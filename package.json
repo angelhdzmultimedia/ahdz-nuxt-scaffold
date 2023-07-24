@@ -15,7 +15,8 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "unbuild"
+    "prepack": "unbuild",
+    "dev": "jiti src/cli-wrapper.ts"
   },
   "devDependencies": {
     "@nuxt/kit": "workspace:../kit",
