@@ -2,14 +2,14 @@ import { rm, mkdir as mkdir$2, readFile, writeFile } from 'node:fs/promises';
 import { a as consola } from '../shared/scaffold.26e5b5d6.mjs';
 import { promisify as promisify$3, deprecate, types as types$2 } from 'node:util';
 import 'node:path';
-import 'node:process';
-import 'node:tty';
+import process$1 from 'node:process';
+import tty__default from 'node:tty';
 import { d as defineNuxtCommand } from '../shared/scaffold.f78c58d8.mjs';
 import { existsSync, readdirSync as readdirSync$1, createWriteStream } from 'node:fs';
-import { c as commonjsGlobal$1, g as getDefaultExportFromCjs } from '../shared/scaffold.24198af3.mjs';
+import { c as commonjsGlobal$1, a as getAugmentedNamespace, g as getDefaultExportFromCjs } from '../shared/scaffold.24198af3.mjs';
 import require$$0 from 'events';
 import require$$1 from 'stream';
-import require$$2 from 'string_decoder';
+import require$$2$1 from 'string_decoder';
 import require$$0$3 from 'assert';
 import require$$0$2 from 'buffer';
 import require$$0$1 from 'zlib';
@@ -17,23 +17,22 @@ import require$$0$4 from 'path';
 import require$$0$5 from 'fs';
 import { y as yallist } from '../shared/scaffold.cc8dd4a9.mjs';
 import require$$9 from 'process';
-import require$$2$1 from 'util';
+import require$$2$2 from 'util';
 import require$$3 from 'crypto';
 import { d as defu } from '../shared/scaffold.a685c563.mjs';
 import Stream$2, { pipeline as pipeline$1, PassThrough } from 'node:stream';
 import { spawnSync } from 'node:child_process';
-import { homedir } from 'node:os';
+import os, { homedir } from 'node:os';
 import http from 'node:http';
 import https from 'node:https';
 import zlib$2 from 'node:zlib';
 import { Buffer as Buffer$2 } from 'node:buffer';
 import { format } from 'node:url';
 import { isIP } from 'node:net';
-import require$$0$7 from 'net';
+import require$$0$6 from 'net';
 import require$$1$1 from 'tls';
 import require$$7 from 'url';
-import tty__default from 'tty';
-import require$$0$6 from 'os';
+import tty__default$1 from 'tty';
 import { r as resolve$1, a as relative, d as dirname$3 } from '../shared/scaffold.ffb4843d.mjs';
 
 // turn tar(1) style args like `C` into the more verbose things like `cwd`
@@ -75,7 +74,7 @@ const proc$1 =
       };
 const EE$3 = require$$0;
 const Stream$1 = require$$1;
-const stringdecoder = require$$2;
+const stringdecoder = require$$2$1;
 const SD$1 = stringdecoder.StringDecoder;
 
 const EOF$2 = Symbol('EOF');
@@ -892,7 +891,7 @@ const proc = typeof process === 'object' && process ? process : {
 };
 const EE$2 = require$$0;
 const Stream = require$$1;
-const SD = require$$2.StringDecoder;
+const SD = require$$2$1.StringDecoder;
 
 const EOF$1 = Symbol('EOF');
 const MAYBE_EMIT_END = Symbol('maybeEmitEnd');
@@ -4620,7 +4619,7 @@ var parse$1 = warner(class Parser extends EE {
 
 var mkdir$1 = {exports: {}};
 
-const { promisify: promisify$2 } = require$$2$1;
+const { promisify: promisify$2 } = require$$2$2;
 const fs$6 = require$$0$5;
 const optsArg$1 = opts => {
   if (!opts)
@@ -14784,160 +14783,190 @@ function requireBrowser () {
 
 var node = {exports: {}};
 
-var hasFlag;
-var hasRequiredHasFlag;
-
-function requireHasFlag () {
-	if (hasRequiredHasFlag) return hasFlag;
-	hasRequiredHasFlag = 1;
-	hasFlag = (flag, argv) => {
-		argv = argv || process.argv;
-		const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
-		const pos = argv.indexOf(prefix + flag);
-		const terminatorPos = argv.indexOf('--');
-		return pos !== -1 && (terminatorPos === -1 ? true : pos < terminatorPos);
-	};
-	return hasFlag;
+// From: https://github.com/sindresorhus/has-flag/blob/main/index.js
+/// function hasFlag(flag, argv = globalThis.Deno?.args ?? process.argv) {
+function hasFlag(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$1.argv) {
+	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
+	const position = argv.indexOf(prefix + flag);
+	const terminatorPosition = argv.indexOf('--');
+	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
 }
 
-var supportsColor_1;
-var hasRequiredSupportsColor;
+const {env} = process$1;
 
-function requireSupportsColor () {
-	if (hasRequiredSupportsColor) return supportsColor_1;
-	hasRequiredSupportsColor = 1;
-	const os = require$$0$6;
-	const hasFlag = requireHasFlag();
+let flagForceColor;
+if (
+	hasFlag('no-color')
+	|| hasFlag('no-colors')
+	|| hasFlag('color=false')
+	|| hasFlag('color=never')
+) {
+	flagForceColor = 0;
+} else if (
+	hasFlag('color')
+	|| hasFlag('colors')
+	|| hasFlag('color=true')
+	|| hasFlag('color=always')
+) {
+	flagForceColor = 1;
+}
 
-	const env = process.env;
-
-	let forceColor;
-	if (hasFlag('no-color') ||
-		hasFlag('no-colors') ||
-		hasFlag('color=false')) {
-		forceColor = false;
-	} else if (hasFlag('color') ||
-		hasFlag('colors') ||
-		hasFlag('color=true') ||
-		hasFlag('color=always')) {
-		forceColor = true;
-	}
+function envForceColor() {
 	if ('FORCE_COLOR' in env) {
-		forceColor = env.FORCE_COLOR.length === 0 || parseInt(env.FORCE_COLOR, 10) !== 0;
-	}
-
-	function translateLevel(level) {
-		if (level === 0) {
-			return false;
+		if (env.FORCE_COLOR === 'true') {
+			return 1;
 		}
 
-		return {
-			level,
-			hasBasic: true,
-			has256: level >= 2,
-			has16m: level >= 3
-		};
-	}
-
-	function supportsColor(stream) {
-		if (forceColor === false) {
+		if (env.FORCE_COLOR === 'false') {
 			return 0;
 		}
 
-		if (hasFlag('color=16m') ||
-			hasFlag('color=full') ||
-			hasFlag('color=truecolor')) {
+		return env.FORCE_COLOR.length === 0 ? 1 : Math.min(Number.parseInt(env.FORCE_COLOR, 10), 3);
+	}
+}
+
+function translateLevel(level) {
+	if (level === 0) {
+		return false;
+	}
+
+	return {
+		level,
+		hasBasic: true,
+		has256: level >= 2,
+		has16m: level >= 3,
+	};
+}
+
+function _supportsColor(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
+	const noFlagForceColor = envForceColor();
+	if (noFlagForceColor !== undefined) {
+		flagForceColor = noFlagForceColor;
+	}
+
+	const forceColor = sniffFlags ? flagForceColor : noFlagForceColor;
+
+	if (forceColor === 0) {
+		return 0;
+	}
+
+	if (sniffFlags) {
+		if (hasFlag('color=16m')
+			|| hasFlag('color=full')
+			|| hasFlag('color=truecolor')) {
 			return 3;
 		}
 
 		if (hasFlag('color=256')) {
 			return 2;
 		}
+	}
 
-		if (stream && !stream.isTTY && forceColor !== true) {
-			return 0;
+	// Check for Azure DevOps pipelines.
+	// Has to be above the `!streamIsTTY` check.
+	if ('TF_BUILD' in env && 'AGENT_NAME' in env) {
+		return 1;
+	}
+
+	if (haveStream && !streamIsTTY && forceColor === undefined) {
+		return 0;
+	}
+
+	const min = forceColor || 0;
+
+	if (env.TERM === 'dumb') {
+		return min;
+	}
+
+	if (process$1.platform === 'win32') {
+		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
+		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
+		const osRelease = os.release().split('.');
+		if (
+			Number(osRelease[0]) >= 10
+			&& Number(osRelease[2]) >= 10_586
+		) {
+			return Number(osRelease[2]) >= 14_931 ? 3 : 2;
 		}
 
-		const min = forceColor ? 1 : 0;
+		return 1;
+	}
 
-		if (process.platform === 'win32') {
-			// Node.js 7.5.0 is the first version of Node.js to include a patch to
-			// libuv that enables 256 color output on Windows. Anything earlier and it
-			// won't work. However, here we target Node.js 8 at minimum as it is an LTS
-			// release, and Node.js 7 is not. Windows 10 build 10586 is the first Windows
-			// release that supports 256 colors. Windows 10 build 14931 is the first release
-			// that supports 16m/TrueColor.
-			const osRelease = os.release().split('.');
-			if (
-				Number(process.versions.node.split('.')[0]) >= 8 &&
-				Number(osRelease[0]) >= 10 &&
-				Number(osRelease[2]) >= 10586
-			) {
-				return Number(osRelease[2]) >= 14931 ? 3 : 2;
-			}
-
-			return 1;
-		}
-
-		if ('CI' in env) {
-			if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI'].some(sign => sign in env) || env.CI_NAME === 'codeship') {
-				return 1;
-			}
-
-			return min;
-		}
-
-		if ('TEAMCITY_VERSION' in env) {
-			return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
-		}
-
-		if (env.COLORTERM === 'truecolor') {
+	if ('CI' in env) {
+		if ('GITHUB_ACTIONS' in env || 'GITEA_ACTIONS' in env) {
 			return 3;
 		}
 
-		if ('TERM_PROGRAM' in env) {
-			const version = parseInt((env.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
-
-			switch (env.TERM_PROGRAM) {
-				case 'iTerm.app':
-					return version >= 3 ? 3 : 2;
-				case 'Apple_Terminal':
-					return 2;
-				// No default
-			}
-		}
-
-		if (/-256(color)?$/i.test(env.TERM)) {
-			return 2;
-		}
-
-		if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
+		if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI', 'BUILDKITE', 'DRONE'].some(sign => sign in env) || env.CI_NAME === 'codeship') {
 			return 1;
-		}
-
-		if ('COLORTERM' in env) {
-			return 1;
-		}
-
-		if (env.TERM === 'dumb') {
-			return min;
 		}
 
 		return min;
 	}
 
-	function getSupportLevel(stream) {
-		const level = supportsColor(stream);
-		return translateLevel(level);
+	if ('TEAMCITY_VERSION' in env) {
+		return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
 	}
 
-	supportsColor_1 = {
-		supportsColor: getSupportLevel,
-		stdout: getSupportLevel(process.stdout),
-		stderr: getSupportLevel(process.stderr)
-	};
-	return supportsColor_1;
+	if (env.COLORTERM === 'truecolor') {
+		return 3;
+	}
+
+	if (env.TERM === 'xterm-kitty') {
+		return 3;
+	}
+
+	if ('TERM_PROGRAM' in env) {
+		const version = Number.parseInt((env.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
+
+		switch (env.TERM_PROGRAM) {
+			case 'iTerm.app': {
+				return version >= 3 ? 3 : 2;
+			}
+
+			case 'Apple_Terminal': {
+				return 2;
+			}
+			// No default
+		}
+	}
+
+	if (/-256(color)?$/i.test(env.TERM)) {
+		return 2;
+	}
+
+	if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
+		return 1;
+	}
+
+	if ('COLORTERM' in env) {
+		return 1;
+	}
+
+	return min;
 }
+
+function createSupportsColor(stream, options = {}) {
+	const level = _supportsColor(stream, {
+		streamIsTTY: stream && stream.isTTY,
+		...options,
+	});
+
+	return translateLevel(level);
+}
+
+const supportsColor = {
+	stdout: createSupportsColor({isTTY: tty__default.isatty(1)}),
+	stderr: createSupportsColor({isTTY: tty__default.isatty(2)}),
+};
+
+const supportsColor$1 = {
+  __proto__: null,
+  createSupportsColor: createSupportsColor,
+  default: supportsColor
+};
+
+const require$$2 = /*@__PURE__*/getAugmentedNamespace(supportsColor$1);
 
 /**
  * Module dependencies.
@@ -14949,8 +14978,8 @@ function requireNode () {
 	if (hasRequiredNode) return node.exports;
 	hasRequiredNode = 1;
 	(function (module, exports) {
-		const tty = tty__default;
-		const util = require$$2$1;
+		const tty = tty__default$1;
+		const util = require$$2$2;
 
 		/**
 		 * This is the Node.js implementation of `debug()`.
@@ -14976,7 +15005,7 @@ function requireNode () {
 		try {
 			// Optional dependency (as in, doesn't need to be installed, NOT like optionalDependencies in package.json)
 			// eslint-disable-next-line import/no-extraneous-dependencies
-			const supportsColor = requireSupportsColor();
+			const supportsColor = require$$2;
 
 			if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
 				exports.colors = [
@@ -15526,7 +15555,7 @@ var __importDefault$1 = (commonjsGlobal$1 && commonjsGlobal$1.__importDefault) |
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(agent, "__esModule", { value: true });
-const net_1 = __importDefault$1(require$$0$7);
+const net_1 = __importDefault$1(require$$0$6);
 const tls_1 = __importDefault$1(require$$1$1);
 const url_1 = __importDefault$1(require$$7);
 const assert_1 = __importDefault$1(require$$0$3);

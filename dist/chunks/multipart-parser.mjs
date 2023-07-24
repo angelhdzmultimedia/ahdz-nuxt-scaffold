@@ -34,7 +34,6 @@ import 'net';
 import 'tls';
 import 'url';
 import 'tty';
-import 'os';
 import '../shared/scaffold.ffb4843d.mjs';
 
 let s = 0;

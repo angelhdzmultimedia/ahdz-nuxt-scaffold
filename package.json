@@ -42,6 +42,7 @@
     "listhen": "1.1.2",
     "mlly": "1.4.0",
     "mri": "1.2.0",
+    "nuxt": "^3.6.5",
     "ohash": "1.1.2",
     "pathe": "1.1.1",
     "perfect-debounce": "1.0.0",
