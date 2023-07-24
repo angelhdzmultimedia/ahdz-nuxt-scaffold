@@ -1,4 +1,4 @@
-import { defineTemplate, prompt } from '../../../utils'
+import { defineTemplate } from '../../utils'
 
 const templates = {
   default: `export default defineNitroPlugin(async (nitroPlugin) => {

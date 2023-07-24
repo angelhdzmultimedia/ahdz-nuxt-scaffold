@@ -1,8 +1,9 @@
 
-import { defineTemplate,  prompt } from '../../utils'
+import { defineTemplate,  prompt } from '../utils'
 
 const templates = {
   default: `<script lang="ts" setup>
+
 </script>
 
 <template>

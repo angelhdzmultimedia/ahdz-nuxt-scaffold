@@ -1,10 +1,11 @@
-import { TemplateOptions } from '../../types/template-options'
-import { defineTemplate, parseName, prompt } from '../../utils'
-import { capitalizeWords } from '../../utils/capitalize'
+import { TemplateOptions } from '../types/template-options'
+import { defineTemplate, parseName, prompt } from '../utils'
+import { capitalizeWords } from '../utils/capitalize'
 
 const templates: any = {
   default: 
 `<script lang="ts" setup>
+
 </script>
       
 <template>
@@ -12,8 +13,8 @@ const templates: any = {
     <span>[name]</span>
   </main>
 </template>`,
-  layout: 
-`<script lang="ts" setup>
+  layout: `<script lang="ts" setup>
+
 </script>
     
 <template>
@@ -44,19 +45,19 @@ export default defineTemplate(async ({name}: TemplateOptions) => {
     })
   }
 
-  const pageName: string = `${capitalizeWords(
+  const componentName: string = `${capitalizeWords(
     capitalizeWords(_name.split(' ')).split('-')
   )
 
-} Page`
+} Component`
 
   const template: string | undefined = withLayout.value ? 'layout' : 'default'
 
   return {
-    name: 'page',
-    path: `pages/${name}.vue`,
+    name: 'component',
+    path: `components/${name}.vue`,
     data: {
-      name: `${pageName}`,
+      name: `${componentName}`,
       layout: layout?.value,
     },
     content: templates[template]

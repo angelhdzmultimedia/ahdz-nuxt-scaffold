@@ -37,7 +37,6 @@ export default defineTemplate(async ({name}) => {
   return {
     name: 'entity',
     path: `server/entities/${name}.ts`,
-    isDynamic: false,
     data: {
       name: entityName,
       extend: withExtend.value ? ` extends ${baseEntityName} ` : '',

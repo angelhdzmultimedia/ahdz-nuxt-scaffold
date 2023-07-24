@@ -1,5 +1,5 @@
-import { defineTemplate, prompt } from '../utils'
-import { capitalizeWords } from '../utils/capitalize'
+import {defineTemplate} from '../utils'
+//import { capitalizeWords } from '../utils/capitalize'
 
 export default defineTemplate(async ({name}) => {
   return {

@@ -1,5 +1,5 @@
-import { defineTemplate, parseName } from '../../utils'
-import { capitalizeWords } from '../../utils/capitalize'
+import { defineTemplate } from '../utils'
+import { capitalizeWords } from '../utils/capitalize'
 
 const templates = {
   default: `import {defineStore} from 'pinia'

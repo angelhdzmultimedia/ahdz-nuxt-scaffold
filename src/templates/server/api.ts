@@ -1,4 +1,4 @@
-import { defineTemplate, prompt } from '../../../utils'
+import { defineTemplate, prompt } from '../../utils'
 
 const templates = {
   default: `export default defineEventHandler(async (event) => {

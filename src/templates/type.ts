@@ -1,9 +1,9 @@
-import { defineTemplate, prompt } from '../../utils'
-import { capitalizeWords } from '../../utils/capitalize'
+import { defineTemplate, prompt } from '../utils'
+import { capitalizeWords } from '../utils/capitalize'
 
 const templates = {
   default: `export type [name] =[extend]{
-  
+
 }  
 `
 }
