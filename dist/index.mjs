@@ -1,6 +1,13 @@
-import jiti from "file:///C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/nuxi/scaffold/node_modules/.pnpm/jiti@1.19.1/node_modules/jiti/lib/index.js";
+import { m as mri, c as commands } from './shared/scaffold.f78c58d8.mjs';
 
-/** @type {import("C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/nuxi/scaffold/src/index")} */
-const _module = jiti(null, { interopDefault: true, esmResolve: true })("C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/nuxi/scaffold/src/index.ts");
+async function runCommand(command, argv = process.argv.slice(2), options = {}) {
+  const args = mri(argv);
+  args.clear = false;
+  const cmd = await commands[command]();
+  if (!cmd) {
+    throw new Error(`Invalid command ${command}`);
+  }
+  await cmd.invoke(args, options);
+}
 
-export const runCommand = _module.runCommand;
+export { runCommand };
