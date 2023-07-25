@@ -99,7 +99,7 @@ function readJson(file: string) {
   // Nest
 
   if (framework.value === 'nest') {
-    await asyncSpawn('pwsh', [`-Command`, 'nest', 'new', name.value])
+    await asyncSpawn('nest', ['new', name.value])
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
     packageJson.dependencies ??= {}
@@ -225,25 +225,25 @@ function readJson(file: string) {
 
     console.log('Installing dependencies...\n')
 
-    await asyncSpawn('pwsh', ['-Command', 'pnpm', 'install'])
+    await asyncSpawn('npm', ['install'])
 
     console.log('Updating dependencies...\n')
 
-    await asyncSpawn('pwsh', ['-Command', 'pnpm', 'update'])
+    await asyncSpawn('npm', ['update', '--force'])
   } 
   
   // Nuxt
 
   if (framework.value === 'nuxt') {
     
-  await asyncSpawn('pwsh', [`-Command`, `pnpx nuxi init ${name.value}`])
+  await asyncSpawn('npx', ['nuxi',  'init',  name.value])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
   packageJson.devDependencies ??= {}
   packageJson.scripts = {
     ...packageJson.scripts,
-    clean: 'rimraf node_modules .nuxt pnpm-lock.yaml'
+    clean: 'rimraf node_modules .nuxt'
   }
 
   const dependencies: any[] = [
@@ -402,11 +402,11 @@ function readJson(file: string) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn('pwsh', ['-Command', 'pnpx', 'nuxi', 'upgrade', '--force'])
+  await asyncSpawn('npx', ['nuxi', 'upgrade', '--force'])
 
   console.log('Updating dependencies...\n')
 
-  await asyncSpawn('pwsh', ['-Command', 'pnpm', 'update'])
+  await asyncSpawn('npm', ['update', '--force'])
   }
   console.log('\nEnjoy your new application! 🔥')
 }
