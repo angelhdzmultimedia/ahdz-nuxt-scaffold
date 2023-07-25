@@ -1,0 +1,27 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "clean": "rimraf node_modules .nuxt"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "*",
+    "@types/node": "^18.17.0",
+    "nuxt": "^3.6.5",
+    "rimraf": "*"
+  },
+  "dependencies": {
+    "nuxt-quasar-ui": "*",
+    "quasar": "*",
+    "@quasar/extras": "*",
+    "pinia": "*",
+    "@pinia/nuxt": "*",
+    "@nuxtjs/i18n": "^8.0.0-beta.12",
+    "@vue-macros/nuxt": "*"
+  }
+}
