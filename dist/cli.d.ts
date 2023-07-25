@@ -1,3 +1,1 @@
-declare function main(): void;
-
-export { main };
+export * from "C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/nuxi/scaffold/src/cli";
