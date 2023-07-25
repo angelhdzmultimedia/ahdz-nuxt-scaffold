@@ -9,7 +9,15 @@ import 'node:tty';
 import { p as prompt } from '../shared/scaffold.8eb8f1f4.mjs';
 import { d as defineNuxtCommand } from '../shared/scaffold.f78c58d8.mjs';
 import { resolve as resolve$1 } from 'path';
+import { l as loadKit } from '../shared/scaffold.43d6937c.mjs';
 import 'inquirer';
+import '../shared/scaffold.a96fae2c.mjs';
+import 'node:url';
+import '../shared/scaffold.9a506861.mjs';
+import 'node:module';
+import 'node:assert';
+import 'node:v8';
+import '../shared/scaffold.ffb4843d.mjs';
 
 const templates = [
   "page",
@@ -71,6 +79,9 @@ async function generateTemplate(templateData, baseDir) {
 }
 
 async function main(args) {
+  const cwd = resolve$1(args.cwd || ".");
+  const kit = await loadKit(cwd);
+  await kit.loadNuxtConfig({ cwd });
   const template = await prompt({
     name: "value",
     type: "rawlist",
@@ -103,7 +114,7 @@ async function main(args) {
     const _templateName = foundTemplate.split(":").join("/");
     const _module = await import(`../templates/${_templateName}`);
     const _template = _module.default;
-    const _templateBaseDir = resolve$1(args._[0], "templates", _templateName);
+    const _templateBaseDir = resolve$1(cwd, "templates", _templateName);
     const _templateData = await _template.apply(void 0, [{ name: name.value, baseDir: _templateBaseDir }]);
     await generateTemplate(_templateData);
   } else {

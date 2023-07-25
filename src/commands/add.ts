@@ -8,11 +8,13 @@ import {prompt} from '../utils'
 import consola from 'consola'
 import { defineNuxtCommand } from '.'
 import { dirname, join, resolve } from 'path'
-
-
+import { loadKit } from '../utils/kit'
 
 
  async function main(args: any) {
+  const cwd = resolve(args.cwd || '.')
+  const kit = await loadKit(cwd)
+  const config = await kit.loadNuxtConfig({ cwd })
   const template: { value: string } = await prompt({
     name: 'value',
     type: 'rawlist',
@@ -50,7 +52,7 @@ import { dirname, join, resolve } from 'path'
     const _templateName: string = foundTemplate.split(':').join('/')
     const _module: { default: Template } = await import(`../templates/${_templateName}`)
     const _template: Template = _module.default
-    const _templateBaseDir: string = resolve(args._[0], 'templates', _templateName)
+    const _templateBaseDir: string = resolve(cwd, 'templates', _templateName)
     const _templateData: TemplateData = await _template.apply(undefined, [{name: name.value, baseDir: _templateBaseDir}])
     
     await generateTemplate(_templateData, _templateBaseDir)

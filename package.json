@@ -16,11 +16,12 @@
   ],
   "scripts": {
     "prepack": "unbuild",
-    "dev": "jiti src/cli-wrapper.ts"
+    "prepack:stub": "unbuild --stub",
+    "dev": "node bin/scaffold.mjs"
   },
   "devDependencies": {
-    "@nuxt/kit": "workspace:../kit",
-    "@nuxt/schema": "workspace:../schema",
+    "@nuxt/kit": "^3.6.5",
+    "@nuxt/schema": "^3.6.5",
     "@types/clear": "0.1.2",
     "@types/flat": "5.0.2",
     "@types/inquirer": "^9.0.3",

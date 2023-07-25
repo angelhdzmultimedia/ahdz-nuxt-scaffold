@@ -3,9 +3,9 @@ import {writeFile} from 'node:fs/promises'
 import {mkdir} from 'node:fs/promises'
 import { resolve, dirname, join } from 'node:path'
 import { TemplateData } from '../types/template-data'
-import {loadNuxtConfig} from 'nuxt/kit'
+import {loadNuxtConfig} from '@nuxt/kit'
 import consola from 'consola'
-import { NuxtOptions } from 'nuxt/schema'
+import { NuxtOptions } from '@nuxt/schema'
 
 export async function generateTemplate(templateData: TemplateData, baseDir: string): Promise<void> {
   const {content, name, path, onFileCreated, data} = templateData
