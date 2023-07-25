@@ -1,2 +1,0 @@
-export * from "C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/nuxi/scaffold/src/cli-run";
-export { default } from "C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/nuxi/scaffold/src/cli-run";

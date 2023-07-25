@@ -72,6 +72,73 @@ function readJson(file: string) {
     message: 'App Name?',
   })
 
+  const manager = await prompt({
+    name: 'value',
+    type: 'list',
+    choices: [
+      {
+        checked: true,
+        name: 'pnpm',
+        value: 'pnpm',
+        key: 'pnpm',
+      },
+
+      {
+        checked: true,
+        name: 'npm',
+        value: 'npm',
+        key: 'npm',
+      },
+
+      {
+        checked: true,
+        name: 'yarn',
+        value: 'yarn',
+        key: 'yarn',
+      },
+    ]
+  })
+
+  type NodePackageManagerCommands = {
+    x: string
+    add: string
+    install: string
+    update: string
+    name: NodePackageManagerType
+  }
+
+  type NodePackageManagerType = 'pnpm' | 'npm' | 'yarn'
+  type NodePackageManagers = { 
+    [key in NodePackageManagerType]: NodePackageManagerCommands
+  }
+
+  const npm: NodePackageManagerCommands = ((): NodePackageManagers => ({
+    npm: {
+      x: 'npx',
+      add: 'add',
+      install: 'install',
+      update: 'update',
+      name: 'npm'
+    }, 
+
+    pnpm: {
+      x: 'pnpx',
+      add: 'add',
+      install: 'install',
+      update: 'update',
+      name: 'pnpm'
+    },
+
+    yarn: {
+      x: 'yarn dlx',
+      add: 'add',
+      install: 'install',
+      update: 'upgrade',
+      name: 'yarn'
+    },
+  }))()[manager.value as NodePackageManagerType]
+
+  
 
   const framework = await prompt({
     name: 'value',
@@ -99,7 +166,7 @@ function readJson(file: string) {
   // Nest
 
   if (framework.value === 'nest') {
-    await asyncSpawn('nest', ['new', name.value])
+    await asyncSpawn('cmd', ['/c', 'nest', 'new', name.value])
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
     packageJson.dependencies ??= {}
@@ -116,7 +183,6 @@ function readJson(file: string) {
       '@nestjs/config',
       '@nestjs/websockets',
       '@nestjs/swagger',
-
     ]
   
     const devDependencies: any[] = [
@@ -225,18 +291,18 @@ function readJson(file: string) {
 
     console.log('Installing dependencies...\n')
 
-    await asyncSpawn('npm', ['install'])
+    await asyncSpawn('cmd', ['/c', npm.name, npm.install])
 
     console.log('Updating dependencies...\n')
 
-    await asyncSpawn('npm', ['update', '--force'])
+    await asyncSpawn('cmd', ['/c', npm.name, npm.update])
   } 
   
   // Nuxt
 
   if (framework.value === 'nuxt') {
     
-  await asyncSpawn('npx', ['nuxi',  'init',  name.value])
+  await asyncSpawn('cmd', ['/c', 'nuxi', 'init', name.value])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
@@ -402,11 +468,11 @@ function readJson(file: string) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn('npx', ['nuxi', 'upgrade', '--force'])
+  await asyncSpawn('cmd', ['/c', 'nuxi', 'upgrade', '--force'])
 
   console.log('Updating dependencies...\n')
 
-  await asyncSpawn('npm', ['update', '--force'])
+  await asyncSpawn('cmd', ['/c', npm.name, npm.update])
   }
   console.log('\nEnjoy your new application! 🔥')
 }
