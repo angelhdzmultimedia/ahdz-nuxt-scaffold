@@ -15,9 +15,6 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "unbuild",
-    "prepack:stub": "unbuild --stub",
-    "dev": "node bin/scaffold.mjs"
   },
   "devDependencies": {
     "@nuxt/kit": "^3.6.5",
