@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "unbuild",
+    "prepack": "unbuild --stub",
     "prepack:stub": "unbuild --stub",
     "dev": "node bin/scaffold.mjs"
   },
