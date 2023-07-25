@@ -302,7 +302,7 @@ function readJson(file: string) {
 
   if (framework.value === 'nuxt') {
     
-  await asyncSpawn('cmd', ['/c', 'nuxi', 'init', name.value])
+  await asyncSpawn('cmd', ['/c', npm.x, 'nuxi', 'init', name.value])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
