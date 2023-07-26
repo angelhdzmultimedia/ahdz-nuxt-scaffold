@@ -15,6 +15,7 @@
     "dist"
   ],
   "scripts": {
+ 
   },
   "devDependencies": {
     "@nuxt/kit": "^3.6.5",
