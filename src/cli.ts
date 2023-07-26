@@ -39,7 +39,7 @@ async function _main () {
 }
 
 // Wrap all console logs with consola for better DX
-consola.wrapAll()
+//consola.wrapAll()
 
 // Filter out unwanted logs
 // TODO: Use better API from consola for intercepting logs

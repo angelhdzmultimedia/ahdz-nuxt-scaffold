@@ -15,6 +15,7 @@ import { loadKit } from '../utils/kit'
   const cwd = resolve(args.cwd || '.')
   const kit = await loadKit(cwd)
   const config = await kit.loadNuxtConfig({ cwd })
+  
   const template: { value: string } = await prompt({
     name: 'value',
     type: 'rawlist',
