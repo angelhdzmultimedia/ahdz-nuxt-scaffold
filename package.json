@@ -17,7 +17,7 @@
   "scripts": {
     "prepack": "unbuild",
     "prepack:stub": "unbuild --stub",
-    "dev": "node bin/scaffold.mjs"
+    "dev": "jiti src/cli-wrapper.ts"
   },
   "devDependencies": {
     "@nuxt/kit": "^3.6.5",
