@@ -30,7 +30,7 @@ export default defineTemplate(async ({name}: TemplateOptions) => {
 
   const withLayout: { value: string } = await prompt({
     name: 'value',
-    type: 'confirm',
+    type: 'checkbox',
     message: 'With layout?',
   })
 
