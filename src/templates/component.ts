@@ -31,8 +31,21 @@ export default defineTemplate(async ({name}: TemplateOptions) => {
 
   const withLayout: { value: string } = await prompt({
     name: 'value',
-    type: 'confirm',
-    message: 'With layout?',
+    type: 'list',
+    message: 'Layout',
+    choices: [
+      {
+        name: 'No Layout',
+        key: 'noLayout',
+        value: false,
+      },
+
+      {
+        name: 'With Layout',
+        key: 'withLayout',
+        value: true,
+      },
+    ]
   })
 
   let layout: {value?: string | undefined} | undefined

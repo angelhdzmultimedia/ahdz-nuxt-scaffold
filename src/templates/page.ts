@@ -34,16 +34,16 @@ export default defineTemplate(async ({name}: TemplateOptions) => {
     message: 'Layout',
     choices: [
       {
+        name: 'No Layout',
+        key: 'noLayout',
+        value: false,
+      },
+
+      {
         name: 'With Layout',
         key: 'withLayout',
         value: true,
       },
-
-      {
-        name: 'No Layout',
-        key: 'noLayout',
-        value: false,
-      }
     ]
   })
 
