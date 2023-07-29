@@ -258,6 +258,19 @@ function readJson(file: string) {
   
     writeJson(resolve(name.value, 'nest-cli.json'), nestConfig) 
 
+    let tsConfig = readJson(resolve(name.value, 'tsconfig.json'))
+
+    tsConfig = {
+      ...tsConfig,
+    }
+
+    tsConfig.compilerOptions.paths['~/*'] = ['src/*']
+
+    writeJson(resolve(name.value, 'tsconfig.json'), tsConfig)
+
+    console.log('tsconfig.json created.\n')
+
+
     const prettierConfig = readJson(resolve(name.value, '.prettierrc'))
     prettierConfig.semi = false
 
