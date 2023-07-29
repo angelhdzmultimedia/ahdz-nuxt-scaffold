@@ -270,6 +270,9 @@ function readJson(file: string) {
 
     tsConfig.compilerOptions.paths['~/*'] = ['src/*']
 
+    tsConfig.compilerOptions.strict = true
+    tsConfig.compilerOptions.strictNullChecks = true
+
     writeJson(resolve(name.value, 'tsconfig.json'), tsConfig)
 
     console.log('tsconfig.json created.\n')
