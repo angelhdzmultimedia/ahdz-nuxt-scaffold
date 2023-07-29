@@ -260,8 +260,12 @@ function readJson(file: string) {
 
     let tsConfig = readJson(resolve(name.value, 'tsconfig.json'))
 
-    tsConfig = {
-      ...tsConfig,
+    if (tsConfig.compilerOptions === undefined) {
+      tsConfig.compilerOptions = {}
+    }
+
+    if (tsConfig.compilerOptions.paths === undefined) {
+      tsConfig.compilerOptions.paths = {}
     }
 
     tsConfig.compilerOptions.paths['~/*'] = ['src/*']
