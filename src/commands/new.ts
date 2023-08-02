@@ -389,6 +389,7 @@ function readJson(file: string) {
     'nuxt-quasar-ui',
     '@nuxtjs/i18n',
     '@vue-macros/nuxt',
+    '@vueuse/nuxt'
   ],
 
   imports: {
