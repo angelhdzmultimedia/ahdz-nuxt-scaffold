@@ -9,26 +9,26 @@ A series of Nuxt extra tools for a smooth and fast DX.
 #### Execution Method
 
 **pnpm:**
-`pnpx https://github.com/angelhdzmultimedia/scaffold.git <argument>`
+`pnpx https://github.com/angelhdzmultimedia/scaffold.git <command>`
 
 **npm:**
-`npx https://github.com/angelhdzmultimedia/scaffold.git <argument>`
+`npx https://github.com/angelhdzmultimedia/scaffold.git <command>`
 
 **yarn:**
-`yarn dlx scaffold@https://github.com/angelhdzmultimedia/scaffold.git <argument>`
+`yarn dlx scaffold@https://github.com/angelhdzmultimedia/scaffold.git <command>`
 
 #### Installation Method
 
 **pnpm:**
-`pnpm add -g https://github.com/angelhdzmultimedia/scaffold.git` and execute `scaffold <argument>`.
+`pnpm add -g https://github.com/angelhdzmultimedia/scaffold.git` and execute `scaffold <command>`.
 
 **npm:**
-`npx https://github.com/angelhdzmultimedia/scaffold.git` and execute `scaffold <argument>`.
+`npx https://github.com/angelhdzmultimedia/scaffold.git` and execute `scaffold <command>`.
 
 **yarn:**
-`yarn dlx scaffold@https://github.com/angelhdzmultimedia/scaffold.git` and execute `scaffold <argument>`.
+`yarn dlx scaffold@https://github.com/angelhdzmultimedia/scaffold.git` and execute `scaffold <command>`.
 
-### [ Arguments ]
+### [ Commands ]
 
 - `new`
 - `add`
