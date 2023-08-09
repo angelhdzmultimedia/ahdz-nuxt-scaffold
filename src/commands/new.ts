@@ -166,6 +166,54 @@ function readJson(file: string) {
   // Nest
 
   if (framework.value === 'nest') {
+    /* const database = await prompt({
+      name: '',
+      type: 'list',
+      message: 'Database Library?',
+      choices: [
+        {
+          name: 'none',
+          key: 'none', 
+          value: 'none'
+        },
+        {
+          name: 'prisma',
+          key: 'prisma',
+          value: 'prisma',
+
+        },
+        {
+          name: 'typeorm',
+          key: 'typeorm',
+          value: 'typeorm',
+        },
+        {
+          name: 'firebase',
+          key: 'firebase',
+          value: 'firebase',
+        },
+        {
+          name: 'supabase',
+          key: 'supabase',
+          value: 'supabase',
+        },
+        {
+          name: 'sequelize',
+          key: 'sequelize',
+          value: 'sequelize',
+        },
+        {
+          name: 'mongoose',
+          key: 'mongoose',
+          value: 'mongoose',
+        },
+        {
+          name: 'typegoose',
+          key: 'typegoose',
+          value: 'typegoose',
+        }
+      ]
+    }) */
     await asyncSpawn('cmd', ['/c', 'nest', 'new', name.value])
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
@@ -340,6 +388,7 @@ function readJson(file: string) {
     '@pinia/nuxt',
     '@nuxtjs/i18n',
     '@vue-macros/nuxt',
+    'zod'
   ]
 
   const devDependencies: any[] = [
