@@ -1,12 +1,11 @@
 import {prompt} from '../utils'
 //import consola from 'consola'
-import { defineNuxtCommand } from '.'
 import { resolve, join } from 'node:path'
 import { spawn } from 'node:child_process'
 import { readFileSync, writeFileSync, mkdirSync, existsSync} from 'node:fs'
 //import { deletedDiff } from 'deep-object-diff'
 import { rimrafSync} from 'rimraf'
-import { defineCommand } from './add'
+import { defineCommand } from 'citty'
 
 
 
@@ -552,10 +551,9 @@ function readJson(file: string) {
 export default defineCommand({
   meta: {
     name: 'new',
-    usage: 'scaffold new [app-name]',
     description: 'Build nuxt and analyze production bundle (experimental)'
   },
-  async invoke (args: any) {
+  async run ({args}) {
     await main(args)
   }
 })

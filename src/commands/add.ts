@@ -8,6 +8,7 @@ import {prompt} from '../utils'
 import consola from 'consola'
 import { dirname, join, resolve } from 'path'
 import { loadKit } from '../utils/kit'
+import { defineCommand } from 'citty'
 
 
  async function main(args: any) {
@@ -73,19 +74,15 @@ type CommandOptions = {
   invoke(args: any): Promise<void>
 }
 
-export function defineCommand(options: CommandOptions) {
- consola.info(`Executing command: ${options.meta.name}`)
- return (args: string[]) => options.invoke({cwd: process.cwd(), _args: args})
-}
 
 
 export default defineCommand({
   meta: {
     name: 'add',
-    usage: '',
+    
     description: 'Build nuxt and analyze production bundle (experimental)'
   },
-  async invoke (args: any) {
+  async run({args}) {
     await main(args)
   }
 })

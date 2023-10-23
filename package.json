@@ -15,7 +15,8 @@
     "dist"
   ],
   "scripts": {
-    
+    "dev": "jiti src/cli-wrapper.ts",
+    "prepack:stub": "unbuild --stub"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.3",
@@ -32,6 +33,7 @@
   "dependencies": {
     "@nuxt/kit": "^3.8.0",
     "@types/node": "18.15.11",
+    "citty": "^0.1.4",
     "inquirer": "9.1.5",
     "mlly": "^1.4.2",
     "rimraf": "4.4.1"
