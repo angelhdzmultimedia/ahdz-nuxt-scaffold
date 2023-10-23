@@ -25,6 +25,8 @@
     "citty": "^0.1.4",
     "consola": "3.2.3",
     "jiti": "1.19.1",
+    "mlly": "^1.4.2",
+    "rimraf": "4.4.1",
     "unbuild": "^2.0.0"
   },
   "optionalDependencies": {
@@ -34,8 +36,6 @@
     "node": "^14.18.0 || >=16.10.0"
   },
   "dependencies": {
-    "inquirer": "9.1.5",
-    "mlly": "^1.4.2",
-    "rimraf": "4.4.1"
+    "inquirer": "9.1.5"
   }
 }
