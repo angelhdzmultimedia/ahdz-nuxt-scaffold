@@ -19,7 +19,10 @@
     "prepack:stub": "unbuild --stub"
   },
   "devDependencies": {
+    "@nuxt/kit": "^3.8.0",
     "@types/inquirer": "^9.0.3",
+    "@types/node": "18.15.11",
+    "citty": "^0.1.4",
     "consola": "3.2.3",
     "jiti": "1.19.1",
     "unbuild": "^2.0.0"
@@ -31,9 +34,6 @@
     "node": "^14.18.0 || >=16.10.0"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.8.0",
-    "@types/node": "18.15.11",
-    "citty": "^0.1.4",
     "inquirer": "9.1.5",
     "mlly": "^1.4.2",
     "rimraf": "4.4.1"
