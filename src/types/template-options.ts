@@ -1,0 +1,1 @@
+export type TemplateOptions = {name: string, baseDir?: string, args?: string[]}
