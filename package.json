@@ -4,9 +4,9 @@
   "repository": "angelhdzmultimedia/nuxt-extras",
   "license": "MIT",
   "type": "module",
-  "types": "./dist/index.d.ts",
+
   "exports": {
-    ".": "./dist/index.mjs",
+   
     "./cli": "./bin/scaffold.mjs"
   },
   "bin": "./bin/scaffold.mjs",
@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "dev": "jiti src/cli-wrapper.ts",
+    "prepack": "unbuild",
     "prepack:stub": "unbuild --stub"
   },
   "devDependencies": {
