@@ -6,15 +6,14 @@ import { capitalizeWords } from '../utils/capitalize'
 import { generateTemplate } from '../utils/generate-file'
 import {prompt} from '../utils'
 import consola from 'consola'
-import { dirname, join, resolve } from 'path'
-import { loadKit } from '../utils/kit'
+import { resolve } from 'path'
+import { loadNuxtConfig } from '@nuxt/kit'
 import { defineCommand } from 'citty'
 
 
  async function main(args: any) {
   const cwd = resolve(args.cwd || '.')
-  const kit = await loadKit(cwd)
-  const config = await kit.loadNuxtConfig({ cwd })
+  const config = await loadNuxtConfig({ cwd })
   const template: { value: string } = await prompt({
     name: 'value',
     type: 'rawlist',
