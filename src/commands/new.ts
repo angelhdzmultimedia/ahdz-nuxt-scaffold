@@ -1,7 +1,7 @@
 import {prompt} from '../utils'
 //import consola from 'consola'
 import { resolve, join } from 'node:path'
-import { spawn } from 'node:child_process'
+import { spawn } from 'cross-spawn'
 import { readFileSync, writeFileSync, mkdirSync, existsSync} from 'node:fs'
 //import { deletedDiff } from 'deep-object-diff'
 import { rimrafSync} from 'rimraf'
