@@ -64,15 +64,6 @@ import { defineCommand } from 'citty'
   await main(args)
 }
 
-type CommandOptions = {
-  meta: {
-    name: string 
-    description?: string
-    usage?: string
-  },
-  invoke(args: any): Promise<void>
-}
-
 
 
 export default defineCommand({
