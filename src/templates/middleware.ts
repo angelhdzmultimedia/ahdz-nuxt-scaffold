@@ -11,8 +11,20 @@ const templates = {
 export default defineTemplate(async ({name}) => {
   const isGlobal: { value: string } = await prompt({
     name: 'value',
-    type: 'confirm',
+    type: 'list',
     message: 'Is global?',  
+    choices: [
+      {
+        name: 'No',
+        value: false,
+
+      },
+      {
+        name: 'Yes',
+        value: true,
+
+      },
+    ]
   })
 
   const globalPrefix: string = isGlobal.value ? `.global` : ''

@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    
+    "test": "jiti src/cli-wrapper.ts"
   },
   "devDependencies": {
     "@nuxt/kit": "^3.8.0",
