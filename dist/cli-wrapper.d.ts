@@ -1,2 +1,2 @@
-
-export {  }
+export * from "C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/ahdz-nuxt-scaffold/src/cli-wrapper";
+export { default } from "C:/Users/AngelHdz/Documents/Programming/TypeScript/projects/ahdz-nuxt-scaffold/src/cli-wrapper";
