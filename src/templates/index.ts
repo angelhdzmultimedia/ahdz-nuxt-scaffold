@@ -13,7 +13,9 @@ export const templates = [
   'plugin',
   'server:plugin',
   'middleware',
-  'env'
+  'env',
+  "module", 
+  "external:module",
 ] as const 
 
 export type TemplateName = typeof templates[number]

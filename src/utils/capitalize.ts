@@ -1,3 +1,5 @@
+import lodash from 'lodash'
+const {capitalize} = lodash
 export function capitalizeWords(words: string[]): string {
   let _text: string = ''
 
@@ -8,6 +10,3 @@ export function capitalizeWords(words: string[]): string {
   return _text
 }
 
-export function capitalize(text: string): string {
-  return `${text[0].toUpperCase()}${text.substring(1).toLowerCase()}`
-}

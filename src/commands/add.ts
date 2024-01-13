@@ -9,6 +9,8 @@ import consola from 'consola'
 import { resolve } from 'path'
 import { loadNuxtConfig } from '@nuxt/kit'
 import { defineCommand } from 'citty'
+import { spawn } from 'node:child_process'
+import { spawnSync } from 'child_process'
 
 
  async function main(args: any) {
@@ -54,7 +56,26 @@ import { defineCommand } from 'citty'
     const _templateBaseDir: string = resolve(cwd, 'templates', _templateName)
     const _templateData: TemplateData = await _template.apply(undefined, [{name: name.value, baseDir: _templateBaseDir}])
     
-    await generateTemplate(_templateData, _templateBaseDir)
+    if (_templateData.content) {
+      await generateTemplate(_templateData, _templateBaseDir)
+    }
+
+    const {isExecutable, cmd, args} = _templateData 
+
+    if (isExecutable) {
+      const result = spawn(cmd!, args ?? [], {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+        shell: true
+
+      })
+      let _resolve: any 
+      const promise = new Promise<void>((resolve, reject) => _resolve = resolve)
+      result.on('exit', () => _resolve())
+      result.on('error', console.error)
+      await promise
+    }
+    
   } else {
     consola.error('Scaffold template not valid.')
     consola.info(`The available scaffold templates are: \n${templates.map(item => `\n- item`)}`)

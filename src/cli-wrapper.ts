@@ -2,7 +2,7 @@ import {parseArgs} from 'node:util'
 import { commands } from './commands'
 import { runCommand } from 'citty'
 
-async function main() {
+export async function runMain() {
   const {positionals: [commandName, ...rest]} = parseArgs({allowPositionals: true})
 
   if (!(commandName in commands)) {
@@ -14,4 +14,3 @@ async function main() {
   })
 }
 
-main()
