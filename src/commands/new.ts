@@ -404,7 +404,7 @@ function readJson(file: string) {
         },
       ]
     })
-  await asyncSpawn(shell, ['-c', npm.execute, npm.name === 'bun' ? '--bun' : undefined,'nuxi@latest', 'init', name.value])
+  await asyncSpawn(shell, ['-c', npm.execute, npm.name === 'bun' ? '--bun' : undefined,'nuxi@latest', 'init', name.value].filter(item => item))
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}

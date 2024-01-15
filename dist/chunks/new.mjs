@@ -9488,7 +9488,7 @@ async function main(args) {
         }
       ]
     });
-    await asyncSpawn(shell, ["-c", npm.execute, npm.name === "bun" ? "--bun" : void 0, "nuxi@latest", "init", name.value]);
+    await asyncSpawn(shell, ["-c", npm.execute, npm.name === "bun" ? "--bun" : void 0, "nuxi@latest", "init", name.value].filter((item) => item));
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
