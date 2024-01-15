@@ -9488,7 +9488,7 @@ async function main(args) {
         }
       ]
     });
-    await asyncSpawn(shell, ["-c", npm.execute, "nuxi@latest", "init", name.value]);
+    await asyncSpawn(shell, ["-c", `'${npm.execute} nuxi@latest init ${name.value}'`]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -9520,7 +9520,7 @@ async function main(args) {
     ];
     console.log("\nAdding modules...\n");
     for (const _module of _modules) {
-      await asyncSpawn(shell, ["-c", npm.execute, "nuxi@latest", "module", "add", _module]);
+      await asyncSpawn(shell, ["-c", `'${npm.execute} nuxi@latest add ${_module}'`]);
     }
     console.log("\nCreating files...\n");
     console.log("package.json created.\n");
@@ -9606,7 +9606,7 @@ async function main(args) {
       message: "Hola Localizaci\xF3n"
     });
     console.log("\nUpdating Nuxt...\n");
-    await asyncSpawn(shell, ["-c", npm.execute, "nuxi@latest", "upgrade", "--force"]);
+    await asyncSpawn(shell, ["-c", `'${npm.execute} nuxi@latest upgrade --force'`]);
     console.log("Updating dependencies...\n");
   }
   console.log("\nEnjoy your new application! \u{1F525}");
