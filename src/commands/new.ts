@@ -404,7 +404,7 @@ function readJson(file: string) {
         },
       ]
     })
-  await asyncSpawn(shell, ['-c', npm.execute, npm.name === 'bun' ? '--bun' : undefined,'nuxi@latest', 'init', name.value].filter(item => item))
+  await asyncSpawn(shell, ['-c', npm.execute ,'nuxi@latest', 'init', name.value])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
@@ -447,7 +447,7 @@ function readJson(file: string) {
 
   console.log('\nAdding modules...\n')
   for (const _module of _modules) {
-    await asyncSpawn(shell, ['-c', npm.execute, npm.name === 'bun' ? '--bun' : undefined, 'nuxi@latest', 'module', 'add', _module].filter(item => item))
+    await asyncSpawn(shell, ['-c', npm.execute, 'nuxi@latest', 'module', 'add', _module])
   }
   
 
@@ -573,7 +573,7 @@ function readJson(file: string) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn(shell, ['-c', npm.execute, npm.name === 'bun' ? '--bun' : undefined, 'nuxi@latest', 'upgrade', '--force'].filter(item => item))
+  await asyncSpawn(shell, ['-c', npm.execute, 'nuxi@latest', 'upgrade', '--force'])
 
   console.log('Updating dependencies...\n')
 
