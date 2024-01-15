@@ -109,7 +109,7 @@ function readJson(file: string) {
     name: NodePackageManagerType
   }
 
-  type NodePackageManagerType = 'pnpm' | 'npm' | 'yarn'
+  type NodePackageManagerType = 'pnpm' | 'npm' | 'yarn' | 'bun'
   type NodePackageManagers = { 
     [key in NodePackageManagerType]: NodePackageManagerCommands
   }
@@ -129,6 +129,14 @@ function readJson(file: string) {
       install: 'install',
       update: 'update',
       name: 'pnpm'
+    },
+
+    bun: {
+      execute: 'bunx',
+      add: 'add',
+      install: 'install',
+      update: 'update',
+      name: 'bun'
     },
 
     yarn: {
