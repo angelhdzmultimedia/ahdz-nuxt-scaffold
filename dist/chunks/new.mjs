@@ -9329,21 +9329,21 @@ async function main(args) {
   });
   const npm = (/* @__PURE__ */ (() => ({
     npm: {
-      x: "npx",
+      execute: "npx",
       add: "add",
       install: "install",
       update: "update",
       name: "npm"
     },
     pnpm: {
-      x: "pnpx",
+      execute: "pnpx",
       add: "add",
       install: "install",
       update: "update",
       name: "pnpm"
     },
     yarn: {
-      x: "yarn dlx",
+      execute: "yarn dlx",
       add: "add",
       install: "install",
       update: "upgrade",
@@ -9473,7 +9473,7 @@ async function main(args) {
         }
       ]
     });
-    await asyncSpawn("cmd", ["/c", npm.x, "nuxi", "init", name.value]);
+    await asyncSpawn("cmd", ["/c", npm.execute, "nuxi@latest", "init", name.value]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -9482,18 +9482,10 @@ async function main(args) {
       clean: "rimraf node_modules .nuxt"
     };
     const dependencies = [
-      "nuxt-quasar-ui",
-      "quasar",
-      "@quasar/extras",
-      "pinia",
-      "@pinia/nuxt",
-      "@nuxtjs/i18n",
-      "@vue-macros/nuxt",
-      "zod"
+      "pinia"
     ];
     const devDependencies = [
-      "rimraf",
-      "@nuxt/devtools"
+      "rimraf"
     ];
     console.log("\nAdding development and production dependencies...");
     for (const value of dependencies) {
@@ -9504,7 +9496,17 @@ async function main(args) {
       packageJson.devDependencies[value] = "*";
       console.log(`${value} development dependency added.`);
     }
-    packageJson.dependencies["@nuxtjs/i18n"] = "^8.0.0-beta.12";
+    const _modules = [
+      "@pinia/nuxt",
+      "nuxt-quasar-ui",
+      "@nuxtjs/i18n",
+      "@vue-macros/nuxt",
+      "@vueuse/nuxt"
+    ];
+    console.log("\nAdding modules...\n");
+    for (const _module of _modules) {
+      await asyncSpawn("cmd", ["/c", npm.execute, "nuxi@latest", "module", "add", _module]);
+    }
     console.log("\nCreating files...\n");
     console.log("package.json created.\n");
     writeJson(resolve$1(name.value, "package.json"), packageJson);
@@ -9517,18 +9519,13 @@ async function main(args) {
   vite: {
     vue: {
       script: {
-        defineModel: true,
         propsDestructure: true,
       }
     }
   },
 
   modules: [
-    '@pinia/nuxt',
-    'nuxt-quasar-ui',
-    '@nuxtjs/i18n',
-    '@vue-macros/nuxt',
-    '@vueuse/nuxt'
+
   ],
 
   imports: {
@@ -9594,9 +9591,8 @@ async function main(args) {
       message: "Hola Localizaci\xF3n"
     });
     console.log("\nUpdating Nuxt...\n");
-    await asyncSpawn("cmd", ["/c", "nuxi", "upgrade", "--force"]);
+    await asyncSpawn("cmd", ["/c", npm.execute, "nuxi@latest", "upgrade", "--force"]);
     console.log("Updating dependencies...\n");
-    await asyncSpawn("cmd", ["/c", npm.name, npm.update]);
   }
   console.log("\nEnjoy your new application! \u{1F525}");
 }

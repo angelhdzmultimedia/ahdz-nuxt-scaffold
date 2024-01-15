@@ -102,7 +102,7 @@ function readJson(file: string) {
   })
 
   type NodePackageManagerCommands = {
-    x: string
+    execute: string
     add: string
     install: string
     update: string
@@ -116,7 +116,7 @@ function readJson(file: string) {
 
   const npm: NodePackageManagerCommands = ((): NodePackageManagers => ({
     npm: {
-      x: 'npx',
+      execute: 'npx',
       add: 'add',
       install: 'install',
       update: 'update',
@@ -124,7 +124,7 @@ function readJson(file: string) {
     }, 
 
     pnpm: {
-      x: 'pnpx',
+      execute: 'pnpx',
       add: 'add',
       install: 'install',
       update: 'update',
@@ -132,7 +132,7 @@ function readJson(file: string) {
     },
 
     yarn: {
-      x: 'yarn dlx',
+      execute: 'yarn dlx',
       add: 'add',
       install: 'install',
       update: 'upgrade',
@@ -388,7 +388,7 @@ function readJson(file: string) {
         },
       ]
     })
-  await asyncSpawn('cmd', ['/c', npm.x, 'nuxi', 'init', name.value])
+  await asyncSpawn('cmd', ['/c', npm.execute, 'nuxi@latest', 'init', name.value])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
@@ -399,19 +399,11 @@ function readJson(file: string) {
   }
 
   const dependencies: any[] = [
-    'nuxt-quasar-ui',
-    'quasar',
-    '@quasar/extras',
     'pinia',
-    '@pinia/nuxt',
-    '@nuxtjs/i18n',
-    '@vue-macros/nuxt',
-    'zod'
   ]
 
   const devDependencies: any[] = [
-    'rimraf',
-    '@nuxt/devtools'
+    'rimraf'
   ]
 
   console.log('\nAdding development and production dependencies...')
@@ -427,7 +419,21 @@ function readJson(file: string) {
   }
 
   // Hardcoded versions
-  packageJson.dependencies['@nuxtjs/i18n'] = '^8.0.0-beta.12'
+
+  // Modules
+  const _modules = [
+    '@pinia/nuxt',
+    'nuxt-quasar-ui',
+    '@nuxtjs/i18n',
+    '@vue-macros/nuxt',
+    '@vueuse/nuxt'
+  ]
+
+  console.log('\nAdding modules...\n')
+  for (const _module of _modules) {
+    await asyncSpawn('cmd', ['/c', npm.execute, 'nuxi@latest', 'module', 'add', _module])
+  }
+  
 
   console.log('\nCreating files...\n')
   
@@ -445,18 +451,13 @@ function readJson(file: string) {
   vite: {
     vue: {
       script: {
-        defineModel: true,
         propsDestructure: true,
       }
     }
   },
 
   modules: [
-    '@pinia/nuxt',
-    'nuxt-quasar-ui',
-    '@nuxtjs/i18n',
-    '@vue-macros/nuxt',
-    '@vueuse/nuxt'
+
   ],
 
   imports: {
@@ -556,11 +557,11 @@ function readJson(file: string) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn('cmd', ['/c', 'nuxi', 'upgrade', '--force'])
+  await asyncSpawn('cmd', ['/c', npm.execute, 'nuxi@latest', 'upgrade', '--force'])
 
   console.log('Updating dependencies...\n')
 
-  await asyncSpawn('cmd', ['/c', npm.name, npm.update])
+  //await asyncSpawn('cmd', ['/c', npm.name, npm.update])
   }
   console.log('\nEnjoy your new application! 🔥')
 }
