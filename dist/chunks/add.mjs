@@ -1,9 +1,10 @@
+import { d as defineTemplate, p as parseName, a as prompt, c as consola, b as defineCommand } from '../shared/scaffold.d379b273.mjs';
 import lodash from 'lodash';
+import { ofetch } from 'ofetch';
 import fs$g, { promises, statSync as statSync$1, existsSync, realpathSync, Stats, readFileSync } from 'node:fs';
 import { rm, mkdir, writeFile } from 'node:fs/promises';
 import path$e, { resolve as resolve$1, dirname as dirname$1 } from 'node:path';
 import 'node:perf_hooks';
-import { c as consola, d as defineCommand, p as prompt } from '../shared/scaffold.0d7c350e.mjs';
 import { format, inspect } from 'node:util';
 import process$1 from 'node:process';
 import 'node:tty';
@@ -32,26 +33,6 @@ import v8 from 'node:v8';
 import require$$0$7 from 'constants';
 import { spawn } from 'node:child_process';
 
-const templates = [
-  "page",
-  "store",
-  "store:actions",
-  "store:state",
-  "server:api",
-  "client:api",
-  "composable",
-  "component",
-  "layout",
-  "entity",
-  "type",
-  "plugin",
-  "server:plugin",
-  "middleware",
-  "env",
-  "module",
-  "external:module"
-];
-
 const { capitalize } = lodash;
 function capitalizeWords(words) {
   let _text = "";
@@ -60,6 +41,550 @@ function capitalizeWords(words) {
   }
   return _text;
 }
+
+const templates$b = {
+  default: `<script lang="ts" setup>
+<\/script>
+      
+<template>
+  <main>
+    <span>[name]</span>
+  </main>
+</template>`,
+  layout: `<script lang="ts" setup>
+<\/script>
+    
+<template>
+  <NuxtLayout name="[layout]">
+    <main>
+      <span>[name]</span>
+    </main>
+  </NuxtLayout>
+</template>`
+};
+const page = defineTemplate(async ({ name }) => {
+  const _name = name.endsWith("/") ? "index" : parseName(name);
+  const withLayout = await prompt({
+    name: "value",
+    type: "list",
+    message: "Layout",
+    choices: [
+      {
+        name: "No Layout",
+        key: "noLayout",
+        value: false
+      },
+      {
+        name: "With Layout",
+        key: "withLayout",
+        value: true
+      }
+    ]
+  });
+  let layout;
+  if (withLayout.value) {
+    layout = await prompt({
+      name: "value",
+      type: "input",
+      message: "Layout name?"
+    });
+  }
+  const pageName = `${capitalizeWords(
+    capitalizeWords(_name.split(" ")).split("-")
+  )} Page`;
+  const template = withLayout.value ? "layout" : "default";
+  return {
+    name: "page",
+    path: `pages/${name}.vue`,
+    data: {
+      name: `${pageName}`,
+      layout: layout?.value
+    },
+    content: templates$b[template]
+  };
+});
+
+const templates$a = {
+  default: `import {defineStore} from 'pinia'
+  import * as state from './state'
+  import * as actions from './actions'
+        
+  export const use[name]Store = defineStore('[id]', () => {
+          
+    return {
+      ...state,
+      ...actions
+    }
+  })
+  `
+};
+const store = defineTemplate(async ({ name }) => {
+  const _name = name.split("-");
+  const storeName = capitalizeWords(_name);
+  return {
+    name: "store",
+    path: `stores/${name}/index.ts`,
+    data: { name: storeName, id: _name },
+    content: templates$a.default,
+    onFileCreated({ currentPath }) {
+      return {
+        name: "store:actions",
+        path: `stores/${name}/actions.ts`,
+        content: `export {}`,
+        onFileCreated({ currentPath: currentPath2 }) {
+          return {
+            name: "store:state",
+            path: `stores/${name}/state.ts`,
+            content: `export {}`
+          };
+        }
+      };
+    }
+  };
+});
+
+const templates$9 = {
+  default: `export default defineEventHandler(async (event) => {
+
+})  
+`
+};
+const api = defineTemplate(async ({ name }) => {
+  const method = await prompt({
+    name: "value",
+    type: "list",
+    message: "Method?",
+    choices: [
+      {
+        name: "Post",
+        value: "post",
+        key: "post"
+      },
+      {
+        name: "Get",
+        value: "get",
+        key: "get"
+      }
+    ]
+  });
+  return {
+    name: "server:api",
+    path: `server/api/${name}.${method.value}.ts`,
+    content: templates$9.default
+  };
+});
+
+const templates$8 = {
+  default: `export const [name] = async () => {
+  return {
+  
+  }
+}`
+};
+const composable = defineTemplate(async ({ name }) => {
+  const _name = capitalizeWords(name.split("-"));
+  const composableName = `use${_name}`;
+  return {
+    name: "composable",
+    path: `composables/${name}.ts`,
+    data: { name: composableName },
+    content: templates$8.default
+  };
+});
+
+const templates$7 = {
+  default: `<script lang="ts" setup>
+
+<\/script>
+      
+<template>
+  <main>
+    <span>[name]</span>
+  </main>
+</template>`,
+  layout: `<script lang="ts" setup>
+
+<\/script>
+    
+<template>
+  <NuxtLayout name="[layout]">
+    <main>
+      <span>[name]</span>
+    </main>
+  </NuxtLayout>
+</template>`
+};
+const component = defineTemplate(async ({ name }) => {
+  const _name = name.endsWith("/") ? "index" : parseName(name);
+  const withLayout = await prompt({
+    name: "value",
+    type: "list",
+    message: "Layout",
+    choices: [
+      {
+        name: "No Layout",
+        key: "noLayout",
+        value: false
+      },
+      {
+        name: "With Layout",
+        key: "withLayout",
+        value: true
+      }
+    ]
+  });
+  let layout;
+  if (withLayout.value) {
+    layout = await prompt({
+      name: "value",
+      type: "input",
+      message: "Layout name?"
+    });
+  }
+  const componentName = `${capitalizeWords(
+    capitalizeWords(_name.split(" ")).split("-")
+  )} Component`;
+  const template = withLayout.value ? "layout" : "default";
+  return {
+    name: "component",
+    path: `components/${name}.vue`,
+    data: {
+      name: `${componentName}`,
+      layout: layout?.value
+    },
+    content: templates$7[template]
+  };
+});
+
+const templates$6 = {
+  default: `<script lang="ts" setup>
+
+<\/script>
+
+<template>
+  <main>
+    <span>[name]</span>
+    <slot/>
+  </main>
+</template>
+
+<style scoped>
+
+</style>
+`,
+  quasar: `<script lang="ts" setup>
+import {useQuasar} from 'quasar'
+const $q = useQuasar()
+<\/script>
+
+<template>
+  <q-layout>
+    <q-header>
+      <q-toolbar>
+        <q-btn icon="home" to="/"/>
+        <q-toolbar-title>[name]</q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+    <q-page-container>
+      <q-page>
+        <slot/>
+      </q-page>
+    </q-page-container>
+  </q-layout>
+</template>
+
+<style scoped>
+
+</style>
+`
+};
+const layout = defineTemplate(async function({ name }) {
+  const layout = await prompt({
+    name: "value",
+    type: "list",
+    choices: [
+      {
+        name: "Default",
+        value: "default",
+        key: "default"
+      },
+      {
+        name: "Quasar",
+        value: "quasar",
+        key: "quasar"
+      }
+    ]
+  });
+  const layoutName = `${name[0].toUpperCase()}${name.substring(1).toLowerCase()} Layout`;
+  return {
+    name: "layout",
+    path: `layouts/${name}.vue`,
+    content: templates$6[layout.value],
+    data: {
+      name: layoutName
+    }
+  };
+});
+
+const templates$5 = {
+  default: `export class [name][extend] {
+[super]
+}`
+};
+const entity = defineTemplate(async ({ name }) => {
+  const entityName = capitalizeWords(capitalizeWords(name.split(" ")).split("-"));
+  const withExtend = await prompt({
+    name: "value",
+    type: "confirm",
+    message: "With extends?"
+  });
+  let extendClass;
+  if (withExtend.value) {
+    extendClass = await prompt({
+      name: "value",
+      type: "input",
+      message: "Extends Class?"
+    });
+  }
+  const capitalizedExtends = withExtend.value ? capitalizeWords(capitalizeWords(extendClass?.value.split(" ")).split("-")) : "";
+  const baseEntityName = withExtend.value ? capitalizedExtends : "";
+  const superCall = ` constructor() {
+    super()
+  }`;
+  return {
+    name: "entity",
+    path: `server/entities/${name}.ts`,
+    data: {
+      name: entityName,
+      extend: withExtend.value ? ` extends ${baseEntityName} ` : "",
+      super: withExtend.value ? superCall : ""
+    },
+    content: templates$5.default
+  };
+});
+
+const templates$4 = {
+  default: `export type [name] =[extend]{
+
+}  
+`
+};
+const type = defineTemplate(async ({ name }) => {
+  const typeName = capitalizeWords(capitalizeWords(name.split(" ")).split("-"));
+  const withExtend = await prompt({
+    name: "value",
+    type: "confirm",
+    message: "With interesection?"
+  });
+  let extendType = void 0;
+  if (withExtend.value) {
+    extendType = await prompt({
+      name: "value",
+      type: "input",
+      message: "Interesection name?"
+    });
+  }
+  const capitalizedExtend = withExtend.value ? capitalizeWords(
+    capitalizeWords(
+      extendType?.value.split(" ")
+    ).split("-")
+  ) : "";
+  return {
+    name: "entity",
+    path: `types/${name}.ts`,
+    data: {
+      name: typeName,
+      extend: withExtend.value ? ` ${capitalizedExtend} & ` : ""
+    },
+    content: templates$4.default
+  };
+});
+
+const templates$3 = {
+  default: `export default defineNuxtPlugin((nuxtApp) => {
+    
+})`
+};
+const plugin$1 = defineTemplate(async ({ name }) => {
+  const type = await prompt({
+    name: "value",
+    type: "list",
+    message: "Type?",
+    choices: [
+      {
+        name: "Client",
+        value: "client",
+        key: "client"
+      },
+      {
+        name: "Server",
+        value: "server",
+        key: "server"
+      },
+      {
+        name: "Both",
+        value: "both",
+        key: "both"
+      }
+    ]
+  });
+  return {
+    name: "plugin",
+    path: `plugins/${name}${type.value === "both" ? "" : `.${type.value}`}.ts`,
+    content: templates$3.default
+  };
+});
+
+const templates$2 = {
+  default: `export default defineNitroPlugin(async (nitroPlugin) => {
+  
+})  
+`
+};
+const plugin = defineTemplate(async ({ name }) => {
+  return {
+    name: "server:plugin",
+    path: `server/plugins/${name}.ts`,
+    content: templates$2.default
+  };
+});
+
+const templates$1 = {
+  default: `export default defineNuxtRouteMiddleware(async ({path}) => {
+    
+})
+  `
+};
+const middleware = defineTemplate(async ({ name }) => {
+  const isGlobal = await prompt({
+    name: "value",
+    type: "list",
+    message: "Is global?",
+    choices: [
+      {
+        name: "No",
+        value: false
+      },
+      {
+        name: "Yes",
+        value: true
+      }
+    ]
+  });
+  const globalPrefix = isGlobal.value ? `.global` : "";
+  const _name = name.split("-");
+  const storeName = capitalizeWords(_name);
+  return {
+    name: "middleware",
+    path: `middleware/${name}${globalPrefix}.ts`,
+    data: { name: storeName, id: _name },
+    content: templates$1.default
+  };
+});
+
+const env = defineTemplate(async ({ name }) => {
+  return {
+    name: "env",
+    path: `.${name}`,
+    content: `ENV_VARIABLE=Some value`
+  };
+});
+
+const { camelCase } = lodash;
+const templates = {
+  default: `import {
+    defineNuxtModule, 
+    createResolver,
+  } from 'nuxt/kit'
+  
+} from 'nuxt/kit'
+
+export interface ModuleOptions {
+
+}
+
+export const defineNuxtModule<ModuleOptions>({
+  meta: {
+    name: '{name}',
+    configKey: '{id}',
+  },
+   setup(options, nuxt) {
+     const resolver = createResolver(import.meta.url)
+   }
+})
+`
+};
+const module$2 = defineTemplate(async ({ name }) => {
+  const _name = camelCase(name);
+  return {
+    name: "module",
+    path: `modules/${name}/index.ts`,
+    data: { name: _name, id: _name },
+    content: templates.default
+  };
+});
+
+const module$1 = defineTemplate(async ({ name }) => {
+  const { modules } = await ofetch("https://api.nuxt.com/modules");
+  const selectedModules = await prompt({
+    type: "checkbox",
+    name: "value",
+    message: "Select modules",
+    choices: [
+      ...modules.map(({ name: name2, npm }) => ({ name: npm, value: npm, key: npm }))
+    ]
+  });
+  const sortedModules = selectedModules.value.sort().map((module) => `pnpx nuxi@latest module add ${module}`).join(" && ");
+  return {
+    name: "external:module",
+    isExecutable: true,
+    cmd: "pwsh",
+    args: [
+      "-NoExit",
+      "-Command",
+      `"${sortedModules}"`
+    ]
+  };
+});
+
+const templatesNames = [
+  "page",
+  "store",
+  "storeActions",
+  "storeState",
+  "serverApi",
+  "clientApi",
+  "composable",
+  "component",
+  "layout",
+  "entity",
+  "type",
+  "plugin",
+  "serverPlugin",
+  "middleware",
+  "env",
+  "module",
+  "externalModule"
+];
+
+const index$1 = {
+  __proto__: null,
+  component: component,
+  composable: composable,
+  entity: entity,
+  env: env,
+  externalModule: module$1,
+  layout: layout,
+  middleware: middleware,
+  module: module$2,
+  page: page,
+  plugin: plugin$1,
+  serverApi: api,
+  serverPlugin: plugin,
+  store: store,
+  templatesNames: templatesNames,
+  type: type
+};
 
 function isObject$4(value) {
   return value !== null && typeof value === "object";
@@ -31519,7 +32044,7 @@ async function main(args) {
     type: "rawlist",
     message: "What to scaffold?",
     choices: [
-      ...templates.filter((item) => item !== "store:actions" && item !== "store:state").map((item) => ({
+      ...templatesNames.filter((item) => item !== "storeActions" && item !== "storeState").map((item) => ({
         name: capitalizeWords(item.split(":")),
         key: item,
         value: item
@@ -31541,11 +32066,11 @@ async function main(args) {
     type: "input",
     message: "Name?"
   });
-  const foundTemplate = templates.find((item) => item === template.value);
-  if (templates.some((item) => item === foundTemplate)) {
+  const foundTemplate = templatesNames.find((item) => item === template.value);
+  if (templatesNames.some((item) => item === foundTemplate)) {
     const _templateName = foundTemplate.split(":").join("/");
-    const _module = await import(`../templates/${_templateName}`);
-    const _template = _module.default;
+    const _templatesIndex = await Promise.resolve().then(function () { return index$1; });
+    const _template = _templatesIndex[_templateName];
     const _templateBaseDir = resolve$2(cwd, "templates", _templateName);
     const _templateData = await _template.apply(void 0, [{ name: name.value, baseDir: _templateBaseDir }]);
     if (_templateData.content) {
@@ -31567,7 +32092,7 @@ async function main(args) {
   } else {
     consola.error("Scaffold template not valid.");
     consola.info(`The available scaffold templates are: 
-${templates.map((item) => `
+${templatesNames.map((item) => `
 - item`)}`);
   }
   await main(args);

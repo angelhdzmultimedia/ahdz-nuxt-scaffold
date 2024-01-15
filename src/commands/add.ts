@@ -1,5 +1,5 @@
 
-import { templates } from '../templates'
+import { templatesNames } from '../templates'
 import { TemplateData } from '../types/template-data'
 import { Template } from '../types/template'
 import { capitalizeWords } from '../utils/capitalize'
@@ -21,7 +21,7 @@ import { spawnSync } from 'child_process'
     type: 'rawlist',
     message: 'What to scaffold?',
     choices: [
-      ...templates.filter(item => (item !== 'store:actions' && item !== 'store:state')).map(item => ({
+      ...templatesNames.filter(item => (item !== 'storeActions' && item !== 'storeState')).map(item => ({
         name: capitalizeWords(item.split(':')),
         key: item,
         value: item
@@ -47,12 +47,12 @@ import { spawnSync } from 'child_process'
     message: 'Name?',
   })
 
-  const foundTemplate: string = templates.find(item => item === template.value)!
+  const foundTemplate: string = templatesNames.find(item => item === template.value)!
 
-  if (templates.some(item => item === foundTemplate)) {
+  if (templatesNames.some(item => item === foundTemplate)) {
     const _templateName: string = foundTemplate.split(':').join('/')
-    const _module: { default: Template } = await import(`../templates/${_templateName}`)
-    const _template: Template = _module.default
+    const _templatesIndex: any = await import(`../templates`)
+    const _template: Template = _templatesIndex[_templateName]
     const _templateBaseDir: string = resolve(cwd, 'templates', _templateName)
     const _templateData: TemplateData = await _template.apply(undefined, [{name: name.value, baseDir: _templateBaseDir}])
     
@@ -78,7 +78,7 @@ import { spawnSync } from 'child_process'
     
   } else {
     consola.error('Scaffold template not valid.')
-    consola.info(`The available scaffold templates are: \n${templates.map(item => `\n- item`)}`)
+    consola.info(`The available scaffold templates are: \n${templatesNames.map(item => `\n- item`)}`)
   }
 
   // Recursion

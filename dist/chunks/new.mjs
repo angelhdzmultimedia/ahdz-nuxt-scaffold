@@ -1,4 +1,4 @@
-import { d as defineCommand, p as prompt } from '../shared/scaffold.0d7c350e.mjs';
+import { b as defineCommand, a as prompt } from '../shared/scaffold.d379b273.mjs';
 import { resolve as resolve$1, join } from 'node:path';
 import { spawn } from 'cross-spawn';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';

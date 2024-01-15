@@ -1640,6 +1640,12 @@ async function runCommand(cmd, opts) {
   }
 }
 
+function defineTemplate(callback) {
+  return callback;
+}
+function parseName(name) {
+  return name.split("/").at(-1);
+}
 const prompt = inquirer.prompt;
 
 const _rDefault = (r) => r.default || r;
@@ -1683,4 +1689,4 @@ async function runMain() {
   });
 }
 
-export { colors as a, consola as c, defineCommand as d, getDefaultExportFromCjs as g, isUnicodeSupported as i, prompt as p, runMain as r };
+export { prompt as a, defineCommand as b, consola as c, defineTemplate as d, colors as e, getDefaultExportFromCjs as g, isUnicodeSupported as i, parseName as p, runMain as r };

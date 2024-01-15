@@ -15,7 +15,9 @@
   "scripts": {
     "prepack": "unbuild",
     "build": "unbuild",
-    "dev": "node ./bin/scaffold.mjs"
+    "dev": "node ./bin/scaffold.mjs",
+    "add": "scaffold add",
+    "new": "scaffold new"
   },
   "devDependencies": {
     "@ant-design-vue/nuxt": "^1.2.0",
@@ -53,6 +55,7 @@
     "cross-spawn": "^7.0.3",
     "inquirer": "9.1.5",
     "lodash": "^4.17.21",
-    "ofetch": "^1.3.3"
+    "ofetch": "^1.3.3",
+    "scaffold": "github:angelhdzmultimedia/ahdz-nuxt-scaffold-dev"
   }
 }
