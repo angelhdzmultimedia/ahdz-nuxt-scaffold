@@ -9315,6 +9315,12 @@ async function main(args) {
       },
       {
         checked: true,
+        name: "bun",
+        value: "bun",
+        key: "bun"
+      },
+      {
+        checked: true,
         name: "npm",
         value: "npm",
         key: "npm"
@@ -9341,6 +9347,13 @@ async function main(args) {
       install: "install",
       update: "update",
       name: "pnpm"
+    },
+    bun: {
+      execute: "bunx",
+      add: "add",
+      install: "install",
+      update: "update",
+      name: "bun"
     },
     yarn: {
       execute: "yarn dlx",
