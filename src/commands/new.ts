@@ -72,6 +72,8 @@ function readJson(file: string) {
     message: 'App Name?',
   })
 
+  
+
   const manager = await prompt({
     name: 'value',
     type: 'list',
@@ -369,7 +371,23 @@ function readJson(file: string) {
   // Nuxt
 
   if (framework.value === 'nuxt') {
-    
+    const type = await prompt({
+      name: 'value',
+      type: 'list',
+      message: 'Type?',
+      choices: [
+        {
+          name: 'SSR',
+          value: 'ssr',
+          key: 'ssr',
+        },
+        {
+          name: 'SPA',
+          value: 'spa',
+          key: 'spa',
+        },
+      ]
+    })
   await asyncSpawn('cmd', ['/c', npm.x, 'nuxi', 'init', name.value])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
@@ -422,7 +440,7 @@ function readJson(file: string) {
 
   write(resolve(name.value, 'nuxt.config.ts'), 
 `export default defineNuxtConfig({
-  ssr: false,
+  ssr: ${type.value === 'ssr' ? 'true' : 'false'},
   devtools: true,
   vite: {
     vue: {

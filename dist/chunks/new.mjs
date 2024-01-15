@@ -9456,6 +9456,23 @@ async function main(args) {
     await asyncSpawn("cmd", ["/c", npm.name, npm.update]);
   }
   if (framework.value === "nuxt") {
+    const type = await prompt({
+      name: "value",
+      type: "list",
+      message: "Type?",
+      choices: [
+        {
+          name: "SSR",
+          value: "ssr",
+          key: "ssr"
+        },
+        {
+          name: "SPA",
+          value: "spa",
+          key: "spa"
+        }
+      ]
+    });
     await asyncSpawn("cmd", ["/c", npm.x, "nuxi", "init", name.value]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
@@ -9495,7 +9512,7 @@ async function main(args) {
     write(
       resolve$1(name.value, "nuxt.config.ts"),
       `export default defineNuxtConfig({
-  ssr: false,
+  ssr: ${type.value === "ssr" ? "true" : "false"},
   devtools: true,
   vite: {
     vue: {
