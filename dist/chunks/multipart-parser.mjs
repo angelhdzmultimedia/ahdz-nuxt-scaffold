@@ -1,6 +1,6 @@
 import 'node:fs';
 import 'node:path';
-import { d as dr, w as wn } from './index.mjs';
+import { n as node$1 } from './index.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:zlib';
@@ -9,42 +9,14 @@ import 'node:buffer';
 import 'node:util';
 import 'node:url';
 import 'node:net';
-import 'node:fs/promises';
-import '../shared/scaffold.2155838d.mjs';
-import 'events';
-import 'stream';
-import 'string_decoder';
-import 'assert';
-import 'buffer';
-import 'zlib';
-import 'path';
-import 'fs';
-import './add.mjs';
-import '../shared/scaffold.d379b273.mjs';
-import 'node:process';
-import 'node:tty';
-import 'inquirer';
-import 'lodash';
-import 'ofetch';
-import 'node:perf_hooks';
-import 'crypto';
-import 'module';
-import 'perf_hooks';
-import 'os';
-import 'vm';
-import 'url';
-import 'process';
-import 'v8';
-import 'util';
-import 'tty';
-import 'node:os';
-import 'node:module';
-import 'node:assert';
-import 'node:v8';
-import 'constants';
-import 'node:child_process';
 
-var B=Object.defineProperty;var E=(u,a)=>B(u,"name",{value:a,configurable:!0});let D=0;const t={START_BOUNDARY:D++,HEADER_FIELD_START:D++,HEADER_FIELD:D++,HEADER_VALUE_START:D++,HEADER_VALUE:D++,HEADER_VALUE_ALMOST_DONE:D++,HEADERS_ALMOST_DONE:D++,PART_DATA_START:D++,PART_DATA:D++,END:D++};let w=1;const R={PART_BOUNDARY:w,LAST_BOUNDARY:w*=2},g=10,N=13,x=32,P=45,C=58,I=97,M=122,$=E(u=>u|32,"lower"),m=E(()=>{},"noop"),F=class F{constructor(a){this.index=0,this.flags=0,this.onHeaderEnd=m,this.onHeaderField=m,this.onHeadersEnd=m,this.onHeaderValue=m,this.onPartBegin=m,this.onPartData=m,this.onPartEnd=m,this.boundaryChars={},a=`\r
---`+a;const n=new Uint8Array(a.length);for(let r=0;r<a.length;r++)n[r]=a.charCodeAt(r),this.boundaryChars[n[r]]=!0;this.boundary=n,this.lookbehind=new Uint8Array(this.boundary.length+8),this.state=t.START_BOUNDARY;}write(a){let n=0;const r=a.length;let d=this.index,{lookbehind:l,boundary:c,boundaryChars:H,index:e,state:i,flags:A}=this;const p=this.boundary.length,O=p-1,y=a.length;let o,L;const f=E(h=>{this[h+"Mark"]=n;},"mark"),s=E(h=>{delete this[h+"Mark"];},"clear"),T=E((h,S,_,U)=>{(S===void 0||S!==_)&&this[h](U&&U.subarray(S,_));},"callback"),b=E((h,S)=>{const _=h+"Mark";_ in this&&(S?(T(h,this[_],n,a),delete this[_]):(T(h,this[_],a.length,a),this[_]=0));},"dataCallback");for(n=0;n<r;n++)switch(o=a[n],i){case t.START_BOUNDARY:if(e===c.length-2){if(o===P)A|=R.LAST_BOUNDARY;else if(o!==N)return;e++;break}else if(e-1===c.length-2){if(A&R.LAST_BOUNDARY&&o===P)i=t.END,A=0;else if(!(A&R.LAST_BOUNDARY)&&o===g)e=0,T("onPartBegin"),i=t.HEADER_FIELD_START;else return;break}o!==c[e+2]&&(e=-2),o===c[e+2]&&e++;break;case t.HEADER_FIELD_START:i=t.HEADER_FIELD,f("onHeaderField"),e=0;case t.HEADER_FIELD:if(o===N){s("onHeaderField"),i=t.HEADERS_ALMOST_DONE;break}if(e++,o===P)break;if(o===C){if(e===1)return;b("onHeaderField",!0),i=t.HEADER_VALUE_START;break}if(L=$(o),L<I||L>M)return;break;case t.HEADER_VALUE_START:if(o===x)break;f("onHeaderValue"),i=t.HEADER_VALUE;case t.HEADER_VALUE:o===N&&(b("onHeaderValue",!0),T("onHeaderEnd"),i=t.HEADER_VALUE_ALMOST_DONE);break;case t.HEADER_VALUE_ALMOST_DONE:if(o!==g)return;i=t.HEADER_FIELD_START;break;case t.HEADERS_ALMOST_DONE:if(o!==g)return;T("onHeadersEnd"),i=t.PART_DATA_START;break;case t.PART_DATA_START:i=t.PART_DATA,f("onPartData");case t.PART_DATA:if(d=e,e===0){for(n+=O;n<y&&!(a[n]in H);)n+=p;n-=O,o=a[n];}if(e<c.length)c[e]===o?(e===0&&b("onPartData",!0),e++):e=0;else if(e===c.length)e++,o===N?A|=R.PART_BOUNDARY:o===P?A|=R.LAST_BOUNDARY:e=0;else if(e-1===c.length)if(A&R.PART_BOUNDARY){if(e=0,o===g){A&=~R.PART_BOUNDARY,T("onPartEnd"),T("onPartBegin"),i=t.HEADER_FIELD_START;break}}else A&R.LAST_BOUNDARY&&o===P?(T("onPartEnd"),i=t.END,A=0):e=0;if(e>0)l[e-1]=o;else if(d>0){const h=new Uint8Array(l.buffer,l.byteOffset,l.byteLength);T("onPartData",0,d,h),d=0,f("onPartData"),n--;}break;case t.END:break;default:throw new Error(`Unexpected state entered: ${i}`)}b("onHeaderField"),b("onHeaderValue"),b("onPartData"),this.index=e,this.state=i,this.flags=A;}end(){if(this.state===t.HEADER_FIELD_START&&this.index===0||this.state===t.PART_DATA&&this.index===this.boundary.length)this.onPartEnd();else if(this.state!==t.END)throw new Error("MultipartParser.end(): stream ended unexpectedly")}};E(F,"MultipartParser");let k=F;function v(u){const a=u.match(/\bfilename=("(.*?)"|([^()<>@,;:\\"/[\]?={}\s\t]+))($|;\s)/i);if(!a)return;const n=a[2]||a[3]||"";let r=n.slice(n.lastIndexOf("\\")+1);return r=r.replace(/%22/g,'"'),r=r.replace(/&#(\d{4});/g,(d,l)=>String.fromCharCode(l)),r}E(v,"_fileName");async function Z(u,a){if(!/multipart/i.test(a))throw new TypeError("Failed to fetch");const n=a.match(/boundary=(?:"([^"]+)"|([^;]+))/i);if(!n)throw new TypeError("no or bad content-type header, no multipart boundary");const r=new k(n[1]||n[2]);let d,l,c,H,e,i;const A=[],p=new dr,O=E(s=>{c+=f.decode(s,{stream:!0});},"onPartData"),y=E(s=>{A.push(s);},"appendToFile"),o=E(()=>{const s=new wn(A,i,{type:e});p.append(H,s);},"appendFileToFormData"),L=E(()=>{p.append(H,c);},"appendEntryToFormData"),f=new TextDecoder("utf-8");f.decode(),r.onPartBegin=function(){r.onPartData=O,r.onPartEnd=L,d="",l="",c="",H="",e="",i=null,A.length=0;},r.onHeaderField=function(s){d+=f.decode(s,{stream:!0});},r.onHeaderValue=function(s){l+=f.decode(s,{stream:!0});},r.onHeaderEnd=function(){if(l+=f.decode(),d=d.toLowerCase(),d==="content-disposition"){const s=l.match(/\bname=("([^"]*)"|([^()<>@,;:\\"/[\]?={}\s\t]+))/i);s&&(H=s[2]||s[3]||""),i=v(l),i&&(r.onPartData=y,r.onPartEnd=o);}else d==="content-type"&&(e=l);l="",d="";};for await(const s of u)r.write(s);return r.end(),p}E(Z,"toFormData");
+var toFormData_1;
+var y=Object.defineProperty;var c=(R,o)=>y(R,"name",{value:o,configurable:!0});const node=node$1;let s=0;const S={START_BOUNDARY:s++,HEADER_FIELD_START:s++,HEADER_FIELD:s++,HEADER_VALUE_START:s++,HEADER_VALUE:s++,HEADER_VALUE_ALMOST_DONE:s++,HEADERS_ALMOST_DONE:s++,PART_DATA_START:s++,PART_DATA:s++,END:s++};let f=1;const F={PART_BOUNDARY:f,LAST_BOUNDARY:f*=2},LF=10,CR=13,SPACE=32,HYPHEN=45,COLON=58,A=97,Z=122,lower=c(R=>R|32,"lower"),noop=c(()=>{},"noop"),g=class g{constructor(o){this.index=0,this.flags=0,this.onHeaderEnd=noop,this.onHeaderField=noop,this.onHeadersEnd=noop,this.onHeaderValue=noop,this.onPartBegin=noop,this.onPartData=noop,this.onPartEnd=noop,this.boundaryChars={},o=`\r
+--`+o;const t=new Uint8Array(o.length);for(let n=0;n<o.length;n++)t[n]=o.charCodeAt(n),this.boundaryChars[t[n]]=!0;this.boundary=t,this.lookbehind=new Uint8Array(this.boundary.length+8),this.state=S.START_BOUNDARY;}write(o){let t=0;const n=o.length;let E=this.index,{lookbehind:l,boundary:h,boundaryChars:H,index:e,state:a,flags:d}=this;const b=this.boundary.length,m=b-1,O=o.length;let r,P;const u=c(D=>{this[D+"Mark"]=t;},"mark"),i=c(D=>{delete this[D+"Mark"];},"clear"),T=c((D,p,_,N)=>{(p===void 0||p!==_)&&this[D](N&&N.subarray(p,_));},"callback"),L=c((D,p)=>{const _=D+"Mark";_ in this&&(p?(T(D,this[_],t,o),delete this[_]):(T(D,this[_],o.length,o),this[_]=0));},"dataCallback");for(t=0;t<n;t++)switch(r=o[t],a){case S.START_BOUNDARY:if(e===h.length-2){if(r===HYPHEN)d|=F.LAST_BOUNDARY;else if(r!==CR)return;e++;break}else if(e-1===h.length-2){if(d&F.LAST_BOUNDARY&&r===HYPHEN)a=S.END,d=0;else if(!(d&F.LAST_BOUNDARY)&&r===LF)e=0,T("onPartBegin"),a=S.HEADER_FIELD_START;else return;break}r!==h[e+2]&&(e=-2),r===h[e+2]&&e++;break;case S.HEADER_FIELD_START:a=S.HEADER_FIELD,u("onHeaderField"),e=0;case S.HEADER_FIELD:if(r===CR){i("onHeaderField"),a=S.HEADERS_ALMOST_DONE;break}if(e++,r===HYPHEN)break;if(r===COLON){if(e===1)return;L("onHeaderField",!0),a=S.HEADER_VALUE_START;break}if(P=lower(r),P<A||P>Z)return;break;case S.HEADER_VALUE_START:if(r===SPACE)break;u("onHeaderValue"),a=S.HEADER_VALUE;case S.HEADER_VALUE:r===CR&&(L("onHeaderValue",!0),T("onHeaderEnd"),a=S.HEADER_VALUE_ALMOST_DONE);break;case S.HEADER_VALUE_ALMOST_DONE:if(r!==LF)return;a=S.HEADER_FIELD_START;break;case S.HEADERS_ALMOST_DONE:if(r!==LF)return;T("onHeadersEnd"),a=S.PART_DATA_START;break;case S.PART_DATA_START:a=S.PART_DATA,u("onPartData");case S.PART_DATA:if(E=e,e===0){for(t+=m;t<O&&!(o[t]in H);)t+=b;t-=m,r=o[t];}if(e<h.length)h[e]===r?(e===0&&L("onPartData",!0),e++):e=0;else if(e===h.length)e++,r===CR?d|=F.PART_BOUNDARY:r===HYPHEN?d|=F.LAST_BOUNDARY:e=0;else if(e-1===h.length)if(d&F.PART_BOUNDARY){if(e=0,r===LF){d&=~F.PART_BOUNDARY,T("onPartEnd"),T("onPartBegin"),a=S.HEADER_FIELD_START;break}}else d&F.LAST_BOUNDARY&&r===HYPHEN?(T("onPartEnd"),a=S.END,d=0):e=0;if(e>0)l[e-1]=r;else if(E>0){const D=new Uint8Array(l.buffer,l.byteOffset,l.byteLength);T("onPartData",0,E,D),E=0,u("onPartData"),t--;}break;case S.END:break;default:throw new Error(`Unexpected state entered: ${a}`)}L("onHeaderField"),L("onHeaderValue"),L("onPartData"),this.index=e,this.state=a,this.flags=d;}end(){if(this.state===S.HEADER_FIELD_START&&this.index===0||this.state===S.PART_DATA&&this.index===this.boundary.length)this.onPartEnd();else if(this.state!==S.END)throw new Error("MultipartParser.end(): stream ended unexpectedly")}};c(g,"MultipartParser");let MultipartParser=g;function _fileName(R){const o=R.match(/\bfilename=("(.*?)"|([^()<>@,;:\\"/[\]?={}\s\t]+))($|;\s)/i);if(!o)return;const t=o[2]||o[3]||"";let n=t.slice(t.lastIndexOf("\\")+1);return n=n.replace(/%22/g,'"'),n=n.replace(/&#(\d{4});/g,(E,l)=>String.fromCharCode(l)),n}c(_fileName,"_fileName");async function toFormData(R,o){if(!/multipart/i.test(o))throw new TypeError("Failed to fetch");const t=o.match(/boundary=(?:"([^"]+)"|([^;]+))/i);if(!t)throw new TypeError("no or bad content-type header, no multipart boundary");const n=new MultipartParser(t[1]||t[2]);let E,l,h,H,e,a;const d=[],b=new node.FormData,m=c(i=>{h+=u.decode(i,{stream:!0});},"onPartData"),O=c(i=>{d.push(i);},"appendToFile"),r=c(()=>{const i=new node.File(d,a,{type:e});b.append(H,i);},"appendFileToFormData"),P=c(()=>{b.append(H,h);},"appendEntryToFormData"),u=new TextDecoder("utf-8");u.decode(),n.onPartBegin=function(){n.onPartData=m,n.onPartEnd=P,E="",l="",h="",H="",e="",a=null,d.length=0;},n.onHeaderField=function(i){E+=u.decode(i,{stream:!0});},n.onHeaderValue=function(i){l+=u.decode(i,{stream:!0});},n.onHeaderEnd=function(){if(l+=u.decode(),E=E.toLowerCase(),E==="content-disposition"){const i=l.match(/\bname=("([^"]*)"|([^()<>@,;:\\"/[\]?={}\s\t]+))/i);i&&(H=i[2]||i[3]||""),a=_fileName(l),a&&(n.onPartData=O,n.onPartEnd=r);}else E==="content-type"&&(e=l);l="",E="";};for await(const i of R)n.write(i);return n.end(),b}c(toFormData,"toFormData"),toFormData_1 = toFormData;
 
-export { Z as toFormData };
+const multipartParser = {
+	__proto__: null,
+	get toFormData () { return toFormData_1; }
+};
+
+export { multipartParser as m };

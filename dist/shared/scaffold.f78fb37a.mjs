@@ -1606,6 +1606,7 @@ async function runCommand(cmd, opts) {
   if (typeof cmd.setup === "function") {
     await cmd.setup(context);
   }
+  let result;
   try {
     const subCommands = await resolveValue(cmd.subCommands);
     if (subCommands && Object.keys(subCommands).length > 0) {
@@ -1631,13 +1632,14 @@ async function runCommand(cmd, opts) {
       }
     }
     if (typeof cmd.run === "function") {
-      await cmd.run(context);
+      result = await cmd.run(context);
     }
   } finally {
     if (typeof cmd.cleanup === "function") {
       await cmd.cleanup(context);
     }
   }
+  return { result };
 }
 
 function defineTemplate(callback) {
@@ -1650,7 +1652,7 @@ const prompt = inquirer.prompt;
 
 const _rDefault = (r) => r.default || r;
 const commands = {
-  add: () => import('../chunks/add.mjs').then(function (n) { return n.a; }).then(_rDefault),
+  add: () => import('../chunks/add.mjs').then(function (n) { return n.c; }).then(_rDefault),
   new: () => import('../chunks/new.mjs').then(_rDefault),
   test: () => defineCommand({
     meta: {

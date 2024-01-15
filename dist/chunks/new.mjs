@@ -1,4 +1,4 @@
-import { b as defineCommand, a as prompt } from '../shared/scaffold.d379b273.mjs';
+import { b as defineCommand, a as prompt } from '../shared/scaffold.f78fb37a.mjs';
 import { resolve as resolve$1, join } from 'node:path';
 import { spawn } from 'cross-spawn';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
@@ -6,11 +6,11 @@ import { resolve, parse, win32, posix as posix$1, basename } from 'path';
 import { inspect } from 'util';
 import { g as getDefaultExportFromCjs } from '../shared/scaffold.2155838d.mjs';
 import { fileURLToPath } from 'url';
-import * as require$$0 from 'fs';
-import require$$0__default, { realpathSync as realpathSync$1, lstatSync, readdir as readdir$2, readdirSync as readdirSync$1, readlinkSync, unlinkSync, rmdirSync, chmodSync, statSync, renameSync, rmSync } from 'fs';
+import * as fs from 'fs';
+import fs__default, { realpathSync as realpathSync$1, lstatSync, readdir as readdir$2, readdirSync as readdirSync$1, readlinkSync, unlinkSync, rmdirSync, chmodSync, statSync, renameSync, rmSync } from 'fs';
 import { lstat as lstat$4, readdir as readdir$3, readlink, realpath } from 'fs/promises';
-import require$$0$2, { EventEmitter } from 'events';
-import require$$0$1 from 'stream';
+import require$$0$1, { EventEmitter } from 'events';
+import require$$0 from 'stream';
 import require$$2, { StringDecoder } from 'string_decoder';
 import { tmpdir } from 'os';
 import 'node:util';
@@ -2541,6 +2541,9 @@ class LRUCache {
             if (ttls[index]) {
                 const ttl = ttls[index];
                 const start = starts[index];
+                /* c8 ignore next */
+                if (!ttl || !start)
+                    return;
                 status.ttl = ttl;
                 status.start = start;
                 status.now = cachedNow || getNow();
@@ -2572,16 +2575,16 @@ class LRUCache {
             }
             const ttl = ttls[index];
             const start = starts[index];
-            if (ttl === 0 || start === 0) {
+            if (!ttl || !start) {
                 return Infinity;
             }
             const age = (cachedNow || getNow()) - start;
             return ttl - age;
         };
         this.#isStale = index => {
-            return (ttls[index] !== 0 &&
-                starts[index] !== 0 &&
-                (cachedNow || getNow()) - starts[index] > ttls[index]);
+            const s = starts[index];
+            const t = ttls[index];
+            return !!t && !!s && (cachedNow || getNow()) - s > t;
         };
     }
     // conditionally set private methods related to TTL
@@ -2838,6 +2841,37 @@ class LRUCache {
             }
         }
         return deleted;
+    }
+    /**
+     * Get the extended info about a given entry, to get its value, size, and
+     * TTL info simultaneously. Like {@link LRUCache#dump}, but just for a
+     * single key. Always returns stale values, if their info is found in the
+     * cache, so be sure to check for expired TTLs if relevant.
+     */
+    info(key) {
+        const i = this.#keyMap.get(key);
+        if (i === undefined)
+            return undefined;
+        const v = this.#valList[i];
+        const value = this.#isBackgroundFetch(v)
+            ? v.__staleWhileFetching
+            : v;
+        if (value === undefined)
+            return undefined;
+        const entry = { value };
+        if (this.#ttls && this.#starts) {
+            const ttl = this.#ttls[i];
+            const start = this.#starts[i];
+            if (ttl && start) {
+                const remain = ttl - (perf.now() - start);
+                entry.ttl = remain;
+                entry.start = Date.now();
+            }
+        }
+        if (this.#sizes) {
+            entry.size = this.#sizes[i];
+        }
+        return entry;
     }
     /**
      * Return an array of [key, {@link LRUCache.Entry}] tuples which can be
@@ -3105,12 +3139,13 @@ class LRUCache {
     peek(k, peekOptions = {}) {
         const { allowStale = this.allowStale } = peekOptions;
         const index = this.#keyMap.get(k);
-        if (index !== undefined &&
-            (allowStale || !this.#isStale(index))) {
-            const v = this.#valList[index];
-            // either stale and allowed, or forcing a refresh of non-stale value
-            return this.#isBackgroundFetch(v) ? v.__staleWhileFetching : v;
+        if (index === undefined ||
+            (!allowStale && this.#isStale(index))) {
+            return;
         }
+        const v = this.#valList[index];
+        // either stale and allowed, or forcing a refresh of non-stale value
+        return this.#isBackgroundFetch(v) ? v.__staleWhileFetching : v;
     }
     #backgroundFetch(k, index, options, context) {
         const v = index === undefined ? undefined : this.#valList[index];
@@ -3446,8 +3481,10 @@ class LRUCache {
                         this.#head = this.#next[index];
                     }
                     else {
-                        this.#next[this.#prev[index]] = this.#next[index];
-                        this.#prev[this.#next[index]] = this.#prev[index];
+                        const pi = this.#prev[index];
+                        this.#next[pi] = this.#next[index];
+                        const ni = this.#next[index];
+                        this.#prev[ni] = this.#prev[index];
                     }
                     this.#size--;
                     this.#free.push(index);
@@ -3520,7 +3557,7 @@ const proc$1 = typeof process === 'object' && process
 const isStream = (s) => !!s &&
     typeof s === 'object' &&
     (s instanceof Minipass$1 ||
-        s instanceof require$$0$1 ||
+        s instanceof require$$0 ||
         isReadable(s) ||
         isWritable(s));
 /**
@@ -3531,7 +3568,7 @@ const isReadable = (s) => !!s &&
     s instanceof EventEmitter &&
     typeof s.pipe === 'function' &&
     // node core Writable streams have a pipe() method, but it throws
-    s.pipe !== require$$0$1.Writable.prototype.pipe;
+    s.pipe !== require$$0.Writable.prototype.pipe;
 /**
  * Return true if the argument is a valid {@link Minipass.Writable}
  */
@@ -4537,7 +4574,7 @@ const defaultFS = {
     },
 };
 // if they just gave us require('fs') then use our default
-const fsFromOption = (fsOption) => !fsOption || fsOption === defaultFS || fsOption === require$$0
+const fsFromOption = (fsOption) => !fsOption || fsOption === defaultFS || fsOption === fs
     ? defaultFS
     : {
         ...defaultFS,
@@ -6805,7 +6842,7 @@ class PipeProxyErrors extends Pipe {
   }
 }
 
-class Minipass extends require$$0$1 {
+class Minipass extends require$$0 {
   constructor(options) {
     super();
     this[FLOWING] = false;
@@ -7397,8 +7434,8 @@ class Minipass extends require$$0$1 {
     return (
       !!s &&
       (s instanceof Minipass ||
-        s instanceof require$$0$1 ||
-        (s instanceof require$$0$2 &&
+        s instanceof require$$0 ||
+        (s instanceof require$$0$1 &&
           // readable
           (typeof s.pipe === 'function' ||
             // writable
@@ -8449,15 +8486,15 @@ const readdirSync = (path) => readdirSync$1(path, { withFileTypes: true });
 // than something like:
 // const makeCb = (res, rej) => (er, ...d) => er ? rej(er) : res(...d)
 // which would be a bit cleaner.
-const chmod$2 = (path, mode) => new Promise((res, rej) => require$$0__default.chmod(path, mode, (er, ...d) => (er ? rej(er) : res(...d))));
-const mkdir = (path, options) => new Promise((res, rej) => require$$0__default.mkdir(path, options, (er, made) => (er ? rej(er) : res(made))));
-const readdir$1 = (path) => new Promise((res, rej) => require$$0__default.readdir(path, { withFileTypes: true }, (er, data) => er ? rej(er) : res(data)));
-const rename$1 = (oldPath, newPath) => new Promise((res, rej) => require$$0__default.rename(oldPath, newPath, (er, ...d) => (er ? rej(er) : res(...d))));
-const rm$1 = (path, options) => new Promise((res, rej) => require$$0__default.rm(path, options, (er, ...d) => (er ? rej(er) : res(...d))));
-const rmdir$3 = (path) => new Promise((res, rej) => require$$0__default.rmdir(path, (er, ...d) => (er ? rej(er) : res(...d))));
-const stat$1 = (path) => new Promise((res, rej) => require$$0__default.stat(path, (er, data) => (er ? rej(er) : res(data))));
-const lstat$3 = (path) => new Promise((res, rej) => require$$0__default.lstat(path, (er, data) => (er ? rej(er) : res(data))));
-const unlink$3 = (path) => new Promise((res, rej) => require$$0__default.unlink(path, (er, ...d) => (er ? rej(er) : res(...d))));
+const chmod$2 = (path, mode) => new Promise((res, rej) => fs__default.chmod(path, mode, (er, ...d) => (er ? rej(er) : res(...d))));
+const mkdir = (path, options) => new Promise((res, rej) => fs__default.mkdir(path, options, (er, made) => (er ? rej(er) : res(made))));
+const readdir$1 = (path) => new Promise((res, rej) => fs__default.readdir(path, { withFileTypes: true }, (er, data) => er ? rej(er) : res(data)));
+const rename$1 = (oldPath, newPath) => new Promise((res, rej) => fs__default.rename(oldPath, newPath, (er, ...d) => (er ? rej(er) : res(...d))));
+const rm$1 = (path, options) => new Promise((res, rej) => fs__default.rm(path, options, (er, ...d) => (er ? rej(er) : res(...d))));
+const rmdir$3 = (path) => new Promise((res, rej) => fs__default.rmdir(path, (er, ...d) => (er ? rej(er) : res(...d))));
+const stat$1 = (path) => new Promise((res, rej) => fs__default.stat(path, (er, data) => (er ? rej(er) : res(data))));
+const lstat$3 = (path) => new Promise((res, rej) => fs__default.lstat(path, (er, data) => (er ? rej(er) : res(data))));
+const unlink$3 = (path) => new Promise((res, rej) => fs__default.unlink(path, (er, ...d) => (er ? rej(er) : res(...d))));
 const promises = {
     chmod: chmod$2,
     mkdir,
@@ -9290,7 +9327,7 @@ async function main(args) {
       }
     ]
   });
-  const npm = (() => ({
+  const npm = (/* @__PURE__ */ (() => ({
     npm: {
       x: "npx",
       add: "add",
@@ -9312,7 +9349,7 @@ async function main(args) {
       update: "upgrade",
       name: "yarn"
     }
-  }))()[manager.value];
+  }))())[manager.value];
   const framework = await prompt({
     name: "value",
     message: "App Framework?",
