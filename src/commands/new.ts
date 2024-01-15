@@ -87,6 +87,13 @@ function readJson(file: string) {
 
       {
         checked: true,
+        name: 'bun',
+        value: 'bun',
+        key: 'bun',
+      },
+
+      {
+        checked: true,
         name: 'npm',
         value: 'npm',
         key: 'npm',
