@@ -13,6 +13,7 @@ import require$$0$1, { EventEmitter } from 'events';
 import require$$0 from 'stream';
 import require$$2, { StringDecoder } from 'string_decoder';
 import { tmpdir } from 'os';
+import { platform as platform$1 } from 'node:os';
 import 'node:util';
 import 'node:process';
 import 'node:tty';
@@ -9272,6 +9273,7 @@ const rimraf = Object.assign(wrap((path, opt) => useNative(opt) ? rimrafNative(p
 });
 rimraf.rimraf = rimraf;
 
+const shell = platform$1() === "win32" ? "pwsh" : "bash";
 function asyncSpawn(...args) {
   return new Promise((resolve2, reject) => {
     const result = spawn(args[0], args[1], {
@@ -9386,7 +9388,7 @@ async function main(args) {
     ]
   });
   if (framework.value === "nest") {
-    await asyncSpawn("cmd", ["/c", "nest", "new", name.value]);
+    await asyncSpawn(shell, ["-c", "nest", "new", name.value]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -9464,9 +9466,9 @@ async function main(args) {
     rimrafSync(resolve$1(name.value, "test"));
     console.log(`/test deleted.`);
     console.log("Installing dependencies...\n");
-    await asyncSpawn("cmd", ["/c", npm.name, npm.install]);
+    await asyncSpawn(shell, ["-c", npm.name, npm.install]);
     console.log("Updating dependencies...\n");
-    await asyncSpawn("cmd", ["/c", npm.name, npm.update]);
+    await asyncSpawn(shell, ["-c", npm.name, npm.update]);
   }
   if (framework.value === "nuxt") {
     const type = await prompt({
@@ -9486,7 +9488,7 @@ async function main(args) {
         }
       ]
     });
-    await asyncSpawn("cmd", ["/c", npm.execute, "nuxi@latest", "init", name.value]);
+    await asyncSpawn(shell, ["-c", npm.execute, "nuxi@latest", "init", name.value]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -9518,7 +9520,7 @@ async function main(args) {
     ];
     console.log("\nAdding modules...\n");
     for (const _module of _modules) {
-      await asyncSpawn("cmd", ["/c", npm.execute, "nuxi@latest", "module", "add", _module]);
+      await asyncSpawn(shell, ["-c", npm.execute, "nuxi@latest", "module", "add", _module]);
     }
     console.log("\nCreating files...\n");
     console.log("package.json created.\n");
@@ -9604,7 +9606,7 @@ async function main(args) {
       message: "Hola Localizaci\xF3n"
     });
     console.log("\nUpdating Nuxt...\n");
-    await asyncSpawn("cmd", ["/c", npm.execute, "nuxi@latest", "upgrade", "--force"]);
+    await asyncSpawn(shell, ["-c", npm.execute, "nuxi@latest", "upgrade", "--force"]);
     console.log("Updating dependencies...\n");
   }
   console.log("\nEnjoy your new application! \u{1F525}");
