@@ -6,8 +6,9 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync} from 'node:fs'
 //import { deletedDiff } from 'deep-object-diff'
 import { rimrafSync} from 'rimraf'
 import { defineCommand } from 'citty'
+import {platform} from 'node:os'
 
-
+const shell: 'pwsh' | 'bash' = platform() === 'win32' ? 'pwsh' : 'bash'
 
 function asyncSpawn(...args: any[]): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -231,7 +232,7 @@ function readJson(file: string) {
         }
       ]
     }) */
-    await asyncSpawn('cmd', ['/c', 'nest', 'new', name.value])
+    await asyncSpawn(shell, ['-c', 'nest', 'new', name.value])
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
     packageJson.dependencies ??= {}
@@ -376,11 +377,11 @@ function readJson(file: string) {
 
     console.log('Installing dependencies...\n')
 
-    await asyncSpawn('cmd', ['/c', npm.name, npm.install])
+    await asyncSpawn(shell, ['-c', npm.name, npm.install])
 
     console.log('Updating dependencies...\n')
 
-    await asyncSpawn('cmd', ['/c', npm.name, npm.update])
+    await asyncSpawn(shell, ['-c', npm.name, npm.update])
   } 
   
   // Nuxt
@@ -403,7 +404,7 @@ function readJson(file: string) {
         },
       ]
     })
-  await asyncSpawn('cmd', ['/c', npm.execute, 'nuxi@latest', 'init', name.value])
+  await asyncSpawn(shell, ['-c', npm.execute, 'nuxi@latest', 'init', name.value])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
@@ -446,7 +447,7 @@ function readJson(file: string) {
 
   console.log('\nAdding modules...\n')
   for (const _module of _modules) {
-    await asyncSpawn('cmd', ['/c', npm.execute, 'nuxi@latest', 'module', 'add', _module])
+    await asyncSpawn(shell, ['-c', npm.execute, 'nuxi@latest', 'module', 'add', _module])
   }
   
 
@@ -572,7 +573,7 @@ function readJson(file: string) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn('cmd', ['/c', npm.execute, 'nuxi@latest', 'upgrade', '--force'])
+  await asyncSpawn(shell, ['-c', npm.execute, 'nuxi@latest', 'upgrade', '--force'])
 
   console.log('Updating dependencies...\n')
 
