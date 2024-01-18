@@ -404,6 +404,7 @@ function readJson(file: string) {
         },
       ]
     })
+
   await asyncSpawn(shell, ['-c', `'${npm.execute} nuxi@latest init ${name.value}'`])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
@@ -447,7 +448,7 @@ function readJson(file: string) {
 
   console.log('\nAdding modules...\n')
   for (const _module of _modules) {
-    await asyncSpawn(shell, ['-c', `'${npm.execute} nuxi@latest add ${_module}'`])
+    await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest add ${_module}`])
   }
   
 
