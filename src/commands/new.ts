@@ -405,7 +405,7 @@ function readJson(file: string) {
       ]
     })
 
-  await asyncSpawn(shell, ['-c', `'${npm.execute} nuxi@latest init ${name.value}'`])
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest init ${name.value}`])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
@@ -574,7 +574,7 @@ function readJson(file: string) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn(shell, ['-c', `'${npm.execute} nuxi@latest upgrade --force'`])
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest upgrade --force`])
 
   console.log('Updating dependencies...\n')
 
