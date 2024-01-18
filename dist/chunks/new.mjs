@@ -9511,13 +9511,6 @@ async function main(args) {
       packageJson.devDependencies[value] = "*";
       console.log(`${value} development dependency added.`);
     }
-    const _modules = [
-      "@pinia/nuxt",
-      "nuxt-quasar-ui",
-      "@nuxtjs/i18n",
-      "@vue-macros/nuxt",
-      "@vueuse/nuxt"
-    ];
     console.log("\nCreating files...\n");
     console.log("package.json created.\n");
     writeJson(resolve$1(name.value, "package.json"), packageJson);
@@ -9586,9 +9579,18 @@ async function main(args) {
   
 `
     );
+    const _modules = [
+      "@pinia/nuxt",
+      "nuxt-quasar-ui",
+      "@nuxtjs/i18n",
+      "@vue-macros/nuxt",
+      "@vueuse/nuxt"
+    ];
     console.log("\nAdding modules...\n");
     for (const _module of _modules) {
-      await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest module add ${_module}`]);
+      await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest module add ${_module}`], {
+        cwd: name.value
+      });
     }
     const dirs = ["lang"];
     for (const dir of dirs) {

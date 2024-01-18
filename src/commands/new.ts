@@ -437,14 +437,6 @@ function readJson(file: string) {
 
   // Hardcoded versions
 
-  // Modules
-  const _modules = [
-    '@pinia/nuxt',
-    'nuxt-quasar-ui',
-    '@nuxtjs/i18n',
-    '@vue-macros/nuxt',
-    '@vueuse/nuxt'
-  ]
 
 
 
@@ -461,6 +453,7 @@ function readJson(file: string) {
 `export default defineNuxtConfig({
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
   devtools: true,
+
   vite: {
     vue: {
       script: {
@@ -469,9 +462,14 @@ function readJson(file: string) {
     }
   },
 
-  modules: [
-
+  components: [
+    {
+      path: '~/',
+      extensions: ['.vue']
+    }
   ],
+
+  modules: [],
 
   imports: {
     dirs: ['stores/**']
@@ -520,9 +518,21 @@ function readJson(file: string) {
   
 `)
 
+  // Modules
+  const _modules = [
+    '@pinia/nuxt',
+    'nuxt-quasar-ui',
+    '@nuxtjs/i18n',
+    '@vue-macros/nuxt',
+    '@vueuse/nuxt'
+  ]
+
+
 console.log('\nAdding modules...\n')
 for (const _module of _modules) {
-  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest module add ${_module}`])
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest module add ${_module}`], {
+    cwd: name.value
+  })
 }
 
 
@@ -576,7 +586,9 @@ for (const _module of _modules) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest upgrade --force`])
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest upgrade --force`], {
+    cwd: name.value
+  })
 
   console.log('Updating dependencies...\n')
 
