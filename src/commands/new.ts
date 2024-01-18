@@ -446,11 +446,7 @@ function readJson(file: string) {
     '@vueuse/nuxt'
   ]
 
-  console.log('\nAdding modules...\n')
-  for (const _module of _modules) {
-    await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest add ${_module}`])
-  }
-  
+
 
   console.log('\nCreating files...\n')
   
@@ -523,6 +519,12 @@ function readJson(file: string) {
 })
   
 `)
+
+console.log('\nAdding modules...\n')
+for (const _module of _modules) {
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest module add ${_module}`])
+}
+
 
  /*  const dirs = await inquirer.prompt({
     type: 'checkbox',

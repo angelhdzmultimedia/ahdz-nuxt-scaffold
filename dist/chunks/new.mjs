@@ -9518,10 +9518,6 @@ async function main(args) {
       "@vue-macros/nuxt",
       "@vueuse/nuxt"
     ];
-    console.log("\nAdding modules...\n");
-    for (const _module of _modules) {
-      await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest add ${_module}`]);
-    }
     console.log("\nCreating files...\n");
     console.log("package.json created.\n");
     writeJson(resolve$1(name.value, "package.json"), packageJson);
@@ -9590,6 +9586,10 @@ async function main(args) {
   
 `
     );
+    console.log("\nAdding modules...\n");
+    for (const _module of _modules) {
+      await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest module add ${_module}`]);
+    }
     const dirs = ["lang"];
     for (const dir of dirs) {
       const path = join(name.value, dir);
