@@ -9520,6 +9520,7 @@ async function main(args) {
       `export default defineNuxtConfig({
   ssr: ${type.value === "ssr" ? "true" : "false"},
   devtools: true,
+
   vite: {
     vue: {
       script: {
@@ -9528,9 +9529,14 @@ async function main(args) {
     }
   },
 
-  modules: [
-
+  components: [
+    {
+      path: '~/',
+      extensions: ['.vue']
+    }
   ],
+
+  modules: [],
 
   imports: {
     dirs: ['stores/**']
@@ -9608,7 +9614,9 @@ async function main(args) {
       message: "Hola Localizaci\xF3n"
     });
     console.log("\nUpdating Nuxt...\n");
-    await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest upgrade --force`]);
+    await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest upgrade --force`], {
+      cwd: name.value
+    });
     console.log("Updating dependencies...\n");
   }
   console.log("\nEnjoy your new application! \u{1F525}");
