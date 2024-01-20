@@ -1,6 +1,6 @@
 # AngelHdz Nuxt Scaffold
 
-`@ahdz/nuxt-scaffold`
+`ahdz/nuxt-scaffold`
 
 A series of Nuxt extra tools for a smooth and fast DX.
 
