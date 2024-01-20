@@ -15,11 +15,11 @@
   "scripts": {
     "prepack": "unbuild",
     "build": "unbuild",
-    "dev": "node ./bin/scaffold.mjs"
+    "dev": "node ./bin/scaffold.mjs",
+    "clean:full": "npx rimraf node_modules package-lock.json pnpm-lock.yaml yarn.lock"
   },
   "devDependencies": {
     "@nuxt/kit": "^3.9.3",
-    "@pinia/nuxt": "^0.5.1",
     "@types/inquirer": "^9.0.7",
     "@types/node": "20.11.5",
     "@vueuse/nuxt": "^10.7.2",
@@ -48,8 +48,5 @@
     "untyped": "1.4.2",
     "vite": "^5.0.12",
     "vue": "^3.4.15"
-  }, 
-  "resolutions": {
-    "untyped": "1.4.2"
   }
 }
