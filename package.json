@@ -48,5 +48,8 @@
     "untyped": "1.4.2",
     "vite": "^5.0.12",
     "vue": "^3.4.15"
+  }, 
+  "resolutions": {
+    "untyped": "1.4.2"
   }
 }
