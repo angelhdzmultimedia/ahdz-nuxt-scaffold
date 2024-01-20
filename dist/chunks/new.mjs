@@ -4,7 +4,7 @@ import { spawn } from 'cross-spawn';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { resolve, parse, win32, posix as posix$1, basename } from 'path';
 import { inspect } from 'util';
-import { g as getDefaultExportFromCjs } from '../shared/scaffold.24198af3.mjs';
+import { g as getDefaultExportFromCjs } from '../shared/scaffold.2155838d.mjs';
 import { fileURLToPath } from 'url';
 import * as fs from 'fs';
 import fs__default, { realpathSync as realpathSync$1, lstatSync, readdir as readdir$2, readdirSync as readdirSync$1, readlinkSync, unlinkSync, rmdirSync, chmodSync, statSync, renameSync, rmSync } from 'fs';
@@ -9335,7 +9335,7 @@ async function main(args) {
       }
     ]
   });
-  const npm = (() => ({
+  const npm = (/* @__PURE__ */ (() => ({
     npm: {
       execute: "npx",
       add: "add",
@@ -9364,7 +9364,7 @@ async function main(args) {
       update: "upgrade",
       name: "yarn"
     }
-  }))()[manager.value];
+  }))())[manager.value];
   const framework = await prompt({
     name: "value",
     message: "App Framework?",

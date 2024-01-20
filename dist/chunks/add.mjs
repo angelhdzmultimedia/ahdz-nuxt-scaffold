@@ -9,7 +9,7 @@ import { format, inspect } from 'node:util';
 import process$1 from 'node:process';
 import 'node:tty';
 import { pathToFileURL, fileURLToPath as fileURLToPath$1, URL as URL$1 } from 'node:url';
-import { c as commonjsGlobal, g as getDefaultExportFromCjs, a as getAugmentedNamespace } from '../shared/scaffold.24198af3.mjs';
+import { c as commonjsGlobal, g as getDefaultExportFromCjs, a as getAugmentedNamespace } from '../shared/scaffold.2155838d.mjs';
 import require$$0 from 'crypto';
 import fs__default from 'fs';
 import require$$2$1 from 'module';
@@ -17394,7 +17394,7 @@ if (
 var main$2 = {exports: {}};
 
 const name = "dotenv";
-const version$1 = "16.3.1";
+const version$1 = "16.3.2";
 const description = "Loads environment variables from .env file";
 const main$1 = "lib/main.js";
 const types = "lib/main.d.ts";
@@ -17687,6 +17687,10 @@ function configDotenv (options) {
     }
     if (options.encoding != null) {
       encoding = options.encoding;
+    } else {
+      if (debug) {
+        _debug('No encoding is specified. UTF-8 is used by default');
+      }
     }
   }
 
@@ -17734,9 +17738,9 @@ function decrypt (encrypted, keyStr) {
   const key = Buffer.from(keyStr.slice(-64), 'hex');
   let ciphertext = Buffer.from(encrypted, 'base64');
 
-  const nonce = ciphertext.slice(0, 12);
-  const authTag = ciphertext.slice(-16);
-  ciphertext = ciphertext.slice(12, -16);
+  const nonce = ciphertext.subarray(0, 12);
+  const authTag = ciphertext.subarray(-16);
+  ciphertext = ciphertext.subarray(12, -16);
 
   try {
     const aesgcm = crypto.createDecipheriv('aes-256-gcm', key, nonce);

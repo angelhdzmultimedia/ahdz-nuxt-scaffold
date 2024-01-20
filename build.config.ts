@@ -8,8 +8,9 @@ export default defineBuildConfig({
       exportConditions: ['production', 'node'] as any
     },
   },
-  entries: ['src/index', 
-],
+  entries: [
+    'src/index', 
+  ],
   externals: [
     '@nuxt/test-utils',
     'fsevents',
