@@ -13,8 +13,8 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "unbuild",
-    "build": "unbuild",
+    "prepack": "pnpm unbuild",
+    "build": "pnpm unbuild",
     "dev": "node ./bin/scaffold.mjs"
   },
   "devDependencies": {
