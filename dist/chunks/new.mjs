@@ -9466,9 +9466,13 @@ async function main(args) {
     rimrafSync(resolve$1(name.value, "test"));
     console.log(`/test deleted.`);
     console.log("Installing dependencies...\n");
-    await asyncSpawn(shell, ["-c", npm.name, npm.install]);
+    await asyncSpawn(shell, ["-c", npm.name, npm.install], {
+      cwd: name.value
+    });
     console.log("Updating dependencies...\n");
-    await asyncSpawn(shell, ["-c", npm.name, npm.update]);
+    await asyncSpawn(shell, ["-c", npm.name, npm.update], {
+      cwd: name.value
+    });
   }
   if (framework.value === "nuxt") {
     const type = await prompt({
@@ -9521,14 +9525,6 @@ async function main(args) {
   ssr: ${type.value === "ssr" ? "true" : "false"},
   devtools: true,
 
-  vite: {
-    vue: {
-      script: {
-        propsDestructure: true,
-      }
-    }
-  },
-
   components: [
     {
       path: '~/',
@@ -9542,9 +9538,7 @@ async function main(args) {
     dirs: ['stores/**']
   },
 
-  pinia: {
-    autoImports: ['defineStore']
-  },
+  pinia: {},
 
   i18n: {
     langDir: 'lang',
@@ -9589,7 +9583,6 @@ async function main(args) {
       "@pinia/nuxt",
       "nuxt-quasar-ui",
       "@nuxtjs/i18n",
-      "@vue-macros/nuxt",
       "@vueuse/nuxt"
     ];
     console.log("\nAdding modules...\n");

@@ -7,9 +7,14 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync} from 'node:fs'
 import { rimrafSync} from 'rimraf'
 import { defineCommand } from 'citty'
 import {platform} from 'node:os'
+import { SpawnOptionsWithoutStdio } from 'node:child_process'
 
 const shell: 'pwsh' | 'bash' = platform() === 'win32' ? 'pwsh' : 'bash'
 
+function asyncSpawn(command: string, args: readonly string[] | undefined, options: SpawnOptionsWithoutStdio | undefined): Promise<void>
+function asyncSpawn(command: string, args: readonly string[] | undefined): Promise<void>
+function asyncSpawn(command: string, options: SpawnOptionsWithoutStdio | undefined): Promise<void>
+function asyncSpawn(command: string): Promise<void>
 function asyncSpawn(...args: any[]): Promise<void> {
   return new Promise((resolve, reject) => {
     const result = spawn(args[0], args[1], {
@@ -377,11 +382,14 @@ function readJson(file: string) {
 
     console.log('Installing dependencies...\n')
 
-    await asyncSpawn(shell, ['-c', npm.name, npm.install])
+    await asyncSpawn(shell, ['-c', npm.name, npm.install], {
+      cwd: name.value
+    })
 
     console.log('Updating dependencies...\n')
-
-    await asyncSpawn(shell, ['-c', npm.name, npm.update])
+    await asyncSpawn(shell, ['-c', npm.name, npm.update], {
+      cwd: name.value
+    })
   } 
   
   // Nuxt
@@ -454,14 +462,6 @@ function readJson(file: string) {
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
   devtools: true,
 
-  vite: {
-    vue: {
-      script: {
-        propsDestructure: true,
-      }
-    }
-  },
-
   components: [
     {
       path: '~/',
@@ -475,9 +475,7 @@ function readJson(file: string) {
     dirs: ['stores/**']
   },
 
-  pinia: {
-    autoImports: ['defineStore']
-  },
+  pinia: {},
 
   i18n: {
     langDir: 'lang',
@@ -523,7 +521,6 @@ function readJson(file: string) {
     '@pinia/nuxt',
     'nuxt-quasar-ui',
     '@nuxtjs/i18n',
-    '@vue-macros/nuxt',
     '@vueuse/nuxt'
   ]
 
