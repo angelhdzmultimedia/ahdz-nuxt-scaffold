@@ -16843,6 +16843,14 @@ const cleanRangeBackSlash = slashes => {
 // '`foo/`' should not continue with the '`..`'
 const REPLACERS = [
 
+  [
+    // remove BOM
+    // TODO:
+    // Other similar zero-width characters?
+    /^\uFEFF/,
+    () => EMPTY
+  ],
+
   // > Trailing spaces are ignored unless they are quoted with backslash ("\")
   [
     // (a\ ) -> (a )
@@ -20425,13 +20433,7 @@ const app = defineUntypedSchema({
      * @see [Vue RFC#502](https://github.com/vuejs/rfcs/discussions/502)
      * @type {boolean}
      */
-    propsDestructure: false,
-    /**
-     * Vue Experimental: Enable macro `defineModel`
-     * @see [Vue RFC#503](https://github.com/vuejs/rfcs/discussions/503)
-     * @type {boolean}
-     */
-    defineModel: false
+    propsDestructure: false
   },
   /**
    * Nuxt App configuration.
@@ -20538,6 +20540,21 @@ const app = defineUntypedSchema({
      * @type {typeof import('../src/types/config').NuxtAppConfig['pageTransition']}
      */
     pageTransition: false,
+    /**
+     * Default values for view transitions.
+     *
+     * This only has an effect when **experimental** support for View Transitions is
+     * [enabled in your nuxt.config file](/docs/getting-started/transitions#view-transitions-api-experimental).
+     *
+     * This can be overridden with `definePageMeta` on an individual page.
+     * @see https://nuxt.com/docs/getting-started/transitions#view-transitions-api-experimental
+     * @type {typeof import('../src/types/config').NuxtAppConfig['viewTransition']}
+     */
+    viewTransition: {
+      $resolve: async (val, get) => val ?? await get("experimental").then(
+        (e) => e?.viewTransition
+      ) ?? false
+    },
     /**
      * Default values for KeepAlive configuration between pages.
      *
@@ -20675,7 +20692,7 @@ const build = defineUntypedSchema({
    * @type {'vite' | 'webpack' | { bundle: (nuxt: typeof import('../src/types/nuxt').Nuxt) => Promise<void> }}
    */
   builder: {
-    $resolve: async (val, get) => {
+    $resolve: async (val = "vite", get) => {
       if (typeof val === "object") {
         return val;
       }
@@ -20733,7 +20750,7 @@ const build = defineUntypedSchema({
      * @type {Array<string | RegExp | ((ctx: { isClient?: boolean; isServer?: boolean; isDev: boolean }) => string | RegExp | false)>}
      */
     transpile: {
-      $resolve: (val) => [].concat(val).filter(Boolean)
+      $resolve: (val) => (val || []).filter(Boolean)
     },
     /**
      * You can provide your own templates which will be rendered based
@@ -20795,14 +20812,16 @@ const build = defineUntypedSchema({
      */
     keyedComposables: {
       $resolve: (val) => [
+        { name: "useId", argumentLength: 1 },
         { name: "callOnce", argumentLength: 2 },
         { name: "defineNuxtComponent", argumentLength: 2 },
         { name: "useState", argumentLength: 2 },
         { name: "useFetch", argumentLength: 3 },
         { name: "useAsyncData", argumentLength: 3 },
         { name: "useLazyAsyncData", argumentLength: 3 },
-        { name: "useLazyFetch", argumentLength: 3 }
-      ].concat(val).filter(Boolean)
+        { name: "useLazyFetch", argumentLength: 3 },
+        ...val || []
+      ].filter(Boolean)
     },
     /**
      * Tree shake code from specific builds.
@@ -20977,7 +20996,7 @@ const common = defineUntypedSchema({
     $resolve: async (val, get) => {
       const rootDir = await get("rootDir");
       return [
-        ...await Promise.all(val.map(async (dir) => resolve(rootDir, dir))),
+        ...await Promise.all((val || []).map(async (dir) => resolve(rootDir, dir))),
         resolve(process.cwd(), "node_modules")
       ];
     }
@@ -21042,7 +21061,7 @@ const common = defineUntypedSchema({
    * @type {(typeof import('../src/types/module').NuxtModule | string | [typeof import('../src/types/module').NuxtModule | string, Record<string, any>] | undefined | null | false)[]}
    */
   modules: {
-    $resolve: (val) => [].concat(val).filter(Boolean)
+    $resolve: (val) => (val || []).filter(Boolean)
   },
   /**
    * Customize default directory structure used by Nuxt.
@@ -21090,7 +21109,7 @@ const common = defineUntypedSchema({
    * The extensions that should be resolved by the Nuxt resolver.
    */
   extensions: {
-    $resolve: (val) => [".js", ".jsx", ".mjs", ".ts", ".tsx", ".vue"].concat(val).filter(Boolean)
+    $resolve: (val) => [".js", ".jsx", ".mjs", ".ts", ".tsx", ".vue", ...val || []].filter(Boolean)
   },
   /**
    * You can improve your DX by defining additional aliases to access custom directories
@@ -21182,8 +21201,9 @@ const common = defineUntypedSchema({
         "**/.{pnpm-store,vercel,netlify,output,git,cache,data}",
         relative(rootDir, analyzeDir),
         relative(rootDir, buildDir),
-        ignorePrefix && `**/${ignorePrefix}*.*`
-      ].concat(val).filter(Boolean);
+        ignorePrefix && `**/${ignorePrefix}*.*`,
+        ...val || []
+      ].filter(Boolean);
     }
   },
   /**
@@ -21195,7 +21215,9 @@ const common = defineUntypedSchema({
    * @type {Array<string | RegExp>}
    */
   watch: {
-    $resolve: (val) => [].concat(val).filter((b) => typeof b === "string" || b instanceof RegExp)
+    $resolve: (val) => {
+      return (val || []).filter((b) => typeof b === "string" || b instanceof RegExp);
+    }
   },
   /**
    * The watchers property lets you overwrite watchers configuration in your `nuxt.config`.
@@ -21357,6 +21379,8 @@ const experimental = defineUntypedSchema({
      *
      * It improves type support when using modern libraries with `exports`.
      *
+     * You can set it to false to use the legacy 'Node' mode, which is the default for TypeScript.
+     *
      * See https://github.com/microsoft/TypeScript/pull/51669
      */
     typescriptBundlerResolution: {
@@ -21369,7 +21393,7 @@ const experimental = defineUntypedSchema({
         if (setting) {
           return setting.toLowerCase() === "bundler";
         }
-        return false;
+        return true;
       }
     }
   },
@@ -21489,6 +21513,7 @@ const experimental = defineUntypedSchema({
     /**
      * Enable View Transition API integration with client-side router.
      * @see [View Transitions API](https://developer.chrome.com/docs/web-platform/view-transitions)
+     * @type {boolean | 'always'}
      */
     viewTransition: false,
     /**
@@ -21576,6 +21601,42 @@ const experimental = defineUntypedSchema({
      */
     inlineRouteRules: false,
     /**
+     * Allow exposing some route metadata defined in `definePageMeta` at build-time to modules (alias, name, path, redirect).
+     *
+     * This only works with static or strings/arrays rather than variables or conditional assignment.
+     *
+     * https://github.com/nuxt/nuxt/issues/24770
+     */
+    scanPageMeta: false,
+    /**
+     * Automatically share payload _data_ between pages that are prerendered. This can result in a significant
+     * performance improvement when prerendering sites that use `useAsyncData` or `useFetch` and fetch the same
+     * data in different pages.
+     *
+     * It is particularly important when enabling this feature to make sure that any unique key of your data
+     * is always resolvable to the same data. For example, if you are using `useAsyncData` to fetch
+     * data related to a particular page, you should provide a key that uniquely matches that data. (`useFetch`
+     * should do this automatically for you.)
+     * @example
+     * ```ts
+     * // This would be unsafe in a dynamic page (e.g. `[slug].vue`) because the route slug makes a difference
+     * // to the data fetched, but Nuxt can't know that because it's not reflected in the key.
+     * const route = useRoute()
+     * const { data } = await useAsyncData(async () => {
+     *   return await $fetch(`/api/my-page/${route.params.slug}`)
+     * })
+     * // Instead, you should use a key that uniquely identifies the data fetched.
+     * const { data } = await useAsyncData(route.params.slug, async () => {
+     *   return await $fetch(`/api/my-page/${route.params.slug}`)
+     * })
+     */
+    sharedPrerenderData: false,
+    /**
+     * Enables CookieStore support to listen for cookie updates (if supported by the browser) and refresh `useCookie` ref values.
+     * @see [CookieStore](https://developer.mozilla.org/en-US/docs/Web/API/CookieStore)
+     */
+    cookieStore: false,
+    /**
      * This allows specifying the default options for core Nuxt components and composables.
      *
      * These options will likely be moved elsewhere in the future, such as into `app.config` or into the
@@ -21594,7 +21655,21 @@ const experimental = defineUntypedSchema({
       },
       /** @type {Pick<typeof import('ofetch')['FetchOptions'], 'timeout' | 'retry' | 'retryDelay' | 'retryStatusCodes'>} */
       useFetch: {}
-    }
+    },
+    /**
+     * Automatically polyfill Node.js imports in the client build using `unenv`.
+     * @see https://github.com/unjs/unenv
+     *
+     * **Note:** To make globals like `Buffer` work in the browser, you need to manually inject them.
+     *
+     * ```ts
+     * import { Buffer } from 'node:buffer'
+     *
+     * globalThis.Buffer = globalThis.Buffer || Buffer
+     * ```
+     * @type {boolean}
+     */
+    clientNodeCompat: false
   }
 });
 
@@ -21863,9 +21938,6 @@ const vite = defineUntypedSchema({
       script: {
         propsDestructure: {
           $resolve: async (val, get) => val ?? Boolean((await get("vue")).propsDestructure)
-        },
-        defineModel: {
-          $resolve: async (val, get) => val ?? Boolean((await get("vue")).defineModel)
         }
       }
     },
@@ -21934,7 +22006,8 @@ const webpack = defineUntypedSchema({
      */
     analyze: {
       $resolve: async (val, get) => {
-        return defu(val, await get("build.analyze"));
+        const value = typeof val === "boolean" ? { enabled: val } : val;
+        return defu(value, await get("build.analyze"));
       }
     },
     /**
@@ -22048,6 +22121,7 @@ const webpack = defineUntypedSchema({
      */
     loaders: {
       $resolve: async (val, get) => {
+        const loaders = val && typeof val === "object" ? val : {};
         const styleLoaders = [
           "css",
           "cssModules",
@@ -22058,12 +22132,12 @@ const webpack = defineUntypedSchema({
           "vueStyle"
         ];
         for (const name of styleLoaders) {
-          const loader = val[name];
+          const loader = loaders[name];
           if (loader && loader.sourceMap === void 0) {
             loader.sourceMap = Boolean(await get("build.cssSourceMap"));
           }
         }
-        return val;
+        return loaders;
       },
       /**
        * See https://github.com/esbuild-kit/esbuild-loader
@@ -22114,8 +22188,7 @@ const webpack = defineUntypedSchema({
           embed: "src"
         },
         compilerOptions: { $resolve: async (val, get) => val ?? await get("vue.compilerOptions") },
-        propsDestructure: { $resolve: async (val, get) => val ?? Boolean(await get("vue.propsDestructure")) },
-        defineModel: { $resolve: async (val, get) => val ?? Boolean(await get("vue.defineModel")) }
+        propsDestructure: { $resolve: async (val, get) => val ?? Boolean(await get("vue.propsDestructure")) }
       },
       css: {
         importLoaders: 0,

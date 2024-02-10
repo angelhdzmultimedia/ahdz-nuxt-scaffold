@@ -2,99 +2,22 @@ import { b as defineCommand, a as prompt } from '../shared/scaffold.f78fb37a.mjs
 import { resolve as resolve$1, join } from 'node:path';
 import { spawn } from 'cross-spawn';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
-import { resolve, parse, win32, posix as posix$1, basename } from 'path';
-import { inspect } from 'util';
 import { g as getDefaultExportFromCjs } from '../shared/scaffold.2155838d.mjs';
+import { win32, posix as posix$1, resolve, parse, basename } from 'path';
 import { fileURLToPath } from 'url';
 import * as fs from 'fs';
 import fs__default, { realpathSync as realpathSync$1, lstatSync, readdir as readdir$2, readdirSync as readdirSync$1, readlinkSync, unlinkSync, rmdirSync, chmodSync, statSync, renameSync, rmSync } from 'fs';
 import { lstat as lstat$4, readdir as readdir$3, readlink, realpath } from 'fs/promises';
-import require$$0$1, { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 import require$$0 from 'stream';
-import require$$2, { StringDecoder } from 'string_decoder';
+import { StringDecoder } from 'string_decoder';
+import { inspect } from 'util';
 import { tmpdir } from 'os';
 import { platform as platform$1 } from 'node:os';
 import 'node:util';
 import 'node:process';
 import 'node:tty';
 import 'inquirer';
-
-const optArgT = (opt) => {
-    assertRimrafOptions(opt);
-    const { glob, ...options } = opt;
-    if (!glob) {
-        return options;
-    }
-    const globOpt = glob === true
-        ? opt.signal
-            ? { signal: opt.signal }
-            : {}
-        : opt.signal
-            ? {
-                signal: opt.signal,
-                ...glob,
-            }
-            : glob;
-    return {
-        ...options,
-        glob: {
-            ...globOpt,
-            // always get absolute paths from glob, to ensure
-            // that we are referencing the correct thing.
-            absolute: true,
-            withFileTypes: false,
-        },
-    };
-};
-const optArg = (opt = {}) => optArgT(opt);
-const optArgSync = (opt = {}) => optArgT(opt);
-
-const platform = process.env.__TESTING_RIMRAF_PLATFORM__ || process.platform;
-
-const pathArg = (path, opt = {}) => {
-    const type = typeof path;
-    if (type !== 'string') {
-        const ctor = path && type === 'object' && path.constructor;
-        const received = ctor && ctor.name
-            ? `an instance of ${ctor.name}`
-            : type === 'object'
-                ? inspect(path)
-                : `type ${type} ${path}`;
-        const msg = 'The "path" argument must be of type string. ' + `Received ${received}`;
-        throw Object.assign(new TypeError(msg), {
-            path,
-            code: 'ERR_INVALID_ARG_TYPE',
-        });
-    }
-    if (/\0/.test(path)) {
-        // simulate same failure that node raises
-        const msg = 'path must be a string without null bytes';
-        throw Object.assign(new TypeError(msg), {
-            path,
-            code: 'ERR_INVALID_ARG_VALUE',
-        });
-    }
-    path = resolve(path);
-    const { root } = parse(path);
-    if (path === root && opt.preserveRoot !== false) {
-        const msg = 'refusing to remove root directory without preserveRoot:false';
-        throw Object.assign(new Error(msg), {
-            path,
-            code: 'ERR_PRESERVE_ROOT',
-        });
-    }
-    if (platform === 'win32') {
-        const badWinChars = /[*|"<>?:]/;
-        const { root } = parse(path);
-        if (badWinChars.test(path.substring(root.length))) {
-            throw Object.assign(new Error('Illegal characters in path.'), {
-                path,
-                code: 'EINVAL',
-            });
-        }
-    }
-    return path;
-};
 
 var balancedMatch = balanced$1;
 function balanced$1(a, b, str) {
@@ -548,7 +471,7 @@ const isExtglobType = (c) => types.has(c);
 // entire string, or just a single path portion, to prevent dots
 // and/or traversal patterns, when needed.
 // Exts don't need the ^ or / bit, because the root binds that already.
-const startNoTraversal = '(?!\\.\\.?(?:$|/))';
+const startNoTraversal = '(?!(?:^|/)\\.\\.?(?:$|/))';
 const startNoDot = '(?!\\.)';
 // characters that indicate a start of pattern needs the "no dots" bit,
 // because a dot *might* be matched. ( is not in the list, because in
@@ -945,7 +868,8 @@ class AST {
     // - Since the start for a join is eg /(?!\.) and the start for a part
     // is ^(?!\.), we can just prepend (?!\.) to the pattern (either root
     // or start or whatever) and prepend ^ or / at the Regexp construction.
-    toRegExpSource() {
+    toRegExpSource(allowDot) {
+        const dot = allowDot ?? !!this.#options.dot;
         if (this.#root === this)
             this.#fillNegs();
         if (!this.type) {
@@ -954,7 +878,7 @@ class AST {
                 .map(p => {
                 const [re, _, hasMagic, uflag] = typeof p === 'string'
                     ? AST.#parseGlob(p, this.#hasMagic, noEmpty)
-                    : p.toRegExpSource();
+                    : p.toRegExpSource(allowDot);
                 this.#hasMagic = this.#hasMagic || hasMagic;
                 this.#uflag = this.#uflag || uflag;
                 return re;
@@ -974,14 +898,14 @@ class AST {
                         // and prevent that.
                         const needNoTrav = 
                         // dots are allowed, and the pattern starts with [ or .
-                        (this.#options.dot && aps.has(src.charAt(0))) ||
+                        (dot && aps.has(src.charAt(0))) ||
                             // the pattern starts with \., and then [ or .
                             (src.startsWith('\\.') && aps.has(src.charAt(2))) ||
                             // the pattern starts with \.\., and then [ or .
                             (src.startsWith('\\.\\.') && aps.has(src.charAt(4)));
                         // no need to prevent dots if it can't match a dot, or if a
                         // sub-pattern will be preventing it anyway.
-                        const needNoDot = !this.#options.dot && aps.has(src.charAt(0));
+                        const needNoDot = !dot && !allowDot && aps.has(src.charAt(0));
                         start = needNoTrav ? startNoTraversal : needNoDot ? startNoDot : '';
                     }
                 }
@@ -1001,23 +925,13 @@ class AST {
                 this.#uflag,
             ];
         }
+        // We need to calculate the body *twice* if it's a repeat pattern
+        // at the start, once in nodot mode, then again in dot mode, so a
+        // pattern like *(?) can match 'x.y'
+        const repeated = this.type === '*' || this.type === '+';
         // some kind of extglob
         const start = this.type === '!' ? '(?:(?!(?:' : '(?:';
-        const body = this.#parts
-            .map(p => {
-            // extglob ASTs should only contain parent ASTs
-            /* c8 ignore start */
-            if (typeof p === 'string') {
-                throw new Error('string type in extglob ast??');
-            }
-            /* c8 ignore stop */
-            // can ignore hasMagic, because extglobs are already always magic
-            const [re, _, _hasMagic, uflag] = p.toRegExpSource();
-            this.#uflag = this.#uflag || uflag;
-            return re;
-        })
-            .filter(p => !(this.isStart() && this.isEnd()) || !!p)
-            .join('|');
+        let body = this.#partsToRegExp(dot);
         if (this.isStart() && this.isEnd() && !body && this.type !== '!') {
             // invalid extglob, has to at least be *something* present, if it's
             // the entire path portion.
@@ -1027,22 +941,37 @@ class AST {
             this.#hasMagic = undefined;
             return [s, unescape(this.toString()), false, false];
         }
+        // XXX abstract out this map method
+        let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot
+            ? ''
+            : this.#partsToRegExp(true);
+        if (bodyDotAllowed === body) {
+            bodyDotAllowed = '';
+        }
+        if (bodyDotAllowed) {
+            body = `(?:${body})(?:${bodyDotAllowed})*?`;
+        }
         // an empty !() is exactly equivalent to a starNoEmpty
         let final = '';
         if (this.type === '!' && this.#emptyExt) {
-            final =
-                (this.isStart() && !this.#options.dot ? startNoDot : '') + starNoEmpty;
+            final = (this.isStart() && !dot ? startNoDot : '') + starNoEmpty;
         }
         else {
             const close = this.type === '!'
                 ? // !() must match something,but !(x) can match ''
                     '))' +
-                        (this.isStart() && !this.#options.dot ? startNoDot : '') +
+                        (this.isStart() && !dot && !allowDot ? startNoDot : '') +
                         star$1 +
                         ')'
                 : this.type === '@'
                     ? ')'
-                    : `)${this.type}`;
+                    : this.type === '?'
+                        ? ')?'
+                        : this.type === '+' && bodyDotAllowed
+                            ? ')'
+                            : this.type === '*' && bodyDotAllowed
+                                ? `)?`
+                                : `)${this.type}`;
             final = start + body + close;
         }
         return [
@@ -1051,6 +980,23 @@ class AST {
             (this.#hasMagic = !!this.#hasMagic),
             this.#uflag,
         ];
+    }
+    #partsToRegExp(dot) {
+        return this.#parts
+            .map(p => {
+            // extglob ASTs should only contain parent ASTs
+            /* c8 ignore start */
+            if (typeof p === 'string') {
+                throw new Error('string type in extglob ast??');
+            }
+            /* c8 ignore stop */
+            // can ignore hasMagic, because extglobs are already always magic
+            const [re, _, _hasMagic, uflag] = p.toRegExpSource(dot);
+            this.#uflag = this.#uflag || uflag;
+            return re;
+        })
+            .filter(p => !(this.isStart() && this.isEnd()) || !!p)
+            .join('|');
     }
     static #parseGlob(glob, hasMagic, noEmpty = false) {
         let escaping = false;
@@ -1712,39 +1658,35 @@ class Minimatch {
     // the parts match.
     matchOne(file, pattern, partial = false) {
         const options = this.options;
-        // a UNC pattern like //?/c:/* can match a path like c:/x
-        // and vice versa
+        // UNC paths like //?/X:/... can match X:/... and vice versa
+        // Drive letters in absolute drive or unc paths are always compared
+        // case-insensitively.
         if (this.isWindows) {
-            const fileUNC = file[0] === '' &&
+            const fileDrive = typeof file[0] === 'string' && /^[a-z]:$/i.test(file[0]);
+            const fileUNC = !fileDrive &&
+                file[0] === '' &&
                 file[1] === '' &&
                 file[2] === '?' &&
-                typeof file[3] === 'string' &&
                 /^[a-z]:$/i.test(file[3]);
-            const patternUNC = pattern[0] === '' &&
+            const patternDrive = typeof pattern[0] === 'string' && /^[a-z]:$/i.test(pattern[0]);
+            const patternUNC = !patternDrive &&
+                pattern[0] === '' &&
                 pattern[1] === '' &&
                 pattern[2] === '?' &&
                 typeof pattern[3] === 'string' &&
                 /^[a-z]:$/i.test(pattern[3]);
-            if (fileUNC && patternUNC) {
-                const fd = file[3];
-                const pd = pattern[3];
+            const fdi = fileUNC ? 3 : fileDrive ? 0 : undefined;
+            const pdi = patternUNC ? 3 : patternDrive ? 0 : undefined;
+            if (typeof fdi === 'number' && typeof pdi === 'number') {
+                const [fd, pd] = [file[fdi], pattern[pdi]];
                 if (fd.toLowerCase() === pd.toLowerCase()) {
-                    file[3] = pd;
-                }
-            }
-            else if (patternUNC && typeof file[0] === 'string') {
-                const pd = pattern[3];
-                const fd = file[0];
-                if (pd.toLowerCase() === fd.toLowerCase()) {
-                    pattern[3] = fd;
-                    pattern = pattern.slice(3);
-                }
-            }
-            else if (fileUNC && typeof pattern[0] === 'string') {
-                const fd = file[3];
-                if (fd.toLowerCase() === pattern[0].toLowerCase()) {
-                    pattern[0] = fd;
-                    file = file.slice(3);
+                    pattern[pdi] = fd;
+                    if (pdi > fdi) {
+                        pattern = pattern.slice(pdi);
+                    }
+                    else if (fdi > pdi) {
+                        file = file.slice(fdi);
+                    }
                 }
             }
         }
@@ -3545,7 +3487,7 @@ class LRUCache {
     }
 }
 
-const proc$1 = typeof process === 'object' && process
+const proc = typeof process === 'object' && process
     ? process
     : {
         stdout: null,
@@ -3557,7 +3499,7 @@ const proc$1 = typeof process === 'object' && process
  */
 const isStream = (s) => !!s &&
     typeof s === 'object' &&
-    (s instanceof Minipass$1 ||
+    (s instanceof Minipass ||
         s instanceof require$$0 ||
         isReadable(s) ||
         isWritable(s));
@@ -3578,55 +3520,55 @@ const isWritable = (s) => !!s &&
     s instanceof EventEmitter &&
     typeof s.write === 'function' &&
     typeof s.end === 'function';
-const EOF$1 = Symbol('EOF');
-const MAYBE_EMIT_END$1 = Symbol('maybeEmitEnd');
-const EMITTED_END$1 = Symbol('emittedEnd');
-const EMITTING_END$1 = Symbol('emittingEnd');
-const EMITTED_ERROR$1 = Symbol('emittedError');
-const CLOSED$1 = Symbol('closed');
-const READ$1 = Symbol('read');
-const FLUSH$1 = Symbol('flush');
-const FLUSHCHUNK$1 = Symbol('flushChunk');
-const ENCODING$1 = Symbol('encoding');
-const DECODER$1 = Symbol('decoder');
-const FLOWING$1 = Symbol('flowing');
-const PAUSED$1 = Symbol('paused');
-const RESUME$1 = Symbol('resume');
-const BUFFER$1 = Symbol('buffer');
-const PIPES$1 = Symbol('pipes');
-const BUFFERLENGTH$1 = Symbol('bufferLength');
-const BUFFERPUSH$1 = Symbol('bufferPush');
-const BUFFERSHIFT$1 = Symbol('bufferShift');
-const OBJECTMODE$1 = Symbol('objectMode');
+const EOF = Symbol('EOF');
+const MAYBE_EMIT_END = Symbol('maybeEmitEnd');
+const EMITTED_END = Symbol('emittedEnd');
+const EMITTING_END = Symbol('emittingEnd');
+const EMITTED_ERROR = Symbol('emittedError');
+const CLOSED = Symbol('closed');
+const READ = Symbol('read');
+const FLUSH = Symbol('flush');
+const FLUSHCHUNK = Symbol('flushChunk');
+const ENCODING = Symbol('encoding');
+const DECODER = Symbol('decoder');
+const FLOWING = Symbol('flowing');
+const PAUSED = Symbol('paused');
+const RESUME = Symbol('resume');
+const BUFFER = Symbol('buffer');
+const PIPES = Symbol('pipes');
+const BUFFERLENGTH = Symbol('bufferLength');
+const BUFFERPUSH = Symbol('bufferPush');
+const BUFFERSHIFT = Symbol('bufferShift');
+const OBJECTMODE = Symbol('objectMode');
 // internal event when stream is destroyed
-const DESTROYED$1 = Symbol('destroyed');
+const DESTROYED = Symbol('destroyed');
 // internal event when stream has an error
-const ERROR$1 = Symbol('error');
-const EMITDATA$1 = Symbol('emitData');
-const EMITEND$1 = Symbol('emitEnd');
-const EMITEND2$1 = Symbol('emitEnd2');
-const ASYNC$1 = Symbol('async');
-const ABORT$1 = Symbol('abort');
-const ABORTED$1 = Symbol('aborted');
-const SIGNAL$1 = Symbol('signal');
+const ERROR = Symbol('error');
+const EMITDATA = Symbol('emitData');
+const EMITEND = Symbol('emitEnd');
+const EMITEND2 = Symbol('emitEnd2');
+const ASYNC = Symbol('async');
+const ABORT = Symbol('abort');
+const ABORTED = Symbol('aborted');
+const SIGNAL = Symbol('signal');
 const DATALISTENERS = Symbol('dataListeners');
 const DISCARDED = Symbol('discarded');
-const defer$1 = (fn) => Promise.resolve().then(fn);
+const defer = (fn) => Promise.resolve().then(fn);
 const nodefer = (fn) => fn();
-const isEndish$1 = (ev) => ev === 'end' || ev === 'finish' || ev === 'prefinish';
+const isEndish = (ev) => ev === 'end' || ev === 'finish' || ev === 'prefinish';
 const isArrayBufferLike = (b) => b instanceof ArrayBuffer ||
     (!!b &&
         typeof b === 'object' &&
         b.constructor &&
         b.constructor.name === 'ArrayBuffer' &&
         b.byteLength >= 0);
-const isArrayBufferView$1 = (b) => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
+const isArrayBufferView = (b) => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
 /**
  * Internal class representing a pipe to a destination stream.
  *
  * @internal
  */
-let Pipe$1 = class Pipe {
+class Pipe {
     src;
     dest;
     opts;
@@ -3635,7 +3577,7 @@ let Pipe$1 = class Pipe {
         this.src = src;
         this.dest = dest;
         this.opts = opts;
-        this.ondrain = () => src[RESUME$1]();
+        this.ondrain = () => src[RESUME]();
         this.dest.on('drain', this.ondrain);
     }
     unpipe() {
@@ -3650,14 +3592,14 @@ let Pipe$1 = class Pipe {
         if (this.opts.end)
             this.dest.end();
     }
-};
+}
 /**
  * Internal class representing a pipe to a destination stream where
  * errors are proxied.
  *
  * @internal
  */
-let PipeProxyErrors$1 = class PipeProxyErrors extends Pipe$1 {
+class PipeProxyErrors extends Pipe {
     unpipe() {
         this.src.removeListener('error', this.proxyErrors);
         super.unpipe();
@@ -3667,7 +3609,7 @@ let PipeProxyErrors$1 = class PipeProxyErrors extends Pipe$1 {
         this.proxyErrors = er => dest.emit('error', er);
         src.on('error', this.proxyErrors);
     }
-};
+}
 const isObjectModeOptions = (o) => !!o.objectMode;
 const isEncodingOptions = (o) => !o.objectMode && !!o.encoding && o.encoding !== 'buffer';
 /**
@@ -3681,24 +3623,24 @@ const isEncodingOptions = (o) => !o.objectMode && !!o.encoding && o.encoding !==
  * `Events` is the set of event handler signatures that this object
  * will emit, see {@link Minipass.Events}
  */
-let Minipass$1 = class Minipass extends EventEmitter {
-    [FLOWING$1] = false;
-    [PAUSED$1] = false;
-    [PIPES$1] = [];
-    [BUFFER$1] = [];
-    [OBJECTMODE$1];
-    [ENCODING$1];
-    [ASYNC$1];
-    [DECODER$1];
-    [EOF$1] = false;
-    [EMITTED_END$1] = false;
-    [EMITTING_END$1] = false;
-    [CLOSED$1] = false;
-    [EMITTED_ERROR$1] = null;
-    [BUFFERLENGTH$1] = 0;
-    [DESTROYED$1] = false;
-    [SIGNAL$1];
-    [ABORTED$1] = false;
+class Minipass extends EventEmitter {
+    [FLOWING] = false;
+    [PAUSED] = false;
+    [PIPES] = [];
+    [BUFFER] = [];
+    [OBJECTMODE];
+    [ENCODING];
+    [ASYNC];
+    [DECODER];
+    [EOF] = false;
+    [EMITTED_END] = false;
+    [EMITTING_END] = false;
+    [CLOSED] = false;
+    [EMITTED_ERROR] = null;
+    [BUFFERLENGTH] = 0;
+    [DESTROYED] = false;
+    [SIGNAL];
+    [ABORTED] = false;
     [DATALISTENERS] = 0;
     [DISCARDED] = false;
     /**
@@ -3723,37 +3665,37 @@ let Minipass$1 = class Minipass extends EventEmitter {
             throw new TypeError('Encoding and objectMode may not be used together');
         }
         if (isObjectModeOptions(options)) {
-            this[OBJECTMODE$1] = true;
-            this[ENCODING$1] = null;
+            this[OBJECTMODE] = true;
+            this[ENCODING] = null;
         }
         else if (isEncodingOptions(options)) {
-            this[ENCODING$1] = options.encoding;
-            this[OBJECTMODE$1] = false;
+            this[ENCODING] = options.encoding;
+            this[OBJECTMODE] = false;
         }
         else {
-            this[OBJECTMODE$1] = false;
-            this[ENCODING$1] = null;
+            this[OBJECTMODE] = false;
+            this[ENCODING] = null;
         }
-        this[ASYNC$1] = !!options.async;
-        this[DECODER$1] = this[ENCODING$1]
-            ? new StringDecoder(this[ENCODING$1])
+        this[ASYNC] = !!options.async;
+        this[DECODER] = this[ENCODING]
+            ? new StringDecoder(this[ENCODING])
             : null;
         //@ts-ignore - private option for debugging and testing
         if (options && options.debugExposeBuffer === true) {
-            Object.defineProperty(this, 'buffer', { get: () => this[BUFFER$1] });
+            Object.defineProperty(this, 'buffer', { get: () => this[BUFFER] });
         }
         //@ts-ignore - private option for debugging and testing
         if (options && options.debugExposePipes === true) {
-            Object.defineProperty(this, 'pipes', { get: () => this[PIPES$1] });
+            Object.defineProperty(this, 'pipes', { get: () => this[PIPES] });
         }
         const { signal } = options;
         if (signal) {
-            this[SIGNAL$1] = signal;
+            this[SIGNAL] = signal;
             if (signal.aborted) {
-                this[ABORT$1]();
+                this[ABORT]();
             }
             else {
-                signal.addEventListener('abort', () => this[ABORT$1]());
+                signal.addEventListener('abort', () => this[ABORT]());
             }
         }
     }
@@ -3767,13 +3709,13 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * emitted.
      */
     get bufferLength() {
-        return this[BUFFERLENGTH$1];
+        return this[BUFFERLENGTH];
     }
     /**
      * The `BufferEncoding` currently in use, or `null`
      */
     get encoding() {
-        return this[ENCODING$1];
+        return this[ENCODING];
     }
     /**
      * @deprecated - This is a read only property
@@ -3791,7 +3733,7 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * True if this is an objectMode stream
      */
     get objectMode() {
-        return this[OBJECTMODE$1];
+        return this[OBJECTMODE];
     }
     /**
      * @deprecated - This is a read-only property
@@ -3803,7 +3745,7 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * true if this is an async stream
      */
     get ['async']() {
-        return this[ASYNC$1];
+        return this[ASYNC];
     }
     /**
      * Set to true to make this stream async.
@@ -3813,19 +3755,19 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * cannot be safely made sync.
      */
     set ['async'](a) {
-        this[ASYNC$1] = this[ASYNC$1] || !!a;
+        this[ASYNC] = this[ASYNC] || !!a;
     }
     // drop everything and get out of the flow completely
-    [ABORT$1]() {
-        this[ABORTED$1] = true;
-        this.emit('abort', this[SIGNAL$1]?.reason);
-        this.destroy(this[SIGNAL$1]?.reason);
+    [ABORT]() {
+        this[ABORTED] = true;
+        this.emit('abort', this[SIGNAL]?.reason);
+        this.destroy(this[SIGNAL]?.reason);
     }
     /**
      * True if the stream has been aborted.
      */
     get aborted() {
-        return this[ABORTED$1];
+        return this[ABORTED];
     }
     /**
      * No-op setter. Stream aborted status is set via the AbortSignal provided
@@ -3833,11 +3775,11 @@ let Minipass$1 = class Minipass extends EventEmitter {
      */
     set aborted(_) { }
     write(chunk, encoding, cb) {
-        if (this[ABORTED$1])
+        if (this[ABORTED])
             return false;
-        if (this[EOF$1])
+        if (this[EOF])
             throw new Error('write after end');
-        if (this[DESTROYED$1]) {
+        if (this[DESTROYED]) {
             this.emit('error', Object.assign(new Error('Cannot call write after a stream was destroyed'), { code: 'ERR_STREAM_DESTROYED' }));
             return true;
         }
@@ -3847,13 +3789,13 @@ let Minipass$1 = class Minipass extends EventEmitter {
         }
         if (!encoding)
             encoding = 'utf8';
-        const fn = this[ASYNC$1] ? defer$1 : nodefer;
+        const fn = this[ASYNC] ? defer : nodefer;
         // convert array buffers and typed array views into buffers
         // at some point in the future, we may want to do the opposite!
         // leave strings and buffers as-is
         // anything is only allowed if in object mode, so throw
-        if (!this[OBJECTMODE$1] && !Buffer.isBuffer(chunk)) {
-            if (isArrayBufferView$1(chunk)) {
+        if (!this[OBJECTMODE] && !Buffer.isBuffer(chunk)) {
+            if (isArrayBufferView(chunk)) {
                 //@ts-ignore - sinful unsafe type changing
                 chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
             }
@@ -3867,55 +3809,55 @@ let Minipass$1 = class Minipass extends EventEmitter {
         }
         // handle object mode up front, since it's simpler
         // this yields better performance, fewer checks later.
-        if (this[OBJECTMODE$1]) {
+        if (this[OBJECTMODE]) {
             // maybe impossible?
             /* c8 ignore start */
-            if (this[FLOWING$1] && this[BUFFERLENGTH$1] !== 0)
-                this[FLUSH$1](true);
+            if (this[FLOWING] && this[BUFFERLENGTH] !== 0)
+                this[FLUSH](true);
             /* c8 ignore stop */
-            if (this[FLOWING$1])
+            if (this[FLOWING])
                 this.emit('data', chunk);
             else
-                this[BUFFERPUSH$1](chunk);
-            if (this[BUFFERLENGTH$1] !== 0)
+                this[BUFFERPUSH](chunk);
+            if (this[BUFFERLENGTH] !== 0)
                 this.emit('readable');
             if (cb)
                 fn(cb);
-            return this[FLOWING$1];
+            return this[FLOWING];
         }
         // at this point the chunk is a buffer or string
         // don't buffer it up or send it to the decoder
         if (!chunk.length) {
-            if (this[BUFFERLENGTH$1] !== 0)
+            if (this[BUFFERLENGTH] !== 0)
                 this.emit('readable');
             if (cb)
                 fn(cb);
-            return this[FLOWING$1];
+            return this[FLOWING];
         }
         // fast-path writing strings of same encoding to a stream with
         // an empty buffer, skipping the buffer/decoder dance
         if (typeof chunk === 'string' &&
             // unless it is a string already ready for us to use
-            !(encoding === this[ENCODING$1] && !this[DECODER$1]?.lastNeed)) {
+            !(encoding === this[ENCODING] && !this[DECODER]?.lastNeed)) {
             //@ts-ignore - sinful unsafe type change
             chunk = Buffer.from(chunk, encoding);
         }
-        if (Buffer.isBuffer(chunk) && this[ENCODING$1]) {
+        if (Buffer.isBuffer(chunk) && this[ENCODING]) {
             //@ts-ignore - sinful unsafe type change
-            chunk = this[DECODER$1].write(chunk);
+            chunk = this[DECODER].write(chunk);
         }
         // Note: flushing CAN potentially switch us into not-flowing mode
-        if (this[FLOWING$1] && this[BUFFERLENGTH$1] !== 0)
-            this[FLUSH$1](true);
-        if (this[FLOWING$1])
+        if (this[FLOWING] && this[BUFFERLENGTH] !== 0)
+            this[FLUSH](true);
+        if (this[FLOWING])
             this.emit('data', chunk);
         else
-            this[BUFFERPUSH$1](chunk);
-        if (this[BUFFERLENGTH$1] !== 0)
+            this[BUFFERPUSH](chunk);
+        if (this[BUFFERLENGTH] !== 0)
             this.emit('readable');
         if (cb)
             fn(cb);
-        return this[FLOWING$1];
+        return this[FLOWING];
     }
     /**
      * Low-level explicit read method.
@@ -3931,50 +3873,50 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * then `null` is returned.
      */
     read(n) {
-        if (this[DESTROYED$1])
+        if (this[DESTROYED])
             return null;
         this[DISCARDED] = false;
-        if (this[BUFFERLENGTH$1] === 0 ||
+        if (this[BUFFERLENGTH] === 0 ||
             n === 0 ||
-            (n && n > this[BUFFERLENGTH$1])) {
-            this[MAYBE_EMIT_END$1]();
+            (n && n > this[BUFFERLENGTH])) {
+            this[MAYBE_EMIT_END]();
             return null;
         }
-        if (this[OBJECTMODE$1])
+        if (this[OBJECTMODE])
             n = null;
-        if (this[BUFFER$1].length > 1 && !this[OBJECTMODE$1]) {
+        if (this[BUFFER].length > 1 && !this[OBJECTMODE]) {
             // not object mode, so if we have an encoding, then RType is string
             // otherwise, must be Buffer
-            this[BUFFER$1] = [
-                (this[ENCODING$1]
-                    ? this[BUFFER$1].join('')
-                    : Buffer.concat(this[BUFFER$1], this[BUFFERLENGTH$1])),
+            this[BUFFER] = [
+                (this[ENCODING]
+                    ? this[BUFFER].join('')
+                    : Buffer.concat(this[BUFFER], this[BUFFERLENGTH])),
             ];
         }
-        const ret = this[READ$1](n || null, this[BUFFER$1][0]);
-        this[MAYBE_EMIT_END$1]();
+        const ret = this[READ](n || null, this[BUFFER][0]);
+        this[MAYBE_EMIT_END]();
         return ret;
     }
-    [READ$1](n, chunk) {
-        if (this[OBJECTMODE$1])
-            this[BUFFERSHIFT$1]();
+    [READ](n, chunk) {
+        if (this[OBJECTMODE])
+            this[BUFFERSHIFT]();
         else {
             const c = chunk;
             if (n === c.length || n === null)
-                this[BUFFERSHIFT$1]();
+                this[BUFFERSHIFT]();
             else if (typeof c === 'string') {
-                this[BUFFER$1][0] = c.slice(n);
+                this[BUFFER][0] = c.slice(n);
                 chunk = c.slice(0, n);
-                this[BUFFERLENGTH$1] -= n;
+                this[BUFFERLENGTH] -= n;
             }
             else {
-                this[BUFFER$1][0] = c.subarray(n);
+                this[BUFFER][0] = c.subarray(n);
                 chunk = c.subarray(0, n);
-                this[BUFFERLENGTH$1] -= n;
+                this[BUFFERLENGTH] -= n;
             }
         }
         this.emit('data', chunk);
-        if (!this[BUFFER$1].length && !this[EOF$1])
+        if (!this[BUFFER].length && !this[EOF])
             this.emit('drain');
         return chunk;
     }
@@ -3991,30 +3933,30 @@ let Minipass$1 = class Minipass extends EventEmitter {
             this.write(chunk, encoding);
         if (cb)
             this.once('end', cb);
-        this[EOF$1] = true;
+        this[EOF] = true;
         this.writable = false;
         // if we haven't written anything, then go ahead and emit,
         // even if we're not reading.
         // we'll re-emit if a new 'end' listener is added anyway.
         // This makes MP more suitable to write-only use cases.
-        if (this[FLOWING$1] || !this[PAUSED$1])
-            this[MAYBE_EMIT_END$1]();
+        if (this[FLOWING] || !this[PAUSED])
+            this[MAYBE_EMIT_END]();
         return this;
     }
     // don't let the internal resume be overwritten
-    [RESUME$1]() {
-        if (this[DESTROYED$1])
+    [RESUME]() {
+        if (this[DESTROYED])
             return;
-        if (!this[DATALISTENERS] && !this[PIPES$1].length) {
+        if (!this[DATALISTENERS] && !this[PIPES].length) {
             this[DISCARDED] = true;
         }
-        this[PAUSED$1] = false;
-        this[FLOWING$1] = true;
+        this[PAUSED] = false;
+        this[FLOWING] = true;
         this.emit('resume');
-        if (this[BUFFER$1].length)
-            this[FLUSH$1]();
-        else if (this[EOF$1])
-            this[MAYBE_EMIT_END$1]();
+        if (this[BUFFER].length)
+            this[FLUSH]();
+        else if (this[EOF])
+            this[MAYBE_EMIT_END]();
         else
             this.emit('drain');
     }
@@ -4028,58 +3970,58 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * asynchronous iteration is started.
      */
     resume() {
-        return this[RESUME$1]();
+        return this[RESUME]();
     }
     /**
      * Pause the stream
      */
     pause() {
-        this[FLOWING$1] = false;
-        this[PAUSED$1] = true;
+        this[FLOWING] = false;
+        this[PAUSED] = true;
         this[DISCARDED] = false;
     }
     /**
      * true if the stream has been forcibly destroyed
      */
     get destroyed() {
-        return this[DESTROYED$1];
+        return this[DESTROYED];
     }
     /**
      * true if the stream is currently in a flowing state, meaning that
      * any writes will be immediately emitted.
      */
     get flowing() {
-        return this[FLOWING$1];
+        return this[FLOWING];
     }
     /**
      * true if the stream is currently in a paused state
      */
     get paused() {
-        return this[PAUSED$1];
+        return this[PAUSED];
     }
-    [BUFFERPUSH$1](chunk) {
-        if (this[OBJECTMODE$1])
-            this[BUFFERLENGTH$1] += 1;
+    [BUFFERPUSH](chunk) {
+        if (this[OBJECTMODE])
+            this[BUFFERLENGTH] += 1;
         else
-            this[BUFFERLENGTH$1] += chunk.length;
-        this[BUFFER$1].push(chunk);
+            this[BUFFERLENGTH] += chunk.length;
+        this[BUFFER].push(chunk);
     }
-    [BUFFERSHIFT$1]() {
-        if (this[OBJECTMODE$1])
-            this[BUFFERLENGTH$1] -= 1;
+    [BUFFERSHIFT]() {
+        if (this[OBJECTMODE])
+            this[BUFFERLENGTH] -= 1;
         else
-            this[BUFFERLENGTH$1] -= this[BUFFER$1][0].length;
-        return this[BUFFER$1].shift();
+            this[BUFFERLENGTH] -= this[BUFFER][0].length;
+        return this[BUFFER].shift();
     }
-    [FLUSH$1](noDrain = false) {
-        do { } while (this[FLUSHCHUNK$1](this[BUFFERSHIFT$1]()) &&
-            this[BUFFER$1].length);
-        if (!noDrain && !this[BUFFER$1].length && !this[EOF$1])
+    [FLUSH](noDrain = false) {
+        do { } while (this[FLUSHCHUNK](this[BUFFERSHIFT]()) &&
+            this[BUFFER].length);
+        if (!noDrain && !this[BUFFER].length && !this[EOF])
             this.emit('drain');
     }
-    [FLUSHCHUNK$1](chunk) {
+    [FLUSHCHUNK](chunk) {
         this.emit('data', chunk);
-        return this[FLOWING$1];
+        return this[FLOWING];
     }
     /**
      * Pipe all data emitted by this stream into the destination provided.
@@ -4087,12 +4029,12 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * Triggers the flow of data.
      */
     pipe(dest, opts) {
-        if (this[DESTROYED$1])
+        if (this[DESTROYED])
             return dest;
         this[DISCARDED] = false;
-        const ended = this[EMITTED_END$1];
+        const ended = this[EMITTED_END];
         opts = opts || {};
-        if (dest === proc$1.stdout || dest === proc$1.stderr)
+        if (dest === proc.stdout || dest === proc.stderr)
             opts.end = false;
         else
             opts.end = opts.end !== false;
@@ -4105,13 +4047,13 @@ let Minipass$1 = class Minipass extends EventEmitter {
         else {
             // "as" here just ignores the WType, which pipes don't care about,
             // since they're only consuming from us, and writing to the dest
-            this[PIPES$1].push(!opts.proxyErrors
-                ? new Pipe$1(this, dest, opts)
-                : new PipeProxyErrors$1(this, dest, opts));
-            if (this[ASYNC$1])
-                defer$1(() => this[RESUME$1]());
+            this[PIPES].push(!opts.proxyErrors
+                ? new Pipe(this, dest, opts)
+                : new PipeProxyErrors(this, dest, opts));
+            if (this[ASYNC])
+                defer(() => this[RESUME]());
             else
-                this[RESUME$1]();
+                this[RESUME]();
         }
         return dest;
     }
@@ -4124,16 +4066,16 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * {@link Minipass#resume} is explicitly called.
      */
     unpipe(dest) {
-        const p = this[PIPES$1].find(p => p.dest === dest);
+        const p = this[PIPES].find(p => p.dest === dest);
         if (p) {
-            if (this[PIPES$1].length === 1) {
-                if (this[FLOWING$1] && this[DATALISTENERS] === 0) {
-                    this[FLOWING$1] = false;
+            if (this[PIPES].length === 1) {
+                if (this[FLOWING] && this[DATALISTENERS] === 0) {
+                    this[FLOWING] = false;
                 }
-                this[PIPES$1] = [];
+                this[PIPES] = [];
             }
             else
-                this[PIPES$1].splice(this[PIPES$1].indexOf(p), 1);
+                this[PIPES].splice(this[PIPES].indexOf(p), 1);
             p.unpipe();
         }
     }
@@ -4165,23 +4107,23 @@ let Minipass$1 = class Minipass extends EventEmitter {
         if (ev === 'data') {
             this[DISCARDED] = false;
             this[DATALISTENERS]++;
-            if (!this[PIPES$1].length && !this[FLOWING$1]) {
-                this[RESUME$1]();
+            if (!this[PIPES].length && !this[FLOWING]) {
+                this[RESUME]();
             }
         }
-        else if (ev === 'readable' && this[BUFFERLENGTH$1] !== 0) {
+        else if (ev === 'readable' && this[BUFFERLENGTH] !== 0) {
             super.emit('readable');
         }
-        else if (isEndish$1(ev) && this[EMITTED_END$1]) {
+        else if (isEndish(ev) && this[EMITTED_END]) {
             super.emit(ev);
             this.removeAllListeners(ev);
         }
-        else if (ev === 'error' && this[EMITTED_ERROR$1]) {
+        else if (ev === 'error' && this[EMITTED_ERROR]) {
             const h = handler;
-            if (this[ASYNC$1])
-                defer$1(() => h.call(this, this[EMITTED_ERROR$1]));
+            if (this[ASYNC])
+                defer(() => h.call(this, this[EMITTED_ERROR]));
             else
-                h.call(this, this[EMITTED_ERROR$1]);
+                h.call(this, this[EMITTED_ERROR]);
         }
         return ret;
     }
@@ -4208,8 +4150,8 @@ let Minipass$1 = class Minipass extends EventEmitter {
             this[DATALISTENERS] = this.listeners('data').length;
             if (this[DATALISTENERS] === 0 &&
                 !this[DISCARDED] &&
-                !this[PIPES$1].length) {
-                this[FLOWING$1] = false;
+                !this[PIPES].length) {
+                this[FLOWING] = false;
             }
         }
         return ret;
@@ -4226,8 +4168,8 @@ let Minipass$1 = class Minipass extends EventEmitter {
         const ret = super.removeAllListeners(ev);
         if (ev === 'data' || ev === undefined) {
             this[DATALISTENERS] = 0;
-            if (!this[DISCARDED] && !this[PIPES$1].length) {
-                this[FLOWING$1] = false;
+            if (!this[DISCARDED] && !this[PIPES].length) {
+                this[FLOWING] = false;
             }
         }
         return ret;
@@ -4236,21 +4178,21 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * true if the 'end' event has been emitted
      */
     get emittedEnd() {
-        return this[EMITTED_END$1];
+        return this[EMITTED_END];
     }
-    [MAYBE_EMIT_END$1]() {
-        if (!this[EMITTING_END$1] &&
-            !this[EMITTED_END$1] &&
-            !this[DESTROYED$1] &&
-            this[BUFFER$1].length === 0 &&
-            this[EOF$1]) {
-            this[EMITTING_END$1] = true;
+    [MAYBE_EMIT_END]() {
+        if (!this[EMITTING_END] &&
+            !this[EMITTED_END] &&
+            !this[DESTROYED] &&
+            this[BUFFER].length === 0 &&
+            this[EOF]) {
+            this[EMITTING_END] = true;
             this.emit('end');
             this.emit('prefinish');
             this.emit('finish');
-            if (this[CLOSED$1])
+            if (this[CLOSED])
                 this.emit('close');
-            this[EMITTING_END$1] = false;
+            this[EMITTING_END] = false;
         }
     }
     /**
@@ -4282,41 +4224,41 @@ let Minipass$1 = class Minipass extends EventEmitter {
         // error and close are only events allowed after calling destroy()
         if (ev !== 'error' &&
             ev !== 'close' &&
-            ev !== DESTROYED$1 &&
-            this[DESTROYED$1]) {
+            ev !== DESTROYED &&
+            this[DESTROYED]) {
             return false;
         }
         else if (ev === 'data') {
-            return !this[OBJECTMODE$1] && !data
+            return !this[OBJECTMODE] && !data
                 ? false
-                : this[ASYNC$1]
-                    ? (defer$1(() => this[EMITDATA$1](data)), true)
-                    : this[EMITDATA$1](data);
+                : this[ASYNC]
+                    ? (defer(() => this[EMITDATA](data)), true)
+                    : this[EMITDATA](data);
         }
         else if (ev === 'end') {
-            return this[EMITEND$1]();
+            return this[EMITEND]();
         }
         else if (ev === 'close') {
-            this[CLOSED$1] = true;
+            this[CLOSED] = true;
             // don't emit close before 'end' and 'finish'
-            if (!this[EMITTED_END$1] && !this[DESTROYED$1])
+            if (!this[EMITTED_END] && !this[DESTROYED])
                 return false;
             const ret = super.emit('close');
             this.removeAllListeners('close');
             return ret;
         }
         else if (ev === 'error') {
-            this[EMITTED_ERROR$1] = data;
-            super.emit(ERROR$1, data);
-            const ret = !this[SIGNAL$1] || this.listeners('error').length
+            this[EMITTED_ERROR] = data;
+            super.emit(ERROR, data);
+            const ret = !this[SIGNAL] || this.listeners('error').length
                 ? super.emit('error', data)
                 : false;
-            this[MAYBE_EMIT_END$1]();
+            this[MAYBE_EMIT_END]();
             return ret;
         }
         else if (ev === 'resume') {
             const ret = super.emit('resume');
-            this[MAYBE_EMIT_END$1]();
+            this[MAYBE_EMIT_END]();
             return ret;
         }
         else if (ev === 'finish' || ev === 'prefinish') {
@@ -4326,39 +4268,39 @@ let Minipass$1 = class Minipass extends EventEmitter {
         }
         // Some other unknown event
         const ret = super.emit(ev, ...args);
-        this[MAYBE_EMIT_END$1]();
+        this[MAYBE_EMIT_END]();
         return ret;
     }
-    [EMITDATA$1](data) {
-        for (const p of this[PIPES$1]) {
+    [EMITDATA](data) {
+        for (const p of this[PIPES]) {
             if (p.dest.write(data) === false)
                 this.pause();
         }
         const ret = this[DISCARDED] ? false : super.emit('data', data);
-        this[MAYBE_EMIT_END$1]();
+        this[MAYBE_EMIT_END]();
         return ret;
     }
-    [EMITEND$1]() {
-        if (this[EMITTED_END$1])
+    [EMITEND]() {
+        if (this[EMITTED_END])
             return false;
-        this[EMITTED_END$1] = true;
+        this[EMITTED_END] = true;
         this.readable = false;
-        return this[ASYNC$1]
-            ? (defer$1(() => this[EMITEND2$1]()), true)
-            : this[EMITEND2$1]();
+        return this[ASYNC]
+            ? (defer(() => this[EMITEND2]()), true)
+            : this[EMITEND2]();
     }
-    [EMITEND2$1]() {
-        if (this[DECODER$1]) {
-            const data = this[DECODER$1].end();
+    [EMITEND2]() {
+        if (this[DECODER]) {
+            const data = this[DECODER].end();
             if (data) {
-                for (const p of this[PIPES$1]) {
+                for (const p of this[PIPES]) {
                     p.dest.write(data);
                 }
                 if (!this[DISCARDED])
                     super.emit('data', data);
             }
         }
-        for (const p of this[PIPES$1]) {
+        for (const p of this[PIPES]) {
             p.end();
         }
         const ret = super.emit('end');
@@ -4373,14 +4315,14 @@ let Minipass$1 = class Minipass extends EventEmitter {
         const buf = Object.assign([], {
             dataLength: 0,
         });
-        if (!this[OBJECTMODE$1])
+        if (!this[OBJECTMODE])
             buf.dataLength = 0;
         // set the promise first, in case an error is raised
         // by triggering the flow here.
         const p = this.promise();
         this.on('data', c => {
             buf.push(c);
-            if (!this[OBJECTMODE$1])
+            if (!this[OBJECTMODE])
                 buf.dataLength += c.length;
         });
         await p;
@@ -4393,11 +4335,11 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * Not allowed on objectMode streams.
      */
     async concat() {
-        if (this[OBJECTMODE$1]) {
+        if (this[OBJECTMODE]) {
             throw new Error('cannot concat in objectMode');
         }
         const buf = await this.collect();
-        return (this[ENCODING$1]
+        return (this[ENCODING]
             ? buf.join('')
             : Buffer.concat(buf, buf.dataLength));
     }
@@ -4406,7 +4348,7 @@ let Minipass$1 = class Minipass extends EventEmitter {
      */
     async promise() {
         return new Promise((resolve, reject) => {
-            this.on(DESTROYED$1, () => reject(new Error('stream destroyed')));
+            this.on(DESTROYED, () => reject(new Error('stream destroyed')));
             this.on('error', er => reject(er));
             this.on('end', () => resolve());
         });
@@ -4432,28 +4374,28 @@ let Minipass$1 = class Minipass extends EventEmitter {
             const res = this.read();
             if (res !== null)
                 return Promise.resolve({ done: false, value: res });
-            if (this[EOF$1])
+            if (this[EOF])
                 return stop();
             let resolve;
             let reject;
             const onerr = (er) => {
                 this.off('data', ondata);
                 this.off('end', onend);
-                this.off(DESTROYED$1, ondestroy);
+                this.off(DESTROYED, ondestroy);
                 stop();
                 reject(er);
             };
             const ondata = (value) => {
                 this.off('error', onerr);
                 this.off('end', onend);
-                this.off(DESTROYED$1, ondestroy);
+                this.off(DESTROYED, ondestroy);
                 this.pause();
-                resolve({ value, done: !!this[EOF$1] });
+                resolve({ value, done: !!this[EOF] });
             };
             const onend = () => {
                 this.off('error', onerr);
                 this.off('data', ondata);
-                this.off(DESTROYED$1, ondestroy);
+                this.off(DESTROYED, ondestroy);
                 stop();
                 resolve({ done: true, value: undefined });
             };
@@ -4461,7 +4403,7 @@ let Minipass$1 = class Minipass extends EventEmitter {
             return new Promise((res, rej) => {
                 reject = rej;
                 resolve = res;
-                this.once(DESTROYED$1, ondestroy);
+                this.once(DESTROYED, ondestroy);
                 this.once('error', onerr);
                 this.once('end', onend);
                 this.once('data', ondata);
@@ -4489,8 +4431,8 @@ let Minipass$1 = class Minipass extends EventEmitter {
         let stopped = false;
         const stop = () => {
             this.pause();
-            this.off(ERROR$1, stop);
-            this.off(DESTROYED$1, stop);
+            this.off(ERROR, stop);
+            this.off(DESTROYED, stop);
             this.off('end', stop);
             stopped = true;
             return { done: true, value: undefined };
@@ -4502,8 +4444,8 @@ let Minipass$1 = class Minipass extends EventEmitter {
             return value === null ? stop() : { done: false, value };
         };
         this.once('end', stop);
-        this.once(ERROR$1, stop);
-        this.once(DESTROYED$1, stop);
+        this.once(ERROR, stop);
+        this.once(DESTROYED, stop);
         return {
             next,
             throw: stop,
@@ -4526,26 +4468,26 @@ let Minipass$1 = class Minipass extends EventEmitter {
      * 'error' event.
      */
     destroy(er) {
-        if (this[DESTROYED$1]) {
+        if (this[DESTROYED]) {
             if (er)
                 this.emit('error', er);
             else
-                this.emit(DESTROYED$1);
+                this.emit(DESTROYED);
             return this;
         }
-        this[DESTROYED$1] = true;
+        this[DESTROYED] = true;
         this[DISCARDED] = true;
         // throw away all buffered data, it's never coming out
-        this[BUFFER$1].length = 0;
-        this[BUFFERLENGTH$1] = 0;
+        this[BUFFER].length = 0;
+        this[BUFFERLENGTH] = 0;
         const wc = this;
-        if (typeof wc.close === 'function' && !this[CLOSED$1])
+        if (typeof wc.close === 'function' && !this[CLOSED])
             wc.close();
         if (er)
             this.emit('error', er);
         // if no error to emit, still reject pending promises
         else
-            this.emit(DESTROYED$1);
+            this.emit(DESTROYED);
         return this;
     }
     /**
@@ -4558,7 +4500,7 @@ let Minipass$1 = class Minipass extends EventEmitter {
     static get isStream() {
         return isStream;
     }
-};
+}
 
 const realpathSync = realpathSync$1.native;
 const defaultFS = {
@@ -6297,7 +6239,7 @@ class PathScurryBase {
             entry = this.cwd;
         }
         const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
-        const results = new Minipass$1({ objectMode: true });
+        const results = new Minipass({ objectMode: true });
         if (!filter || filter(entry)) {
             results.write(withFileTypes ? entry : entry.fullpath());
         }
@@ -6373,7 +6315,7 @@ class PathScurryBase {
             entry = this.cwd;
         }
         const { withFileTypes = true, follow = false, filter, walkFilter, } = opts;
-        const results = new Minipass$1({ objectMode: true });
+        const results = new Minipass({ objectMode: true });
         const dirs = new Set();
         if (!filter || filter(entry)) {
             results.write(withFileTypes ? entry : entry.fullpath());
@@ -6748,703 +6690,6 @@ class Pattern {
     }
 }
 
-const proc =
-  typeof process === 'object' && process
-    ? process
-    : {
-        stdout: null,
-        stderr: null,
-      };
-const SD = require$$2.StringDecoder;
-
-const EOF = Symbol('EOF');
-const MAYBE_EMIT_END = Symbol('maybeEmitEnd');
-const EMITTED_END = Symbol('emittedEnd');
-const EMITTING_END = Symbol('emittingEnd');
-const EMITTED_ERROR = Symbol('emittedError');
-const CLOSED = Symbol('closed');
-const READ = Symbol('read');
-const FLUSH = Symbol('flush');
-const FLUSHCHUNK = Symbol('flushChunk');
-const ENCODING = Symbol('encoding');
-const DECODER = Symbol('decoder');
-const FLOWING = Symbol('flowing');
-const PAUSED = Symbol('paused');
-const RESUME = Symbol('resume');
-const BUFFER = Symbol('buffer');
-const PIPES = Symbol('pipes');
-const BUFFERLENGTH = Symbol('bufferLength');
-const BUFFERPUSH = Symbol('bufferPush');
-const BUFFERSHIFT = Symbol('bufferShift');
-const OBJECTMODE = Symbol('objectMode');
-// internal event when stream is destroyed
-const DESTROYED = Symbol('destroyed');
-// internal event when stream has an error
-const ERROR = Symbol('error');
-const EMITDATA = Symbol('emitData');
-const EMITEND = Symbol('emitEnd');
-const EMITEND2 = Symbol('emitEnd2');
-const ASYNC = Symbol('async');
-const ABORT = Symbol('abort');
-const ABORTED = Symbol('aborted');
-const SIGNAL = Symbol('signal');
-
-const defer = fn => Promise.resolve().then(fn);
-
-// TODO remove when Node v8 support drops
-const doIter = global._MP_NO_ITERATOR_SYMBOLS_ !== '1';
-const ASYNCITERATOR =
-  (doIter && Symbol.asyncIterator) || Symbol('asyncIterator not implemented');
-const ITERATOR =
-  (doIter && Symbol.iterator) || Symbol('iterator not implemented');
-
-// events that mean 'the stream is over'
-// these are treated specially, and re-emitted
-// if they are listened for after emitting.
-const isEndish = ev => ev === 'end' || ev === 'finish' || ev === 'prefinish';
-
-const isArrayBuffer = b =>
-  b instanceof ArrayBuffer ||
-  (typeof b === 'object' &&
-    b.constructor &&
-    b.constructor.name === 'ArrayBuffer' &&
-    b.byteLength >= 0);
-
-const isArrayBufferView = b => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
-
-class Pipe {
-  constructor(src, dest, opts) {
-    this.src = src;
-    this.dest = dest;
-    this.opts = opts;
-    this.ondrain = () => src[RESUME]();
-    dest.on('drain', this.ondrain);
-  }
-  unpipe() {
-    this.dest.removeListener('drain', this.ondrain);
-  }
-  // istanbul ignore next - only here for the prototype
-  proxyErrors() {}
-  end() {
-    this.unpipe();
-    if (this.opts.end) this.dest.end();
-  }
-}
-
-class PipeProxyErrors extends Pipe {
-  unpipe() {
-    this.src.removeListener('error', this.proxyErrors);
-    super.unpipe();
-  }
-  constructor(src, dest, opts) {
-    super(src, dest, opts);
-    this.proxyErrors = er => dest.emit('error', er);
-    src.on('error', this.proxyErrors);
-  }
-}
-
-class Minipass extends require$$0 {
-  constructor(options) {
-    super();
-    this[FLOWING] = false;
-    // whether we're explicitly paused
-    this[PAUSED] = false;
-    this[PIPES] = [];
-    this[BUFFER] = [];
-    this[OBJECTMODE] = (options && options.objectMode) || false;
-    if (this[OBJECTMODE]) this[ENCODING] = null;
-    else this[ENCODING] = (options && options.encoding) || null;
-    if (this[ENCODING] === 'buffer') this[ENCODING] = null;
-    this[ASYNC] = (options && !!options.async) || false;
-    this[DECODER] = this[ENCODING] ? new SD(this[ENCODING]) : null;
-    this[EOF] = false;
-    this[EMITTED_END] = false;
-    this[EMITTING_END] = false;
-    this[CLOSED] = false;
-    this[EMITTED_ERROR] = null;
-    this.writable = true;
-    this.readable = true;
-    this[BUFFERLENGTH] = 0;
-    this[DESTROYED] = false;
-    if (options && options.debugExposeBuffer === true) {
-      Object.defineProperty(this, 'buffer', { get: () => this[BUFFER] });
-    }
-    if (options && options.debugExposePipes === true) {
-      Object.defineProperty(this, 'pipes', { get: () => this[PIPES] });
-    }
-    this[SIGNAL] = options && options.signal;
-    this[ABORTED] = false;
-    if (this[SIGNAL]) {
-      this[SIGNAL].addEventListener('abort', () => this[ABORT]());
-      if (this[SIGNAL].aborted) {
-        this[ABORT]();
-      }
-    }
-  }
-
-  get bufferLength() {
-    return this[BUFFERLENGTH]
-  }
-
-  get encoding() {
-    return this[ENCODING]
-  }
-  set encoding(enc) {
-    if (this[OBJECTMODE]) throw new Error('cannot set encoding in objectMode')
-
-    if (
-      this[ENCODING] &&
-      enc !== this[ENCODING] &&
-      ((this[DECODER] && this[DECODER].lastNeed) || this[BUFFERLENGTH])
-    )
-      throw new Error('cannot change encoding')
-
-    if (this[ENCODING] !== enc) {
-      this[DECODER] = enc ? new SD(enc) : null;
-      if (this[BUFFER].length)
-        this[BUFFER] = this[BUFFER].map(chunk => this[DECODER].write(chunk));
-    }
-
-    this[ENCODING] = enc;
-  }
-
-  setEncoding(enc) {
-    this.encoding = enc;
-  }
-
-  get objectMode() {
-    return this[OBJECTMODE]
-  }
-  set objectMode(om) {
-    this[OBJECTMODE] = this[OBJECTMODE] || !!om;
-  }
-
-  get ['async']() {
-    return this[ASYNC]
-  }
-  set ['async'](a) {
-    this[ASYNC] = this[ASYNC] || !!a;
-  }
-
-  // drop everything and get out of the flow completely
-  [ABORT]() {
-    this[ABORTED] = true;
-    this.emit('abort', this[SIGNAL].reason);
-    this.destroy(this[SIGNAL].reason);
-  }
-
-  get aborted() {
-    return this[ABORTED]
-  }
-  set aborted(_) {}
-
-  write(chunk, encoding, cb) {
-    if (this[ABORTED]) return false
-    if (this[EOF]) throw new Error('write after end')
-
-    if (this[DESTROYED]) {
-      this.emit(
-        'error',
-        Object.assign(
-          new Error('Cannot call write after a stream was destroyed'),
-          { code: 'ERR_STREAM_DESTROYED' }
-        )
-      );
-      return true
-    }
-
-    if (typeof encoding === 'function') (cb = encoding), (encoding = 'utf8');
-
-    if (!encoding) encoding = 'utf8';
-
-    const fn = this[ASYNC] ? defer : f => f();
-
-    // convert array buffers and typed array views into buffers
-    // at some point in the future, we may want to do the opposite!
-    // leave strings and buffers as-is
-    // anything else switches us into object mode
-    if (!this[OBJECTMODE] && !Buffer.isBuffer(chunk)) {
-      if (isArrayBufferView(chunk))
-        chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
-      else if (isArrayBuffer(chunk)) chunk = Buffer.from(chunk);
-      else if (typeof chunk !== 'string')
-        // use the setter so we throw if we have encoding set
-        this.objectMode = true;
-    }
-
-    // handle object mode up front, since it's simpler
-    // this yields better performance, fewer checks later.
-    if (this[OBJECTMODE]) {
-      /* istanbul ignore if - maybe impossible? */
-      if (this.flowing && this[BUFFERLENGTH] !== 0) this[FLUSH](true);
-
-      if (this.flowing) this.emit('data', chunk);
-      else this[BUFFERPUSH](chunk);
-
-      if (this[BUFFERLENGTH] !== 0) this.emit('readable');
-
-      if (cb) fn(cb);
-
-      return this.flowing
-    }
-
-    // at this point the chunk is a buffer or string
-    // don't buffer it up or send it to the decoder
-    if (!chunk.length) {
-      if (this[BUFFERLENGTH] !== 0) this.emit('readable');
-      if (cb) fn(cb);
-      return this.flowing
-    }
-
-    // fast-path writing strings of same encoding to a stream with
-    // an empty buffer, skipping the buffer/decoder dance
-    if (
-      typeof chunk === 'string' &&
-      // unless it is a string already ready for us to use
-      !(encoding === this[ENCODING] && !this[DECODER].lastNeed)
-    ) {
-      chunk = Buffer.from(chunk, encoding);
-    }
-
-    if (Buffer.isBuffer(chunk) && this[ENCODING])
-      chunk = this[DECODER].write(chunk);
-
-    // Note: flushing CAN potentially switch us into not-flowing mode
-    if (this.flowing && this[BUFFERLENGTH] !== 0) this[FLUSH](true);
-
-    if (this.flowing) this.emit('data', chunk);
-    else this[BUFFERPUSH](chunk);
-
-    if (this[BUFFERLENGTH] !== 0) this.emit('readable');
-
-    if (cb) fn(cb);
-
-    return this.flowing
-  }
-
-  read(n) {
-    if (this[DESTROYED]) return null
-
-    if (this[BUFFERLENGTH] === 0 || n === 0 || n > this[BUFFERLENGTH]) {
-      this[MAYBE_EMIT_END]();
-      return null
-    }
-
-    if (this[OBJECTMODE]) n = null;
-
-    if (this[BUFFER].length > 1 && !this[OBJECTMODE]) {
-      if (this.encoding) this[BUFFER] = [this[BUFFER].join('')];
-      else this[BUFFER] = [Buffer.concat(this[BUFFER], this[BUFFERLENGTH])];
-    }
-
-    const ret = this[READ](n || null, this[BUFFER][0]);
-    this[MAYBE_EMIT_END]();
-    return ret
-  }
-
-  [READ](n, chunk) {
-    if (n === chunk.length || n === null) this[BUFFERSHIFT]();
-    else {
-      this[BUFFER][0] = chunk.slice(n);
-      chunk = chunk.slice(0, n);
-      this[BUFFERLENGTH] -= n;
-    }
-
-    this.emit('data', chunk);
-
-    if (!this[BUFFER].length && !this[EOF]) this.emit('drain');
-
-    return chunk
-  }
-
-  end(chunk, encoding, cb) {
-    if (typeof chunk === 'function') (cb = chunk), (chunk = null);
-    if (typeof encoding === 'function') (cb = encoding), (encoding = 'utf8');
-    if (chunk) this.write(chunk, encoding);
-    if (cb) this.once('end', cb);
-    this[EOF] = true;
-    this.writable = false;
-
-    // if we haven't written anything, then go ahead and emit,
-    // even if we're not reading.
-    // we'll re-emit if a new 'end' listener is added anyway.
-    // This makes MP more suitable to write-only use cases.
-    if (this.flowing || !this[PAUSED]) this[MAYBE_EMIT_END]();
-    return this
-  }
-
-  // don't let the internal resume be overwritten
-  [RESUME]() {
-    if (this[DESTROYED]) return
-
-    this[PAUSED] = false;
-    this[FLOWING] = true;
-    this.emit('resume');
-    if (this[BUFFER].length) this[FLUSH]();
-    else if (this[EOF]) this[MAYBE_EMIT_END]();
-    else this.emit('drain');
-  }
-
-  resume() {
-    return this[RESUME]()
-  }
-
-  pause() {
-    this[FLOWING] = false;
-    this[PAUSED] = true;
-  }
-
-  get destroyed() {
-    return this[DESTROYED]
-  }
-
-  get flowing() {
-    return this[FLOWING]
-  }
-
-  get paused() {
-    return this[PAUSED]
-  }
-
-  [BUFFERPUSH](chunk) {
-    if (this[OBJECTMODE]) this[BUFFERLENGTH] += 1;
-    else this[BUFFERLENGTH] += chunk.length;
-    this[BUFFER].push(chunk);
-  }
-
-  [BUFFERSHIFT]() {
-    if (this[OBJECTMODE]) this[BUFFERLENGTH] -= 1;
-    else this[BUFFERLENGTH] -= this[BUFFER][0].length;
-    return this[BUFFER].shift()
-  }
-
-  [FLUSH](noDrain) {
-    do {} while (this[FLUSHCHUNK](this[BUFFERSHIFT]()) && this[BUFFER].length)
-
-    if (!noDrain && !this[BUFFER].length && !this[EOF]) this.emit('drain');
-  }
-
-  [FLUSHCHUNK](chunk) {
-    this.emit('data', chunk);
-    return this.flowing
-  }
-
-  pipe(dest, opts) {
-    if (this[DESTROYED]) return
-
-    const ended = this[EMITTED_END];
-    opts = opts || {};
-    if (dest === proc.stdout || dest === proc.stderr) opts.end = false;
-    else opts.end = opts.end !== false;
-    opts.proxyErrors = !!opts.proxyErrors;
-
-    // piping an ended stream ends immediately
-    if (ended) {
-      if (opts.end) dest.end();
-    } else {
-      this[PIPES].push(
-        !opts.proxyErrors
-          ? new Pipe(this, dest, opts)
-          : new PipeProxyErrors(this, dest, opts)
-      );
-      if (this[ASYNC]) defer(() => this[RESUME]());
-      else this[RESUME]();
-    }
-
-    return dest
-  }
-
-  unpipe(dest) {
-    const p = this[PIPES].find(p => p.dest === dest);
-    if (p) {
-      this[PIPES].splice(this[PIPES].indexOf(p), 1);
-      p.unpipe();
-    }
-  }
-
-  addListener(ev, fn) {
-    return this.on(ev, fn)
-  }
-
-  on(ev, fn) {
-    const ret = super.on(ev, fn);
-    if (ev === 'data' && !this[PIPES].length && !this.flowing) this[RESUME]();
-    else if (ev === 'readable' && this[BUFFERLENGTH] !== 0)
-      super.emit('readable');
-    else if (isEndish(ev) && this[EMITTED_END]) {
-      super.emit(ev);
-      this.removeAllListeners(ev);
-    } else if (ev === 'error' && this[EMITTED_ERROR]) {
-      if (this[ASYNC]) defer(() => fn.call(this, this[EMITTED_ERROR]));
-      else fn.call(this, this[EMITTED_ERROR]);
-    }
-    return ret
-  }
-
-  get emittedEnd() {
-    return this[EMITTED_END]
-  }
-
-  [MAYBE_EMIT_END]() {
-    if (
-      !this[EMITTING_END] &&
-      !this[EMITTED_END] &&
-      !this[DESTROYED] &&
-      this[BUFFER].length === 0 &&
-      this[EOF]
-    ) {
-      this[EMITTING_END] = true;
-      this.emit('end');
-      this.emit('prefinish');
-      this.emit('finish');
-      if (this[CLOSED]) this.emit('close');
-      this[EMITTING_END] = false;
-    }
-  }
-
-  emit(ev, data, ...extra) {
-    // error and close are only events allowed after calling destroy()
-    if (ev !== 'error' && ev !== 'close' && ev !== DESTROYED && this[DESTROYED])
-      return
-    else if (ev === 'data') {
-      return !this[OBJECTMODE] && !data
-        ? false
-        : this[ASYNC]
-        ? defer(() => this[EMITDATA](data))
-        : this[EMITDATA](data)
-    } else if (ev === 'end') {
-      return this[EMITEND]()
-    } else if (ev === 'close') {
-      this[CLOSED] = true;
-      // don't emit close before 'end' and 'finish'
-      if (!this[EMITTED_END] && !this[DESTROYED]) return
-      const ret = super.emit('close');
-      this.removeAllListeners('close');
-      return ret
-    } else if (ev === 'error') {
-      this[EMITTED_ERROR] = data;
-      super.emit(ERROR, data);
-      const ret =
-        !this[SIGNAL] || this.listeners('error').length
-          ? super.emit('error', data)
-          : false;
-      this[MAYBE_EMIT_END]();
-      return ret
-    } else if (ev === 'resume') {
-      const ret = super.emit('resume');
-      this[MAYBE_EMIT_END]();
-      return ret
-    } else if (ev === 'finish' || ev === 'prefinish') {
-      const ret = super.emit(ev);
-      this.removeAllListeners(ev);
-      return ret
-    }
-
-    // Some other unknown event
-    const ret = super.emit(ev, data, ...extra);
-    this[MAYBE_EMIT_END]();
-    return ret
-  }
-
-  [EMITDATA](data) {
-    for (const p of this[PIPES]) {
-      if (p.dest.write(data) === false) this.pause();
-    }
-    const ret = super.emit('data', data);
-    this[MAYBE_EMIT_END]();
-    return ret
-  }
-
-  [EMITEND]() {
-    if (this[EMITTED_END]) return
-
-    this[EMITTED_END] = true;
-    this.readable = false;
-    if (this[ASYNC]) defer(() => this[EMITEND2]());
-    else this[EMITEND2]();
-  }
-
-  [EMITEND2]() {
-    if (this[DECODER]) {
-      const data = this[DECODER].end();
-      if (data) {
-        for (const p of this[PIPES]) {
-          p.dest.write(data);
-        }
-        super.emit('data', data);
-      }
-    }
-
-    for (const p of this[PIPES]) {
-      p.end();
-    }
-    const ret = super.emit('end');
-    this.removeAllListeners('end');
-    return ret
-  }
-
-  // const all = await stream.collect()
-  collect() {
-    const buf = [];
-    if (!this[OBJECTMODE]) buf.dataLength = 0;
-    // set the promise first, in case an error is raised
-    // by triggering the flow here.
-    const p = this.promise();
-    this.on('data', c => {
-      buf.push(c);
-      if (!this[OBJECTMODE]) buf.dataLength += c.length;
-    });
-    return p.then(() => buf)
-  }
-
-  // const data = await stream.concat()
-  concat() {
-    return this[OBJECTMODE]
-      ? Promise.reject(new Error('cannot concat in objectMode'))
-      : this.collect().then(buf =>
-          this[OBJECTMODE]
-            ? Promise.reject(new Error('cannot concat in objectMode'))
-            : this[ENCODING]
-            ? buf.join('')
-            : Buffer.concat(buf, buf.dataLength)
-        )
-  }
-
-  // stream.promise().then(() => done, er => emitted error)
-  promise() {
-    return new Promise((resolve, reject) => {
-      this.on(DESTROYED, () => reject(new Error('stream destroyed')));
-      this.on('error', er => reject(er));
-      this.on('end', () => resolve());
-    })
-  }
-
-  // for await (let chunk of stream)
-  [ASYNCITERATOR]() {
-    let stopped = false;
-    const stop = () => {
-      this.pause();
-      stopped = true;
-      return Promise.resolve({ done: true })
-    };
-    const next = () => {
-      if (stopped) return stop()
-      const res = this.read();
-      if (res !== null) return Promise.resolve({ done: false, value: res })
-
-      if (this[EOF]) return stop()
-
-      let resolve = null;
-      let reject = null;
-      const onerr = er => {
-        this.removeListener('data', ondata);
-        this.removeListener('end', onend);
-        this.removeListener(DESTROYED, ondestroy);
-        stop();
-        reject(er);
-      };
-      const ondata = value => {
-        this.removeListener('error', onerr);
-        this.removeListener('end', onend);
-        this.removeListener(DESTROYED, ondestroy);
-        this.pause();
-        resolve({ value: value, done: !!this[EOF] });
-      };
-      const onend = () => {
-        this.removeListener('error', onerr);
-        this.removeListener('data', ondata);
-        this.removeListener(DESTROYED, ondestroy);
-        stop();
-        resolve({ done: true });
-      };
-      const ondestroy = () => onerr(new Error('stream destroyed'));
-      return new Promise((res, rej) => {
-        reject = rej;
-        resolve = res;
-        this.once(DESTROYED, ondestroy);
-        this.once('error', onerr);
-        this.once('end', onend);
-        this.once('data', ondata);
-      })
-    };
-
-    return {
-      next,
-      throw: stop,
-      return: stop,
-      [ASYNCITERATOR]() {
-        return this
-      },
-    }
-  }
-
-  // for (let chunk of stream)
-  [ITERATOR]() {
-    let stopped = false;
-    const stop = () => {
-      this.pause();
-      this.removeListener(ERROR, stop);
-      this.removeListener(DESTROYED, stop);
-      this.removeListener('end', stop);
-      stopped = true;
-      return { done: true }
-    };
-
-    const next = () => {
-      if (stopped) return stop()
-      const value = this.read();
-      return value === null ? stop() : { value }
-    };
-    this.once('end', stop);
-    this.once(ERROR, stop);
-    this.once(DESTROYED, stop);
-
-    return {
-      next,
-      throw: stop,
-      return: stop,
-      [ITERATOR]() {
-        return this
-      },
-    }
-  }
-
-  destroy(er) {
-    if (this[DESTROYED]) {
-      if (er) this.emit('error', er);
-      else this.emit(DESTROYED);
-      return this
-    }
-
-    this[DESTROYED] = true;
-
-    // throw away all buffered data, it's never coming out
-    this[BUFFER].length = 0;
-    this[BUFFERLENGTH] = 0;
-
-    if (typeof this.close === 'function' && !this[CLOSED]) this.close();
-
-    if (er) this.emit('error', er);
-    // if no error to emit, still reject pending promises
-    else this.emit(DESTROYED);
-
-    return this
-  }
-
-  static isStream(s) {
-    return (
-      !!s &&
-      (s instanceof Minipass ||
-        s instanceof require$$0 ||
-        (s instanceof require$$0$1 &&
-          // readable
-          (typeof s.pipe === 'function' ||
-            // writable
-            (typeof s.write === 'function' && typeof s.end === 'function'))))
-    )
-  }
-}
-
 // give it a pattern, and it'll be able to tell you if
 // a given path should be ignored.
 // Ignoring a path ignores its children if the pattern ends in /**
@@ -7495,6 +6740,11 @@ class Ignore {
             for (let i = 0; i < mm.set.length; i++) {
                 const parsed = mm.set[i];
                 const globParts = mm.globParts[i];
+                /* c8 ignore start */
+                if (!parsed || !globParts) {
+                    throw new Error('invalid pattern object');
+                }
+                /* c8 ignore stop */
                 const p = new Pattern(parsed, globParts, 0, platform);
                 const m = new Minimatch(p.globString(), mmopts);
                 const children = globParts[globParts.length - 1] === '**';
@@ -7536,7 +6786,7 @@ class Ignore {
         }
         for (const m of this.absoluteChildren) {
             if (m.match(fullpath))
-                ;
+                return true;
         }
         return false;
     }
@@ -7675,9 +6925,6 @@ class Processor {
             while (typeof (p = pattern.pattern()) === 'string' &&
                 (rest = pattern.rest())) {
                 const c = t.resolve(p);
-                // we can be reasonably sure that .. is a readable dir
-                if (c.isUnknown() && p !== '..')
-                    break;
                 t = c;
                 pattern = rest;
                 changed = true;
@@ -7693,14 +6940,10 @@ class Processor {
             // more strings for an unknown entry,
             // or a pattern starting with magic, mounted on t.
             if (typeof p === 'string') {
-                // must be final entry
-                if (!rest) {
-                    const ifDir = p === '..' || p === '' || p === '.';
-                    this.matches.add(t.resolve(p), absolute, ifDir);
-                }
-                else {
-                    this.subwalks.add(t, pattern);
-                }
+                // must not be final entry, otherwise we would have
+                // concatenated it earlier.
+                const ifDir = p === '..' || p === '' || p === '.';
+                this.matches.add(t.resolve(p), absolute, ifDir);
                 continue;
             }
             else if (p === GLOBSTAR) {
@@ -7873,7 +7116,7 @@ class GlobUtil {
         this.patterns = patterns;
         this.path = path;
         this.opts = opts;
-        this.#sep = opts.platform === 'win32' ? '\\' : '/';
+        this.#sep = !opts.posix && opts.platform === 'win32' ? '\\' : '/';
         if (opts.ignore) {
             this.#ignore = makeIgnore(opts.ignore, opts);
         }
@@ -7970,14 +7213,15 @@ class GlobUtil {
             this.matchEmit(e);
         }
         else if (abs) {
-            this.matchEmit(e.fullpath() + mark);
+            const abs = this.opts.posix ? e.fullpathPosix() : e.fullpath();
+            this.matchEmit(abs + mark);
         }
         else {
-            const rel = e.relative();
+            const rel = this.opts.posix ? e.relativePosix() : e.relative();
             const pre = this.opts.dotRelative && !rel.startsWith('..' + this.#sep)
                 ? '.' + this.#sep
                 : '';
-            this.matchEmit(!rel && mark ? '.' + mark : pre + rel + mark);
+            this.matchEmit(!rel ? '.' + mark : pre + rel + mark);
         }
     }
     async match(e, absolute, ifDir) {
@@ -8247,6 +7491,10 @@ class Glob {
      * again.
      */
     constructor(pattern, opts) {
+        /* c8 ignore start */
+        if (!opts)
+            throw new TypeError('glob options required');
+        /* c8 ignore stop */
         this.withFileTypes = !!opts.withFileTypes;
         this.signal = opts.signal;
         this.follow = !!opts.follow;
@@ -8315,6 +7563,11 @@ class Glob {
             });
         }
         this.nocase = this.scurry.nocase;
+        // If you do nocase:true on a case-sensitive file system, then
+        // we need to use regexps instead of strings for non-magic
+        // path portions, because statting `aBc` won't return results
+        // for the file `AbC` for example.
+        const nocaseMagicOnly = this.platform === 'darwin' || this.platform === 'win32';
         const mmo = {
             // default nocase based on platform
             ...opts,
@@ -8322,7 +7575,7 @@ class Glob {
             matchBase: this.matchBase,
             nobrace: this.nobrace,
             nocase: this.nocase,
-            nocaseMagicOnly: true,
+            nocaseMagicOnly,
             nocomment: true,
             noext: this.noext,
             nonegate: true,
@@ -8338,7 +7591,12 @@ class Glob {
             return set;
         }, [[], []]);
         this.patterns = matchSet.map((set, i) => {
-            return new Pattern(set, globParts[i], 0, this.platform);
+            const g = globParts[i];
+            /* c8 ignore start */
+            if (!g)
+                throw new Error('invalid pattern object');
+            /* c8 ignore stop */
+            return new Pattern(set, g, 0, this.platform);
         });
     }
     async walk() {
@@ -8442,7 +7700,7 @@ function globStream(pattern, options = {}) {
 function globSync(pattern, options = {}) {
     return new Glob(pattern, options).walkSync();
 }
-async function glob(pattern, options = {}) {
+async function glob_(pattern, options = {}) {
     return new Glob(pattern, options).walk();
 }
 function globIterateSync(pattern, options = {}) {
@@ -8463,8 +7721,8 @@ const sync = Object.assign(globSync, {
     iterate: globIterateSync,
 });
 /* c8 ignore stop */
-Object.assign(glob, {
-    glob,
+const glob = Object.assign(glob_, {
+    glob: glob_,
     globSync,
     sync,
     globStream,
@@ -8480,6 +7738,100 @@ Object.assign(glob, {
     escape,
     unescape,
 });
+glob.glob = glob;
+
+const typeOrUndef = (val, t) => typeof val === 'undefined' || typeof val === t;
+const isRimrafOptions = (o) => !!o &&
+    typeof o === 'object' &&
+    typeOrUndef(o.preserveRoot, 'boolean') &&
+    typeOrUndef(o.tmp, 'string') &&
+    typeOrUndef(o.maxRetries, 'number') &&
+    typeOrUndef(o.retryDelay, 'number') &&
+    typeOrUndef(o.backoff, 'number') &&
+    typeOrUndef(o.maxBackoff, 'number') &&
+    (typeOrUndef(o.glob, 'boolean') || (o.glob && typeof o.glob === 'object')) &&
+    typeOrUndef(o.filter, 'function');
+const assertRimrafOptions = (o) => {
+    if (!isRimrafOptions(o)) {
+        throw new Error('invalid rimraf options');
+    }
+};
+const optArgT = (opt) => {
+    assertRimrafOptions(opt);
+    const { glob, ...options } = opt;
+    if (!glob) {
+        return options;
+    }
+    const globOpt = glob === true
+        ? opt.signal
+            ? { signal: opt.signal }
+            : {}
+        : opt.signal
+            ? {
+                signal: opt.signal,
+                ...glob,
+            }
+            : glob;
+    return {
+        ...options,
+        glob: {
+            ...globOpt,
+            // always get absolute paths from glob, to ensure
+            // that we are referencing the correct thing.
+            absolute: true,
+            withFileTypes: false,
+        },
+    };
+};
+const optArg = (opt = {}) => optArgT(opt);
+const optArgSync = (opt = {}) => optArgT(opt);
+
+const platform = process.env.__TESTING_RIMRAF_PLATFORM__ || process.platform;
+
+const pathArg = (path, opt = {}) => {
+    const type = typeof path;
+    if (type !== 'string') {
+        const ctor = path && type === 'object' && path.constructor;
+        const received = ctor && ctor.name
+            ? `an instance of ${ctor.name}`
+            : type === 'object'
+                ? inspect(path)
+                : `type ${type} ${path}`;
+        const msg = 'The "path" argument must be of type string. ' + `Received ${received}`;
+        throw Object.assign(new TypeError(msg), {
+            path,
+            code: 'ERR_INVALID_ARG_TYPE',
+        });
+    }
+    if (/\0/.test(path)) {
+        // simulate same failure that node raises
+        const msg = 'path must be a string without null bytes';
+        throw Object.assign(new TypeError(msg), {
+            path,
+            code: 'ERR_INVALID_ARG_VALUE',
+        });
+    }
+    path = resolve(path);
+    const { root } = parse(path);
+    if (path === root && opt.preserveRoot !== false) {
+        const msg = 'refusing to remove root directory without preserveRoot:false';
+        throw Object.assign(new Error(msg), {
+            path,
+            code: 'ERR_PRESERVE_ROOT',
+        });
+    }
+    if (platform === 'win32') {
+        const badWinChars = /[*|"<>?:]/;
+        const { root } = parse(path);
+        if (badWinChars.test(path.substring(root.length))) {
+            throw Object.assign(new Error('Illegal characters in path.'), {
+                path,
+                code: 'EINVAL',
+            });
+        }
+    }
+    return path;
+};
 
 // promisify ourselves, because older nodes don't have fs.promises
 const readdirSync = (path) => readdirSync$1(path, { withFileTypes: true });
@@ -9192,7 +8544,12 @@ const rimrafNativeSync = (path, opt) => {
 
 const version = process.env.__TESTING_RIMRAF_NODE_VERSION__ || process.version;
 const versArr = version.replace(/^v/, '').split('.');
-const hasNative = +versArr[0] > 14 || (+versArr[0] === 14 && +versArr[1] >= 14);
+/* c8 ignore start */
+const [major = 0, minor = 0] = versArr.map(v => parseInt(v, 10));
+/* c8 ignore stop */
+const hasNative = major > 14 || (major === 14 && minor >= 14);
+// we do NOT use native by default on Windows, because Node's native
+// rm implementation is less advanced.  Change this code if that changes.
 const useNative = !hasNative || platform === 'win32'
     ? () => false
     : opt => !opt?.signal && !opt?.filter;
@@ -9200,22 +8557,6 @@ const useNativeSync = !hasNative || platform === 'win32'
     ? () => false
     : opt => !opt?.signal && !opt?.filter;
 
-const typeOrUndef = (val, t) => typeof val === 'undefined' || typeof val === t;
-const isRimrafOptions = (o) => !!o &&
-    typeof o === 'object' &&
-    typeOrUndef(o.preserveRoot, 'boolean') &&
-    typeOrUndef(o.tmp, 'string') &&
-    typeOrUndef(o.maxRetries, 'number') &&
-    typeOrUndef(o.retryDelay, 'number') &&
-    typeOrUndef(o.backoff, 'number') &&
-    typeOrUndef(o.maxBackoff, 'number') &&
-    (typeOrUndef(o.glob, 'boolean') || (o.glob && typeof o.glob === 'object')) &&
-    typeOrUndef(o.filter, 'function');
-const assertRimrafOptions = (o) => {
-    if (!isRimrafOptions(o)) {
-        throw new Error('invalid rimraf options');
-    }
-};
 const wrap = (fn) => async (path, opt) => {
     const options = optArg(opt);
     if (options.glob) {
@@ -9255,9 +8596,9 @@ const moveRemove = Object.assign(wrap(rimrafMoveRemove), {
     sync: moveRemoveSync,
 });
 const rimrafSync = wrapSync((path, opt) => useNativeSync(opt) ? rimrafNativeSync(path, opt) : rimrafManualSync(path, opt));
-const rimraf = Object.assign(wrap((path, opt) => useNative(opt) ? rimrafNative(path, opt) : rimrafManual(path, opt)), {
-    // this weirdness because it's easier than explicitly declaring
-    rimraf: manual,
+const rimraf_ = wrap((path, opt) => useNative(opt) ? rimrafNative(path, opt) : rimrafManual(path, opt));
+const rimraf = Object.assign(rimraf_, {
+    rimraf: rimraf_,
     sync: rimrafSync,
     rimrafSync: rimrafSync,
     manual,
