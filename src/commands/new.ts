@@ -8,6 +8,10 @@ import { rimrafSync} from 'rimraf'
 import { defineCommand } from 'citty'
 import {platform} from 'node:os'
 import { SpawnOptionsWithoutStdio } from 'node:child_process'
+import {loadNuxtConfig} from 'nuxt/kit'
+import { writeNuxtManifest } from '../utils/nuxt'
+
+
 
 const shell: 'pwsh' | 'bash' = platform() === 'win32' ? 'pwsh' : 'bash'
 
@@ -456,11 +460,12 @@ function readJson(file: string) {
   writeJson(resolve(name.value, 'package.json'), packageJson)
 
   console.log('nuxt.config.ts created.\n')
-
+ 
+ 
   write(resolve(name.value, 'nuxt.config.ts'), 
 `export default defineNuxtConfig({
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
-  devtools: true,
+  devtools: {enabled: true},
 
   components: [
     {
