@@ -9,7 +9,7 @@
   "type": "module",
   "exports": {
     "./cli": "./bin/index.mjs",
-    ".": "./dist/index.mjs"
+    ".": "./dist/scaffold.mjs"
   },
   "bin": {
     "scaffold": "bin/scaffold.mjs"
