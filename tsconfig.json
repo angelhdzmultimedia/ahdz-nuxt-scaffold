@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -13,38 +12,7 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "resolveJsonModule": true,
-    "types": [
-      "node"
-    ],
-    "paths": {
-      "#app": [
-        "./packages/nuxt/src/app/index"
-      ],
-      "#app/*": [
-        "./packages/nuxt/src/app/*"
-      ],
-      "#internal/nitro": [
-        "./node_modules/nitropack/dist/runtime"
-      ],
-      "#internal/nitro/app": [
-        "./node_modules/nitropack/dist/runtime/app"
-      ],
-      "#internal/nitro/utils": [
-        "./node_modules/nitropack/dist/runtime/utils"
-      ],
-      "#vue-router": [
-        "./node_modules/vue-router"
-      ]
-    }
+    "types": ["node", "./src/types"],
   },
-  "exclude": [
-    "**/dist/**",
-    "**/.nuxt/**",
-    "**/nuxt.d.ts",
-    "**/examples/**",
-    "**/docs/**",
-    "**/playground/**",
-    "**/test/fixtures/**",
-    "scripts/flat-dir/nuxt/**"
-  ]
+  "include": ["src"]
 }

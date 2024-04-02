@@ -1,13 +1,19 @@
 {
-  "name": "scaffold",
+  "name": "@ahdz/scaffold",
   "version": "0.1.2",
-  "repository": "angelhdzmultimedia/nuxt-extras",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angelhdzmultimedia/nuxt-extras.git"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./cli": "./bin/scaffold.mjs"
+    "./cli": "./bin/index.mjs",
+    ".": "./dist/index.mjs"
   },
-  "bin": "./bin/scaffold.mjs",
+  "bin": {
+    "scaffold": "bin/scaffold.mjs"
+  },
   "files": [
     "bin",
     "dist"
@@ -47,5 +53,12 @@
     "unbuild": "^2.0.0",
     "vite": "^5.2.7",
     "vue": "^3.4.21"
-  }
+  },
+  "description": "`ahdz/nuxt-scaffold`",
+  "bugs": {
+    "url": "https://github.com/angelhdzmultimedia/nuxt-extras/issues"
+  },
+  "homepage": "https://github.com/angelhdzmultimedia/nuxt-extras#readme",
+  "main": "index.js",
+  "author": "AngelHdz Multimedia"
 }
