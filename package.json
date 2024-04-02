@@ -19,6 +19,7 @@
     "dist"
   ],
   "scripts": {
+    "build:stub": "unbuild --stub",
     "prepack": "unbuild",
     "build": "unbuild",
     "dev": "node ./bin/scaffold.mjs",
@@ -59,6 +60,5 @@
     "url": "https://github.com/angelhdzmultimedia/nuxt-extras/issues"
   },
   "homepage": "https://github.com/angelhdzmultimedia/nuxt-extras#readme",
-  "main": "index.js",
   "author": "AngelHdz Multimedia"
 }
