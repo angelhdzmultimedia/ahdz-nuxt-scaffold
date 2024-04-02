@@ -8,8 +8,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./cli": "./bin/index.mjs",
-    ".": "./dist/scaffold.mjs"
+    "./cli": "./bin/scaffold.mjs",
+    ".": "./dist/index.mjs"
   },
   "bin": {
     "scaffold": "bin/scaffold.mjs"
