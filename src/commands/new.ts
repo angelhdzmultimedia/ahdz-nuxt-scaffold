@@ -241,7 +241,9 @@ function readJson(file: string) {
         }
       ]
     }) */
-    await asyncSpawn(shell, ['nest', 'new', name.value, '--skip-install'])
+    await asyncSpawn(shell, ['nest', 'new', name.value, '--skip-install'], {
+      cwd: process.cwd()
+    })
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
     packageJson.dependencies ??= {}
