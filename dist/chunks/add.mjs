@@ -1,4 +1,4 @@
-import { d as defineTemplate, p as parseName, a as prompt, c as consola, b as defineCommand } from '../shared/ahdz-nuxt-scaffold.66bd7c69.mjs';
+import { d as defineTemplate, p as parseName, a as prompt, c as consola, b as defineCommand } from '../shared/scaffold.66bd7c69.mjs';
 import lodash from 'lodash';
 import { ofetch } from 'ofetch';
 import fs$1, { promises, statSync, realpathSync, Stats, existsSync, readFileSync } from 'node:fs';
@@ -9,7 +9,7 @@ import { format, inspect } from 'node:util';
 import process$1 from 'node:process';
 import 'node:tty';
 import { fileURLToPath as fileURLToPath$1, pathToFileURL as pathToFileURL$1, URL as URL$1 } from 'node:url';
-import { c as commonjsGlobal, g as getDefaultExportFromCjs, a as getAugmentedNamespace } from '../shared/ahdz-nuxt-scaffold.2155838d.mjs';
+import { c as commonjsGlobal, g as getDefaultExportFromCjs, a as getAugmentedNamespace } from '../shared/scaffold.2155838d.mjs';
 import require$$0 from 'crypto';
 import fs__default from 'fs';
 import require$$2$1 from 'module';

@@ -1,6 +1,6 @@
 import { readFile, mkdir as mkdir$2, rm, writeFile } from 'node:fs/promises';
 import fs$a, { existsSync, readdirSync as readdirSync$1, createWriteStream } from 'node:fs';
-import { c as commonjsGlobal$1 } from '../shared/ahdz-nuxt-scaffold.2155838d.mjs';
+import { c as commonjsGlobal$1 } from '../shared/scaffold.2155838d.mjs';
 import require$$0$9 from 'events';
 import require$$0$a from 'stream';
 import require$$2$2 from 'string_decoder';

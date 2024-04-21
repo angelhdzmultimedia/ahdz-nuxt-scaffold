@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import require$$24, { constants } from 'node:os';
 import { createWriteStream, readFileSync, createReadStream } from 'node:fs';
 import { setTimeout as setTimeout$1 } from 'node:timers/promises';
-import { g as getDefaultExportFromCjs } from '../shared/ahdz-nuxt-scaffold.2155838d.mjs';
+import { g as getDefaultExportFromCjs } from '../shared/scaffold.2155838d.mjs';
 import require$$0 from 'stream';
 import { debuglog } from 'node:util';
 

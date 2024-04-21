@@ -241,9 +241,7 @@ function readJson(file: string) {
         }
       ]
     }) */
-    await asyncSpawn(shell, ['nest', 'new', name.value, '--skip-install'], {
-      cwd: process.cwd()
-    })
+    await asyncSpawn(shell, ['-c', 'nest', 'new', name.value, '--skip-install'])
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
     packageJson.dependencies ??= {}
@@ -387,12 +385,12 @@ function readJson(file: string) {
 
     console.log('Installing dependencies...\n')
 
-    await asyncSpawn(shell, [npm.name, npm.install], {
+    await asyncSpawn(shell, ['-c', npm.name, npm.install], {
       cwd: name.value
     })
 
     /* console.log('Updating dependencies...\n')
-    await asyncSpawn(shell, [npm.name, npm.update], {
+    await asyncSpawn(shell, ['-c', npm.name, npm.update], {
       cwd: name.value
     }) */
   } 
@@ -418,7 +416,7 @@ function readJson(file: string) {
       ]
     })
 
-  await asyncSpawn(shell, [`${npm.execute} nuxi@latest init ${name.value}`])
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest init ${name.value}`])
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
@@ -533,7 +531,7 @@ function readJson(file: string) {
 
 console.log('\nAdding modules...\n')
 for (const _module of _modules) {
-  await asyncSpawn(shell, [`${npm.execute} nuxi@latest module add ${_module}`], {
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest module add ${_module}`], {
     cwd: name.value
   })
 }

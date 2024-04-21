@@ -1,8 +1,8 @@
-import { b as defineCommand, a as prompt } from '../shared/ahdz-nuxt-scaffold.66bd7c69.mjs';
+import { b as defineCommand, a as prompt } from '../shared/scaffold.66bd7c69.mjs';
 import { resolve as resolve$1, join } from 'node:path';
 import { spawn } from 'cross-spawn';
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
-import { g as getDefaultExportFromCjs } from '../shared/ahdz-nuxt-scaffold.2155838d.mjs';
+import { g as getDefaultExportFromCjs } from '../shared/scaffold.2155838d.mjs';
 import { win32, posix as posix$1, resolve, parse, basename } from 'path';
 import { fileURLToPath } from 'url';
 import * as fs from 'fs';
@@ -8770,7 +8770,7 @@ async function main(args) {
     ]
   });
   if (framework.value === "nest") {
-    await asyncSpawn(shell, ["nest", "new", name.value, "--skip-install"]);
+    await asyncSpawn(shell, ["-c", "nest", "new", name.value, "--skip-install"]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -8847,7 +8847,7 @@ async function main(args) {
     rimrafSync(resolve$1(name.value, "test"));
     console.log(`/test deleted.`);
     console.log("Installing dependencies...\n");
-    await asyncSpawn(shell, [npm.name, npm.install], {
+    await asyncSpawn(shell, ["-c", npm.name, npm.install], {
       cwd: name.value
     });
   }
@@ -8869,7 +8869,7 @@ async function main(args) {
         }
       ]
     });
-    await asyncSpawn(shell, [`${npm.execute} nuxi@latest init ${name.value}`]);
+    await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest init ${name.value}`]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -8964,7 +8964,7 @@ async function main(args) {
     ];
     console.log("\nAdding modules...\n");
     for (const _module of _modules) {
-      await asyncSpawn(shell, [`${npm.execute} nuxi@latest module add ${_module}`], {
+      await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest module add ${_module}`], {
         cwd: name.value
       });
     }
