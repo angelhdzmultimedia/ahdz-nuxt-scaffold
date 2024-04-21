@@ -3,7 +3,7 @@
   "version": "0.1.3",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold.git"
+    "url": "git+https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold"
   },
   "license": "MIT",
   "type": "module",
@@ -12,7 +12,8 @@
     ".": "./dist/index.mjs"
   },
   "bin": {
-    "scaffold": "bin/scaffold.mjs"
+    "scaffold": "bin/scaffold.mjs",
+    "ahdz": "bin/scaffold.mjs"
   },
   "files": [
     "bin",
