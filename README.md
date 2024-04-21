@@ -9,24 +9,30 @@ A series of Nuxt extra tools for a smooth and fast DX.
 #### Execution Method
 
 **pnpm:**
-`pnpx https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold.git <command>`
+`pnpm dlx https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold <command>`
 
 **npm:**
-`npx https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold.git <command>`
+`npx https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold <command>`
 
 **yarn:**
-`yarn dlx scaffold@https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold.git <command>`
+`yarn dlx https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold <command>`
+
+**bun:**
+`bunx https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold <command>`
 
 #### Installation Method
 
 **pnpm:**
-`pnpm add -g https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold.git` and execute `scaffold <command>`.
+`pnpm add -g https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold` and execute `scaffold <command>`.
 
 **npm:**
-`npx https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold.git` and execute `scaffold <command>`.
+`npm add -g https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold` and execute `scaffold <command>`.
 
 **yarn:**
-`yarn dlx scaffold@https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold.git` and execute `scaffold <command>`.
+`yarn global add https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold` and execute `scaffold <command>`.
+
+**bun:**
+`bun add -g @https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold` and execute `scaffold <command>`.
 
 ### [ Commands ]
 
