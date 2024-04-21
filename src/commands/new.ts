@@ -241,7 +241,7 @@ function readJson(file: string) {
         }
       ]
     }) */
-    await asyncSpawn(shell, ['-c', 'nest', 'new', name.value])
+    await asyncSpawn(shell, ['-c', 'nest', 'new', name.value, '--skip-install'])
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
     packageJson.dependencies ??= {}
@@ -254,7 +254,6 @@ function readJson(file: string) {
     }
 
     const dependencies: any[] = [
-      '@prisma/client',
       '@nestjs/config',
       '@nestjs/websockets',
       '@nestjs/swagger',
@@ -390,10 +389,10 @@ function readJson(file: string) {
       cwd: name.value
     })
 
-    console.log('Updating dependencies...\n')
+    /* console.log('Updating dependencies...\n')
     await asyncSpawn(shell, ['-c', npm.name, npm.update], {
       cwd: name.value
-    })
+    }) */
   } 
   
   // Nuxt
