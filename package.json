@@ -23,7 +23,7 @@
     "prepack": "unbuild",
     "build": "unbuild",
     "dev": "node ./bin/scaffold.mjs",
-    "clean:full": "npx rimraf node_modules package-lock.json pnpm-lock.yaml yarn.lock"
+    "clean:full": "npx rimraf node_modules package-lock.json pnpm-lock.yaml yarn.lock bun.lockb"
   },
   "devDependencies": {
     "@nuxt/kit": "^3.11.1",
@@ -40,7 +40,7 @@
     "fsevents": "~2.3.3"
   },
   "engines": {
-    "node": "^14.18.0 || >=16.10.0"
+    "node": "^16.10.0 || >=18.0.0"
   },
   "dependencies": {
     "@types/cross-spawn": "^6.0.6",
@@ -55,10 +55,10 @@
     "vite": "^5.2.7",
     "vue": "^3.4.21"
   },
-  "description": "`ahdz/nuxt-scaffold`",
+  "description": "Nuxt extra tools for a smooth and fast DX.",
   "bugs": {
-    "url": "https://github.com/angelhdzmultimedia/nuxt-extras/issues"
+    "url": "https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold/issues"
   },
-  "homepage": "https://github.com/angelhdzmultimedia/nuxt-extras#readme",
+  "homepage": "https://github.com/angelhdzmultimedia/ahdz-nuxt-scaffold",
   "author": "AngelHdz Multimedia"
 }
