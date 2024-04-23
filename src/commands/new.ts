@@ -437,7 +437,7 @@ function readJson(file: string) {
   }
 
   const dependencies: any[] = [
-    'pinia',
+   
   ]
 
   const devDependencies: any[] = [
@@ -474,7 +474,7 @@ function readJson(file: string) {
   write(resolve(name.value, 'nuxt.config.ts'), 
 `export default defineNuxtConfig({
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
-  devtools: {enabled: true},
+  devtools: {enabled: false},
 
   components: [
     {
@@ -484,12 +484,6 @@ function readJson(file: string) {
   ],
 
   modules: [],
-
-  imports: {
-    dirs: ['stores/**']
-  },
-
-  pinia: {},
 
   i18n: {
     langDir: 'lang',
@@ -532,7 +526,6 @@ function readJson(file: string) {
 
   // Modules
   const _modules = [
-    '@pinia/nuxt',
     'nuxt-quasar-ui',
     '@nuxtjs/i18n',
     '@vueuse/nuxt'
