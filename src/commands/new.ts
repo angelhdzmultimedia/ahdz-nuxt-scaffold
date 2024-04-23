@@ -242,6 +242,14 @@ function readJson(file: string) {
       ]
     }) */
     await asyncSpawn(shell, ['-c', 'nest', 'new', name.value, '--skip-install'])
+
+    console.log('\nSetting up domains...')
+    mkdirSync(join(name.value, 'src', 'domains'), {recursive: true})
+    mkdirSync(join(name.value, 'src', 'app'), {recursive: true})
+    mkdirSync(join(name.value, 'src', 'domains', 'auth'), {recursive: true})
+    await asyncSpawn(shell, ['-c', 'nest', 'g', 'resource', 'auth'])
+    
+
     const packageJson = readJson(resolve(name.value, 'package.json'))
 
     packageJson.dependencies ??= {}
@@ -323,6 +331,7 @@ function readJson(file: string) {
     const nestConfig = readJson(resolve(name.value, 'nest-cli.json'))
 
     nestConfig.generateOptions = {
+      sourceRoot: 'src/app',
       spec: false
     }
 
@@ -404,14 +413,15 @@ function readJson(file: string) {
       message: 'Type?',
       choices: [
         {
-          name: 'SSR',
-          value: 'ssr',
-          key: 'ssr',
-        },
-        {
           name: 'SPA',
           value: 'spa',
           key: 'spa',
+          checked: true
+        },
+        {
+          name: 'SSR',
+          value: 'ssr',
+          key: 'ssr',
         },
       ]
     })
