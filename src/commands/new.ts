@@ -474,16 +474,11 @@ function readJson(file: string) {
   write(resolve(name.value, 'nuxt.config.ts'), 
 `export default defineNuxtConfig({
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
-  devtools: {enabled: false},
+  devtools: { enabled: false },
 
-  components: [
-    {
-      path: '~/',
-      extensions: ['.vue']
-    }
+  modules: [
+
   ],
-
-  modules: [],
 
   i18n: {
     langDir: 'lang',
