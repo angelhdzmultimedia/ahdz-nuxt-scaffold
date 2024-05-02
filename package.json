@@ -27,14 +27,14 @@
     "clean:full": "npx rimraf node_modules package-lock.json pnpm-lock.yaml yarn.lock bun.lockb"
   },
   "devDependencies": {
-    "@nuxt/kit": "^3.11.1",
+    "@nuxt/kit": "^3.11.2",
     "@types/inquirer": "^9.0.7",
     "@types/node": "20.11.17",
     "@vueuse/nuxt": "^10.9.0",
     "citty": "^0.1.6",
     "consola": "3.2.3",
     "jiti": "1.21.0",
-    "mlly": "^1.6.1",
+    "mlly": "^1.7.0",
     "rimraf": "5.0.5"
   },
   "optionalDependencies": {
@@ -49,12 +49,12 @@
     "cross-spawn": "^7.0.3",
     "inquirer": "9.2.14",
     "lodash": "^4.17.21",
-    "nuxt": "^3.11.1",
+    "nuxt": "^3.11.2",
     "ofetch": "^1.3.4",
-    "typescript": "^5.4.3",
+    "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
-    "vite": "^5.2.7",
-    "vue": "^3.4.21"
+    "vite": "^5.2.11",
+    "vue": "^3.4.26"
   },
   "description": "Nuxt extra tools for a smooth and fast DX.",
   "bugs": {
