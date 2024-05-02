@@ -1,7 +1,7 @@
-import { d as defineTemplate, p as parseName, a as prompt, c as consola, b as defineCommand } from '../shared/scaffold.66bd7c69.mjs';
+import { a as defineTemplate, b as parseName, p as prompt, e as consola, d as defineCommand } from '../shared/scaffold.c6b71549.mjs';
 import lodash from 'lodash';
 import { ofetch } from 'ofetch';
-import fs$1, { promises, statSync, realpathSync, Stats, existsSync, readFileSync } from 'node:fs';
+import fs$1, { promises, statSync, realpathSync, existsSync, readFileSync } from 'node:fs';
 import { rm, readFile, mkdir, writeFile } from 'node:fs/promises';
 import path$1, { resolve as resolve$1, dirname as dirname$1 } from 'node:path';
 import 'node:perf_hooks';
@@ -9236,6 +9236,16 @@ function joinURL(base, ...input) {
   return url;
 }
 
+const b$1=/^(?:( )+|\t+)/,d="space",h$1="tab";function g(e,t){const n=new Map;let i=0,s,o;for(const c of e.split(/\n/g)){if(!c)continue;let f,a,l,p,r;const y=c.match(b$1);if(y===null)i=0,s="";else {if(f=y[0].length,a=y[1]?d:h$1,t&&a===d&&f===1)continue;a!==s&&(i=0),s=a,l=1,p=0;const u=f-i;if(i=f,u===0)l=0,p=1;else {const I=u>0?u:-u;o=T$1(a,I);}r=n.get(o),r=r===void 0?[1,0]:[r[0]+l,r[1]+p],n.set(o,r);}}return n}function T$1(e,t){return (e===d?"s":"t")+String(t)}function w(e){const n=e[0]==="s"?d:h$1,i=Number(e.slice(1));return {type:n,amount:i}}function E$1(e){let t,n=0,i=0;for(const[s,[o,c]]of e)(o>n||o===n&&c>i)&&(n=o,i=c,t=s);return t}function S$2(e,t){return (e===d?" ":"	").repeat(t)}function _$2(e){if(typeof e!="string")throw new TypeError("Expected a string");let t=g(e,!0);t.size===0&&(t=g(e,!1));const n=E$1(t);let i,s=0,o="";return n!==void 0&&({type:i,amount:s}=w(n),o=S$2(i,s)),{amount:s,type:i,indent:o}}const m=Symbol.for("__confbox_fmt__"),k=/^(\s+)/,v$2=/(\s+)$/;function x$1(e,t={}){const n=t.indent===void 0&&t.preserveIndentation!==!1&&e.slice(0,t?.sampleSize||1024),i=t.preserveWhitespace===!1?void 0:{start:k.exec(e)?.[0]||"",end:v$2.exec(e)?.[0]||""};return {sample:n,whiteSpace:i}}function N$2(e,t,n){!t||typeof t!="object"||Object.defineProperty(t,m,{enumerable:!1,configurable:!0,writable:!0,value:x$1(e,n)});}function C$1(e,t){if(!e||typeof e!="object"||!(m in e))return {indent:t?.indent,whitespace:{start:"",end:""}};const n=e[m];return {indent:t?.indent||_$2(n.sample||"").indent,whitespace:n.whiteSpace||{start:"",end:""}}}
+
+function Y(n,l=!1){const g=n.length;let e=0,t="",T=0,f=16,O=0,p=0,A=0,B=0,s=0;function F(i,c){let u=0,b=0;for(;u<i||!c;){let m=n.charCodeAt(e);if(m>=48&&m<=57)b=b*16+m-48;else if(m>=65&&m<=70)b=b*16+m-65+10;else if(m>=97&&m<=102)b=b*16+m-97+10;else break;e++,u++;}return u<i&&(b=-1),b}function j(i){e=i,t="",T=0,f=16,s=0;}function w(){let i=e;if(n.charCodeAt(e)===48)e++;else for(e++;e<n.length&&N$1(n.charCodeAt(e));)e++;if(e<n.length&&n.charCodeAt(e)===46)if(e++,e<n.length&&N$1(n.charCodeAt(e)))for(e++;e<n.length&&N$1(n.charCodeAt(e));)e++;else return s=3,n.substring(i,e);let c=e;if(e<n.length&&(n.charCodeAt(e)===69||n.charCodeAt(e)===101))if(e++,(e<n.length&&n.charCodeAt(e)===43||n.charCodeAt(e)===45)&&e++,e<n.length&&N$1(n.charCodeAt(e))){for(e++;e<n.length&&N$1(n.charCodeAt(e));)e++;c=e;}else s=3;return n.substring(i,c)}function L(){let i="",c=e;for(;;){if(e>=g){i+=n.substring(c,e),s=2;break}const u=n.charCodeAt(e);if(u===34){i+=n.substring(c,e),e++;break}if(u===92){if(i+=n.substring(c,e),e++,e>=g){s=2;break}switch(n.charCodeAt(e++)){case 34:i+='"';break;case 92:i+="\\";break;case 47:i+="/";break;case 98:i+="\b";break;case 102:i+="\f";break;case 110:i+=`
+`;break;case 114:i+="\r";break;case 116:i+="	";break;case 117:const m=F(4,!0);m>=0?i+=String.fromCharCode(m):s=4;break;default:s=5;}c=e;continue}if(u>=0&&u<=31)if(_$1(u)){i+=n.substring(c,e),s=2;break}else s=6;e++;}return i}function U(){if(t="",s=0,T=e,p=O,B=A,e>=g)return T=g,f=17;let i=n.charCodeAt(e);if(D$1(i)){do e++,t+=String.fromCharCode(i),i=n.charCodeAt(e);while(D$1(i));return f=15}if(_$1(i))return e++,t+=String.fromCharCode(i),i===13&&n.charCodeAt(e)===10&&(e++,t+=`
+`),O++,A=e,f=14;switch(i){case 123:return e++,f=1;case 125:return e++,f=2;case 91:return e++,f=3;case 93:return e++,f=4;case 58:return e++,f=6;case 44:return e++,f=5;case 34:return e++,t=L(),f=10;case 47:const c=e-1;if(n.charCodeAt(e+1)===47){for(e+=2;e<g&&!_$1(n.charCodeAt(e));)e++;return t=n.substring(c,e),f=12}if(n.charCodeAt(e+1)===42){e+=2;const u=g-1;let b=!1;for(;e<u;){const m=n.charCodeAt(e);if(m===42&&n.charCodeAt(e+1)===47){e+=2,b=!0;break}e++,_$1(m)&&(m===13&&n.charCodeAt(e)===10&&e++,O++,A=e);}return b||(e++,s=1),t=n.substring(c,e),f=13}return t+=String.fromCharCode(i),e++,f=16;case 45:if(t+=String.fromCharCode(i),e++,e===g||!N$1(n.charCodeAt(e)))return f=16;case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:return t+=w(),f=11;default:for(;e<g&&E(i);)e++,i=n.charCodeAt(e);if(T!==e){switch(t=n.substring(T,e),t){case"true":return f=8;case"false":return f=9;case"null":return f=7}return f=16}return t+=String.fromCharCode(i),e++,f=16}}function E(i){if(D$1(i)||_$1(i))return !1;switch(i){case 125:case 93:case 123:case 91:case 34:case 58:case 44:case 47:return !1}return !0}function r(){let i;do i=U();while(i>=12&&i<=15);return i}return {setPosition:j,getPosition:()=>e,scan:l?r:U,getToken:()=>f,getTokenValue:()=>t,getTokenOffset:()=>T,getTokenLength:()=>e-T,getTokenStartLine:()=>p,getTokenStartCharacter:()=>T-B,getTokenError:()=>s}}function D$1(n){return n===32||n===9}function _$1(n){return n===10||n===13}function N$1(n){return n>=48&&n<=57}var W$2;((function(n){n[n.lineFeed=10]="lineFeed",n[n.carriageReturn=13]="carriageReturn",n[n.space=32]="space",n[n._0=48]="_0",n[n._1=49]="_1",n[n._2=50]="_2",n[n._3=51]="_3",n[n._4=52]="_4",n[n._5=53]="_5",n[n._6=54]="_6",n[n._7=55]="_7",n[n._8=56]="_8",n[n._9=57]="_9",n[n.a=97]="a",n[n.b=98]="b",n[n.c=99]="c",n[n.d=100]="d",n[n.e=101]="e",n[n.f=102]="f",n[n.g=103]="g",n[n.h=104]="h",n[n.i=105]="i",n[n.j=106]="j",n[n.k=107]="k",n[n.l=108]="l",n[n.m=109]="m",n[n.n=110]="n",n[n.o=111]="o",n[n.p=112]="p",n[n.q=113]="q",n[n.r=114]="r",n[n.s=115]="s",n[n.t=116]="t",n[n.u=117]="u",n[n.v=118]="v",n[n.w=119]="w",n[n.x=120]="x",n[n.y=121]="y",n[n.z=122]="z",n[n.A=65]="A",n[n.B=66]="B",n[n.C=67]="C",n[n.D=68]="D",n[n.E=69]="E",n[n.F=70]="F",n[n.G=71]="G",n[n.H=72]="H",n[n.I=73]="I",n[n.J=74]="J",n[n.K=75]="K",n[n.L=76]="L",n[n.M=77]="M",n[n.N=78]="N",n[n.O=79]="O",n[n.P=80]="P",n[n.Q=81]="Q",n[n.R=82]="R",n[n.S=83]="S",n[n.T=84]="T",n[n.U=85]="U",n[n.V=86]="V",n[n.W=87]="W",n[n.X=88]="X",n[n.Y=89]="Y",n[n.Z=90]="Z",n[n.asterisk=42]="asterisk",n[n.backslash=92]="backslash",n[n.closeBrace=125]="closeBrace",n[n.closeBracket=93]="closeBracket",n[n.colon=58]="colon",n[n.comma=44]="comma",n[n.dot=46]="dot",n[n.doubleQuote=34]="doubleQuote",n[n.minus=45]="minus",n[n.openBrace=123]="openBrace",n[n.openBracket=91]="openBracket",n[n.plus=43]="plus",n[n.slash=47]="slash",n[n.formFeed=12]="formFeed",n[n.tab=9]="tab";}))(W$2||(W$2={})),new Array(20).fill(0).map((n,l)=>" ".repeat(l));const v$1=200;new Array(v$1).fill(0).map((n,l)=>`
+`+" ".repeat(l)),new Array(v$1).fill(0).map((n,l)=>"\r"+" ".repeat(l)),new Array(v$1).fill(0).map((n,l)=>`\r
+`+" ".repeat(l)),new Array(v$1).fill(0).map((n,l)=>`
+`+"	".repeat(l)),new Array(v$1).fill(0).map((n,l)=>"\r"+"	".repeat(l)),new Array(v$1).fill(0).map((n,l)=>`\r
+`+"	".repeat(l));var V;(function(n){n.DEFAULT={allowTrailingComma:!1};})(V||(V={}));function Z(n,l=[],g=V.DEFAULT){let e=null,t=[];const T=[];function f(p){Array.isArray(t)?t.push(p):e!==null&&(t[e]=p);}return $(n,{onObjectBegin:()=>{const p={};f(p),T.push(t),t=p,e=null;},onObjectProperty:p=>{e=p;},onObjectEnd:()=>{t=T.pop();},onArrayBegin:()=>{const p=[];f(p),T.push(t),t=p,e=null;},onArrayEnd:()=>{t=T.pop();},onLiteralValue:f,onError:(p,A,B)=>{l.push({error:p,offset:A,length:B});}},g),t[0]}function $(n,l,g=V.DEFAULT){const e=Y(n,!1),t=[];function T(k){return k?()=>k(e.getTokenOffset(),e.getTokenLength(),e.getTokenStartLine(),e.getTokenStartCharacter()):()=>!0}function f(k){return k?()=>k(e.getTokenOffset(),e.getTokenLength(),e.getTokenStartLine(),e.getTokenStartCharacter(),()=>t.slice()):()=>!0}function O(k){return k?o=>k(o,e.getTokenOffset(),e.getTokenLength(),e.getTokenStartLine(),e.getTokenStartCharacter()):()=>!0}function p(k){return k?o=>k(o,e.getTokenOffset(),e.getTokenLength(),e.getTokenStartLine(),e.getTokenStartCharacter(),()=>t.slice()):()=>!0}const A=f(l.onObjectBegin),B=p(l.onObjectProperty),s=T(l.onObjectEnd),F=f(l.onArrayBegin),j=T(l.onArrayEnd),w=p(l.onLiteralValue),L=O(l.onSeparator),U=T(l.onComment),E=O(l.onError),r=g&&g.disallowComments,i=g&&g.allowTrailingComma;function c(){for(;;){const k=e.scan();switch(e.getTokenError()){case 4:u(14);break;case 5:u(15);break;case 3:u(13);break;case 1:r||u(11);break;case 2:u(12);break;case 6:u(16);break}switch(k){case 12:case 13:r?u(10):U();break;case 16:u(1);break;case 15:case 14:break;default:return k}}}function u(k,o=[],a=[]){if(E(k),o.length+a.length>0){let I=e.getToken();for(;I!==17;){if(o.indexOf(I)!==-1){c();break}else if(a.indexOf(I)!==-1)break;I=c();}}}function b(k){const o=e.getTokenValue();return k?w(o):(B(o),t.push(o)),c(),!0}function m(){switch(e.getToken()){case 11:const k=e.getTokenValue();let o=Number(k);isNaN(o)&&(u(2),o=0),w(o);break;case 7:w(null);break;case 8:w(!0);break;case 9:w(!1);break;default:return !1}return c(),!0}function z(){return e.getToken()!==10?(u(3,[],[2,5]),!1):(b(!1),e.getToken()===6?(L(":"),c(),J()||u(4,[],[2,5])):u(5,[],[2,5]),t.pop(),!0)}function G(){A(),c();let k=!1;for(;e.getToken()!==2&&e.getToken()!==17;){if(e.getToken()===5){if(k||u(4,[],[]),L(","),c(),e.getToken()===2&&i)break}else k&&u(6,[],[]);z()||u(4,[],[2,5]),k=!0;}return s(),e.getToken()!==2?u(7,[2],[]):c(),!0}function M(){F(),c();let k=!0,o=!1;for(;e.getToken()!==4&&e.getToken()!==17;){if(e.getToken()===5){if(o||u(4,[],[]),L(","),c(),e.getToken()===4&&i)break}else o&&u(6,[],[]);k?(t.push(0),k=!1):t[t.length-1]++,J()||u(4,[],[4,5]),o=!0;}return j(),k||t.pop(),e.getToken()!==4?u(8,[4],[]):c(),!0}function J(){switch(e.getToken()){case 3:return M();case 1:return G();case 10:return b(!0);default:return m()}}return c(),e.getToken()===17?g.allowEmptyContent?!0:(u(4,[],[]),!1):J()?(e.getToken()!==17&&u(9,[],[]),!0):(u(4,[],[]),!1)}var Q;(function(n){n[n.None=0]="None",n[n.UnexpectedEndOfComment=1]="UnexpectedEndOfComment",n[n.UnexpectedEndOfString=2]="UnexpectedEndOfString",n[n.UnexpectedEndOfNumber=3]="UnexpectedEndOfNumber",n[n.InvalidUnicode=4]="InvalidUnicode",n[n.InvalidEscapeCharacter=5]="InvalidEscapeCharacter",n[n.InvalidCharacter=6]="InvalidCharacter";})(Q||(Q={}));var R$1;(function(n){n[n.OpenBraceToken=1]="OpenBraceToken",n[n.CloseBraceToken=2]="CloseBraceToken",n[n.OpenBracketToken=3]="OpenBracketToken",n[n.CloseBracketToken=4]="CloseBracketToken",n[n.CommaToken=5]="CommaToken",n[n.ColonToken=6]="ColonToken",n[n.NullKeyword=7]="NullKeyword",n[n.TrueKeyword=8]="TrueKeyword",n[n.FalseKeyword=9]="FalseKeyword",n[n.StringLiteral=10]="StringLiteral",n[n.NumericLiteral=11]="NumericLiteral",n[n.LineCommentTrivia=12]="LineCommentTrivia",n[n.BlockCommentTrivia=13]="BlockCommentTrivia",n[n.LineBreakTrivia=14]="LineBreakTrivia",n[n.Trivia=15]="Trivia",n[n.Unknown=16]="Unknown",n[n.EOF=17]="EOF";})(R$1||(R$1={}));const S$1=Z;var H$1;(function(n){n[n.InvalidSymbol=1]="InvalidSymbol",n[n.InvalidNumberFormat=2]="InvalidNumberFormat",n[n.PropertyNameExpected=3]="PropertyNameExpected",n[n.ValueExpected=4]="ValueExpected",n[n.ColonExpected=5]="ColonExpected",n[n.CommaExpected=6]="CommaExpected",n[n.CloseBraceExpected=7]="CloseBraceExpected",n[n.CloseBracketExpected=8]="CloseBracketExpected",n[n.EndOfFileExpected=9]="EndOfFileExpected",n[n.InvalidCommentToken=10]="InvalidCommentToken",n[n.UnexpectedEndOfComment=11]="UnexpectedEndOfComment",n[n.UnexpectedEndOfString=12]="UnexpectedEndOfString",n[n.UnexpectedEndOfNumber=13]="UnexpectedEndOfNumber",n[n.InvalidUnicode=14]="InvalidUnicode",n[n.InvalidEscapeCharacter=15]="InvalidEscapeCharacter",n[n.InvalidCharacter=16]="InvalidCharacter";})(H$1||(H$1={}));function P$1(n,l){const g=JSON.parse(n,l?.reviver);return N$2(n,g,l),g}function q(n,l){const g=C$1(n,l),e=JSON.stringify(n,l?.replacer,g.indent);return g.whitespace.start+e+g.whitespace.end}function K$1(n,l){const g=S$1(n,l?.errors,l);return N$2(n,g,l),g}function x(n,l){return q(n,l)}
+
 const defaultFindOptions = {
   startingFrom: ".",
   rootPattern: /^node_modules$/,
@@ -9261,15 +9271,15 @@ async function findFile(filename, _options = {}) {
   if (root === -1) {
     root = 0;
   }
-  if (!options.reverse) {
-    for (let index = segments.length; index > root; index--) {
+  if (options.reverse) {
+    for (let index = root + 1; index <= segments.length; index++) {
       const filePath = join(...segments.slice(0, index), filename);
       if (await options.test(filePath)) {
         return filePath;
       }
     }
   } else {
-    for (let index = root + 1; index <= segments.length; index++) {
+    for (let index = segments.length; index > root; index--) {
       const filePath = join(...segments.slice(0, index), filename);
       if (await options.test(filePath)) {
         return filePath;
@@ -9291,7 +9301,12 @@ async function readPackageJSON(id, options = {}) {
     return cache.get(resolvedPath);
   }
   const blob = await promises.readFile(resolvedPath, "utf8");
-  const parsed = JSON.parse(blob);
+  let parsed;
+  try {
+    parsed = P$1(blob);
+  } catch {
+    parsed = K$1(blob);
+  }
   cache.set(resolvedPath, parsed);
   return parsed;
 }
@@ -9525,14 +9540,14 @@ codes.ERR_INVALID_PACKAGE_CONFIG = createError(
 codes.ERR_INVALID_PACKAGE_TARGET = createError(
   'ERR_INVALID_PACKAGE_TARGET',
   /**
-   * @param {string} pkgPath
+   * @param {string} packagePath
    * @param {string} key
    * @param {unknown} target
    * @param {boolean} [isImport=false]
    * @param {string} [base]
    */
-  (pkgPath, key, target, isImport = false, base = undefined) => {
-    const relError =
+  (packagePath, key, target, isImport = false, base = undefined) => {
+    const relatedError =
       typeof target === 'string' &&
       !isImport &&
       target.length > 0 &&
@@ -9541,9 +9556,9 @@ codes.ERR_INVALID_PACKAGE_TARGET = createError(
       assert(isImport === false);
       return (
         `Invalid "exports" main target ${JSON.stringify(target)} defined ` +
-        `in the package config ${pkgPath}package.json${
+        `in the package config ${packagePath}package.json${
           base ? ` imported from ${base}` : ''
-        }${relError ? '; targets must start with "./"' : ''}`
+        }${relatedError ? '; targets must start with "./"' : ''}`
       )
     }
 
@@ -9551,9 +9566,9 @@ codes.ERR_INVALID_PACKAGE_TARGET = createError(
       isImport ? 'imports' : 'exports'
     }" target ${JSON.stringify(
       target
-    )} defined for '${key}' in the package config ${pkgPath}package.json${
+    )} defined for '${key}' in the package config ${packagePath}package.json${
       base ? ` imported from ${base}` : ''
-    }${relError ? '; targets must start with "./"' : ''}`
+    }${relatedError ? '; targets must start with "./"' : ''}`
   },
   Error
 );
@@ -9597,16 +9612,16 @@ codes.ERR_PACKAGE_IMPORT_NOT_DEFINED = createError(
 codes.ERR_PACKAGE_PATH_NOT_EXPORTED = createError(
   'ERR_PACKAGE_PATH_NOT_EXPORTED',
   /**
-   * @param {string} pkgPath
+   * @param {string} packagePath
    * @param {string} subpath
    * @param {string} [base]
    */
-  (pkgPath, subpath, base = undefined) => {
+  (packagePath, subpath, base = undefined) => {
     if (subpath === '.')
-      return `No "exports" main defined in ${pkgPath}package.json${
+      return `No "exports" main defined in ${packagePath}package.json${
         base ? ` imported from ${base}` : ''
       }`
-    return `Package subpath '${subpath}' is not defined by "exports" in ${pkgPath}package.json${
+    return `Package subpath '${subpath}' is not defined by "exports" in ${packagePath}package.json${
       base ? ` imported from ${base}` : ''
     }`
   },
@@ -9620,14 +9635,20 @@ codes.ERR_UNSUPPORTED_DIR_IMPORT = createError(
   Error
 );
 
+codes.ERR_UNSUPPORTED_RESOLVE_REQUEST = createError(
+  'ERR_UNSUPPORTED_RESOLVE_REQUEST',
+  'Failed to resolve module specifier "%s" from "%s": Invalid relative URL or base scheme is not hierarchical.',
+  TypeError
+);
+
 codes.ERR_UNKNOWN_FILE_EXTENSION = createError(
   'ERR_UNKNOWN_FILE_EXTENSION',
   /**
-   * @param {string} ext
+   * @param {string} extension
    * @param {string} path
    */
-  (ext, path) => {
-    return `Unknown file extension "${ext}" for ${path}`
+  (extension, path) => {
+    return `Unknown file extension "${extension}" for ${path}`
   },
   TypeError
 );
@@ -9660,15 +9681,15 @@ codes.ERR_INVALID_ARG_VALUE = createError(
  * *only* to allow for testing.
  * @param {string} sym
  * @param {MessageFunction | string} value
- * @param {ErrorConstructor} def
- * @returns {new (...args: Array<any>) => Error}
+ * @param {ErrorConstructor} constructor
+ * @returns {new (...parameters: Array<any>) => Error}
  */
-function createError(sym, value, def) {
+function createError(sym, value, constructor) {
   // Special case for SystemError that formats the error message differently
   // The SystemErrors only have SystemError as their base classes.
   messages.set(sym, value);
 
-  return makeNodeErrorWithCode(def, sym)
+  return makeNodeErrorWithCode(constructor, sym)
 }
 
 /**
@@ -9680,15 +9701,15 @@ function makeNodeErrorWithCode(Base, key) {
   // @ts-expect-error It’s a Node error.
   return NodeError
   /**
-   * @param {Array<unknown>} args
+   * @param {Array<unknown>} parameters
    */
-  function NodeError(...args) {
+  function NodeError(...parameters) {
     const limit = Error.stackTraceLimit;
     if (isErrorStackTraceLimitWritable()) Error.stackTraceLimit = 0;
     const error = new Base();
     // Reset the limit and setting the name property.
     if (isErrorStackTraceLimitWritable()) Error.stackTraceLimit = limit;
-    const message = getMessage(key, args, error);
+    const message = getMessage(key, parameters, error);
     Object.defineProperties(error, {
       // Note: no need to implement `kIsNodeError` symbol, would be hard,
       // probably.
@@ -9723,7 +9744,6 @@ function isErrorStackTraceLimitWritable() {
   // Do no touch Error.stackTraceLimit as V8 would attempt to install
   // it again during deserialization.
   try {
-    // @ts-expect-error: not in types?
     if (v8.startupSnapshot.isBuildingSnapshot()) {
       return false
     }
@@ -9741,16 +9761,16 @@ function isErrorStackTraceLimitWritable() {
 
 /**
  * This function removes unnecessary frames from Node.js core errors.
- * @template {(...args: unknown[]) => unknown} T
- * @param {T} fn
+ * @template {(...parameters: unknown[]) => unknown} T
+ * @param {T} wrappedFunction
  * @returns {T}
  */
-function hideStackFrames(fn) {
+function hideStackFrames(wrappedFunction) {
   // We rename the functions that will be hidden to cut off the stacktrace
   // at the outermost one
-  const hidden = nodeInternalPrefix + fn.name;
-  Object.defineProperty(fn, 'name', {value: hidden});
-  return fn
+  const hidden = nodeInternalPrefix + wrappedFunction.name;
+  Object.defineProperty(wrappedFunction, 'name', {value: hidden});
+  return wrappedFunction
 }
 
 const captureLargerStackTrace = hideStackFrames(
@@ -9777,35 +9797,35 @@ const captureLargerStackTrace = hideStackFrames(
 
 /**
  * @param {string} key
- * @param {Array<unknown>} args
+ * @param {Array<unknown>} parameters
  * @param {Error} self
  * @returns {string}
  */
-function getMessage(key, args, self) {
+function getMessage(key, parameters, self) {
   const message = messages.get(key);
   assert(message !== undefined, 'expected `message` to be found');
 
   if (typeof message === 'function') {
     assert(
-      message.length <= args.length, // Default options do not count.
-      `Code: ${key}; The provided arguments length (${args.length}) does not ` +
+      message.length <= parameters.length, // Default options do not count.
+      `Code: ${key}; The provided arguments length (${parameters.length}) does not ` +
         `match the required ones (${message.length}).`
     );
-    return Reflect.apply(message, self, args)
+    return Reflect.apply(message, self, parameters)
   }
 
   const regex = /%[dfijoOs]/g;
   let expectedLength = 0;
   while (regex.exec(message) !== null) expectedLength++;
   assert(
-    expectedLength === args.length,
-    `Code: ${key}; The provided arguments length (${args.length}) does not ` +
+    expectedLength === parameters.length,
+    `Code: ${key}; The provided arguments length (${parameters.length}) does not ` +
       `match the required ones (${expectedLength}).`
   );
-  if (args.length === 0) return message
+  if (parameters.length === 0) return message
 
-  args.unshift(message);
-  return Reflect.apply(format, null, args)
+  parameters.unshift(message);
+  return Reflect.apply(format, null, parameters)
 }
 
 /**
@@ -9840,8 +9860,8 @@ function determineSpecificType(value) {
 }
 
 // Manually “tree shaken” from:
-// <https://github.com/nodejs/node/blob/45f5c9b/lib/internal/modules/package_json_reader.js>
-// Last checked on: Nov 2, 2023.
+// <https://github.com/nodejs/node/blob/7c3dce0/lib/internal/modules/package_json_reader.js>
+// Last checked on: Apr 29, 2023.
 // Removed the native dependency.
 // Also: no need to cache, we do that in resolve already.
 
@@ -9852,9 +9872,6 @@ const {ERR_INVALID_PACKAGE_CONFIG: ERR_INVALID_PACKAGE_CONFIG$1} = codes;
 
 /** @type {Map<string, PackageConfig>} */
 const cache = new Map();
-
-const reader = {read: read$1};
-const packageJsonReader = reader;
 
 /**
  * @param {string} jsonPath
@@ -9905,7 +9922,6 @@ function read$1(jsonPath, {base, specifier}) {
         (base ? `"${specifier}" from ` : '') + fileURLToPath$1(base || specifier),
         cause.message
       );
-      // @ts-expect-error: fine.
       error.cause = cause;
       throw error
     }
@@ -9950,17 +9966,13 @@ function read$1(jsonPath, {base, specifier}) {
   return result
 }
 
-// Manually “tree shaken” from:
-// <https://github.com/nodejs/node/blob/45f5c9b/lib/internal/modules/esm/package_config.js>
-// Last checked on: Nov 2, 2023.
-
-
 /**
  * @param {URL | string} resolved
  * @returns {PackageConfig}
  */
 function getPackageScopeConfig(resolved) {
-  let packageJSONUrl = new URL$1('package.json', resolved);
+  // Note: in Node, this is now a native module.
+  let packageJSONUrl = new URL('package.json', resolved);
 
   while (true) {
     const packageJSONPath = packageJSONUrl.pathname;
@@ -9968,17 +9980,16 @@ function getPackageScopeConfig(resolved) {
       break
     }
 
-    const packageConfig = packageJsonReader.read(
-      fileURLToPath$1(packageJSONUrl),
-      {specifier: resolved}
-    );
+    const packageConfig = read$1(fileURLToPath$1(packageJSONUrl), {
+      specifier: resolved
+    });
 
     if (packageConfig.exists) {
       return packageConfig
     }
 
     const lastPackageJSONUrl = packageJSONUrl;
-    packageJSONUrl = new URL$1('../package.json', packageJSONUrl);
+    packageJSONUrl = new URL('../package.json', packageJSONUrl);
 
     // Terminates at root where ../package.json equals ../../package.json
     // (can't just check "/package.json" for Windows support).
@@ -9988,40 +9999,28 @@ function getPackageScopeConfig(resolved) {
   }
 
   const packageJSONPath = fileURLToPath$1(packageJSONUrl);
+  // ^^ Note: in Node, this is now a native module.
 
   return {
     pjsonPath: packageJSONPath,
     exists: false,
-    main: undefined,
-    name: undefined,
-    type: 'none',
-    exports: undefined,
-    imports: undefined
+    type: 'none'
   }
 }
 
-// Manually “tree shaken” from:
-// <https://github.com/nodejs/node/blob/45f5c9b/lib/internal/modules/esm/resolve.js>
-// Last checked on: Nov 2, 2023.
-//
-// This file solves a circular dependency.
-// In Node.js, `getPackageType` is in `resolve.js`.
-// `resolve.js` imports `get-format.js`, which needs `getPackageType`.
-// We split that up so that bundlers don’t fail.
-
-
 /**
- * @param {URL} url
+ * Returns the package type for a given URL.
+ * @param {URL} url - The URL to get the package type for.
  * @returns {PackageType}
  */
 function getPackageType(url) {
-  const packageConfig = getPackageScopeConfig(url);
-  return packageConfig.type
+  // To do @anonrig: Write a C++ function that returns only "type".
+  return getPackageScopeConfig(url).type
 }
 
 // Manually “tree shaken” from:
-// <https://github.com/nodejs/node/blob/45f5c9b/lib/internal/modules/esm/get_format.js>
-// Last checked on: Nov 2, 2023.
+// <https://github.com/nodejs/node/blob/7c3dce0/lib/internal/modules/esm/get_format.js>
+// Last checked on: Apr 29, 2023.
 
 
 const {ERR_UNKNOWN_FILE_EXTENSION} = codes;
@@ -10120,9 +10119,9 @@ function extname(url) {
  * @type {ProtocolHandler}
  */
 function getFileProtocolModuleFormat(url, _context, ignoreErrors) {
-  const ext = extname(url);
+  const value = extname(url);
 
-  if (ext === '.js') {
+  if (value === '.js') {
     const packageType = getPackageType(url);
 
     if (packageType !== 'none') {
@@ -10132,7 +10131,7 @@ function getFileProtocolModuleFormat(url, _context, ignoreErrors) {
     return 'commonjs'
   }
 
-  if (ext === '') {
+  if (value === '') {
     const packageType = getPackageType(url);
 
     // Legacy behavior
@@ -10145,7 +10144,7 @@ function getFileProtocolModuleFormat(url, _context, ignoreErrors) {
     return 'module'
   }
 
-  const format = extensionFormatMap[ext];
+  const format = extensionFormatMap[value];
   if (format) return format
 
   // Explicit undefined return indicates load hook should rerun format check
@@ -10154,7 +10153,7 @@ function getFileProtocolModuleFormat(url, _context, ignoreErrors) {
   }
 
   const filepath = fileURLToPath$1(url);
-  throw new ERR_UNKNOWN_FILE_EXTENSION(ext, filepath)
+  throw new ERR_UNKNOWN_FILE_EXTENSION(value, filepath)
 }
 
 function getHttpProtocolModuleFormat() {
@@ -10177,8 +10176,8 @@ function defaultGetFormatWithoutErrors(url, context) {
 }
 
 // Manually “tree shaken” from:
-// <https://github.com/nodejs/node/blob/45f5c9b/lib/internal/modules/esm/resolve.js>
-// Last checked on: Nov 2, 2023.
+// <https://github.com/nodejs/node/blob/81a9a97/lib/internal/modules/esm/resolve.js>
+// Last checked on: Apr 29, 2023.
 
 
 const RegExpPrototypeSymbolReplace = RegExp.prototype[Symbol.replace];
@@ -10191,7 +10190,8 @@ const {
   ERR_MODULE_NOT_FOUND,
   ERR_PACKAGE_IMPORT_NOT_DEFINED,
   ERR_PACKAGE_PATH_NOT_EXPORTED,
-  ERR_UNSUPPORTED_DIR_IMPORT
+  ERR_UNSUPPORTED_DIR_IMPORT,
+  ERR_UNSUPPORTED_RESOLVE_REQUEST
 } = codes;
 
 const own = {}.hasOwnProperty;
@@ -10202,7 +10202,7 @@ const deprecatedInvalidSegmentRegEx =
   /(^|\\|\/)((\.|%2e)(\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))(\\|\/|$)/i;
 const invalidPackageNameRegEx = /^\.|%|\\/;
 const patternRegEx = /\*/g;
-const encodedSepRegEx = /%2f|%5c/i;
+const encodedSeparatorRegEx = /%2f|%5c/i;
 /** @type {Set<string>} */
 const emittedPackageWarnings = new Set();
 
@@ -10266,21 +10266,21 @@ function emitLegacyIndexDeprecation(url, packageJsonUrl, base, main) {
   const format = defaultGetFormatWithoutErrors(url, {parentURL: base.href});
   if (format !== 'module') return
   const urlPath = fileURLToPath$1(url.href);
-  const pkgPath = fileURLToPath$1(new URL$1('.', packageJsonUrl));
+  const packagePath = fileURLToPath$1(new URL$1('.', packageJsonUrl));
   const basePath = fileURLToPath$1(base);
   if (!main) {
     process$1.emitWarning(
-      `No "main" or "exports" field defined in the package.json for ${pkgPath} resolving the main entry point "${urlPath.slice(
-        pkgPath.length
+      `No "main" or "exports" field defined in the package.json for ${packagePath} resolving the main entry point "${urlPath.slice(
+        packagePath.length
       )}", imported from ${basePath}.\nDefault "index" lookups for the main are deprecated for ES modules.`,
       'DeprecationWarning',
       'DEP0151'
     );
-  } else if (path$1.resolve(pkgPath, main) !== urlPath) {
+  } else if (path$1.resolve(packagePath, main) !== urlPath) {
     process$1.emitWarning(
-      `Package ${pkgPath} has a "main" field set to "${main}", ` +
+      `Package ${packagePath} has a "main" field set to "${main}", ` +
         `excluding the full filename and extension to the resolved file at "${urlPath.slice(
-          pkgPath.length
+          packagePath.length
         )}", imported from ${basePath}.\n Automatic extension resolution of the "main" field is ` +
         'deprecated for ES modules.',
       'DeprecationWarning',
@@ -10291,14 +10291,17 @@ function emitLegacyIndexDeprecation(url, packageJsonUrl, base, main) {
 
 /**
  * @param {string} path
- * @returns {Stats}
+ * @returns {Stats | undefined}
  */
 function tryStatSync(path) {
   // Note: from Node 15 onwards we can use `throwIfNoEntry: false` instead.
   try {
     return statSync(path)
   } catch {
-    return new Stats()
+    // Note: in Node code this returns `new Stats`,
+    // but in Node 22 that’s marked as a deprecated internal API.
+    // Which, well, we kinda are, but still to prevent that warning,
+    // just yield `undefined`.
   }
 }
 
@@ -10389,7 +10392,7 @@ function legacyMainResolve(packageJsonUrl, packageConfig, base) {
  * @returns {URL}
  */
 function finalizeResolution(resolved, base, preserveSymlinks) {
-  if (encodedSepRegEx.exec(resolved.pathname) !== null) {
+  if (encodedSeparatorRegEx.exec(resolved.pathname) !== null) {
     throw new ERR_INVALID_MODULE_SPECIFIER(
       resolved.pathname,
       'must not include encoded "/" or "\\" characters',
@@ -10413,14 +10416,14 @@ function finalizeResolution(resolved, base, preserveSymlinks) {
     filePath.endsWith('/') ? filePath.slice(-1) : filePath
   );
 
-  if (stats.isDirectory()) {
+  if (stats && stats.isDirectory()) {
     const error = new ERR_UNSUPPORTED_DIR_IMPORT(filePath, fileURLToPath$1(base));
     // @ts-expect-error Add this for `import.meta.resolve`.
     error.url = String(resolved);
     throw error
   }
 
-  if (!stats.isFile()) {
+  if (!stats || !stats.isFile()) {
     const error = new ERR_MODULE_NOT_FOUND(
       filePath || resolved.pathname,
       base && fileURLToPath$1(base),
@@ -10806,13 +10809,13 @@ function isConditionalExportsMainSugar(exports, packageJsonUrl, base) {
   const keys = Object.getOwnPropertyNames(exports);
   let isConditionalSugar = false;
   let i = 0;
-  let j = -1;
-  while (++j < keys.length) {
-    const key = keys[j];
-    const curIsConditionalSugar = key === '' || key[0] !== '.';
+  let keyIndex = -1;
+  while (++keyIndex < keys.length) {
+    const key = keys[keyIndex];
+    const currentIsConditionalSugar = key === '' || key[0] !== '.';
     if (i++ === 0) {
-      isConditionalSugar = curIsConditionalSugar;
-    } else if (isConditionalSugar !== curIsConditionalSugar) {
+      isConditionalSugar = currentIsConditionalSugar;
+    } else if (isConditionalSugar !== currentIsConditionalSugar) {
       throw new ERR_INVALID_PACKAGE_CONFIG(
         fileURLToPath$1(packageJsonUrl),
         base,
@@ -11071,10 +11074,6 @@ function packageImportsResolve(name, base, conditions) {
   throw importNotDefined(name, packageJsonUrl, base)
 }
 
-// Note: In Node.js, `getPackageType` is here.
-// To prevent a circular dependency, we move it to
-// `resolve-get-package-type.js`.
-
 /**
  * @param {string} specifier
  * @param {URL} base
@@ -11162,7 +11161,7 @@ function packageResolve(specifier, base, conditions) {
   let lastPath;
   do {
     const stat = tryStatSync(packageJsonPath.slice(0, -13));
-    if (!stat.isDirectory()) {
+    if (!stat || !stat.isDirectory()) {
       lastPath = packageJsonPath;
       packageJsonUrl = new URL$1(
         (isScoped ? '../../../../node_modules/' : '../../../node_modules/') +
@@ -11175,10 +11174,7 @@ function packageResolve(specifier, base, conditions) {
     }
 
     // Package match.
-    const packageConfig = packageJsonReader.read(packageJsonPath, {
-      base,
-      specifier
-    });
+    const packageConfig = read$1(packageJsonPath, {base, specifier});
     if (packageConfig.exports !== undefined && packageConfig.exports !== null) {
       return packageExportsResolve(
         packageJsonUrl,
@@ -11244,24 +11240,38 @@ function shouldBeTreatedAsRelativeOrAbsolutePath(specifier) {
  *   A URL object to the found thing.
  */
 function moduleResolve(specifier, base, conditions, preserveSymlinks) {
+  // Note: The Node code supports `base` as a string (in this internal API) too,
+  // we don’t.
   const protocol = base.protocol;
-  const isRemote = protocol === 'http:' || protocol === 'https:';
+  const isData = protocol === 'data:';
+  const isRemote = isData || protocol === 'http:' || protocol === 'https:';
   // Order swapped from spec for minor perf gain.
   // Ok since relative URLs cannot parse as URLs.
   /** @type {URL | undefined} */
   let resolved;
 
   if (shouldBeTreatedAsRelativeOrAbsolutePath(specifier)) {
-    resolved = new URL$1(specifier, base);
-  } else if (!isRemote && specifier[0] === '#') {
+    try {
+      resolved = new URL$1(specifier, base);
+    } catch (error_) {
+      const error = new ERR_UNSUPPORTED_RESOLVE_REQUEST(specifier, base);
+      error.cause = error_;
+      throw error
+    }
+  } else if (protocol === 'file:' && specifier[0] === '#') {
     resolved = packageImportsResolve(specifier, base, conditions);
   } else {
     try {
       resolved = new URL$1(specifier);
-    } catch {
-      if (!isRemote) {
-        resolved = packageResolve(specifier, base, conditions);
+    } catch (error_) {
+      // Note: actual code uses `canBeRequiredWithoutScheme`.
+      if (isRemote && !builtinModules.includes(specifier)) {
+        const error = new ERR_UNSUPPORTED_RESOLVE_REQUEST(specifier, base);
+        error.cause = error_;
+        throw error
       }
+
+      resolved = packageResolve(specifier, base, conditions);
     }
   }
 
@@ -14461,10 +14471,6 @@ function destr(value, options = {}) {
   }
 }
 
-var flat = flatten;
-flatten.flatten = flatten;
-flatten.unflatten = unflatten;
-
 function isBuffer$1 (obj) {
   return obj &&
     obj.constructor &&
@@ -14536,7 +14542,8 @@ function unflatten (target, opts) {
       isNaN(parsedKey) ||
       key.indexOf('.') !== -1 ||
       opts.object
-    ) ? key
+    )
+      ? key
       : parsedKey
   }
 
@@ -14602,7 +14609,9 @@ function unflatten (target, opts) {
       if ((overwrite && !isobject) || (!overwrite && recipient[key1] == null)) {
         recipient[key1] = (
           typeof key2 === 'number' &&
-          !opts.object ? [] : {}
+          !opts.object
+            ? []
+            : {}
         );
       }
 
@@ -14619,8 +14628,6 @@ function unflatten (target, opts) {
 
   return result
 }
-
-const flat$1 = /*@__PURE__*/getDefaultExportFromCjs(flat);
 
 const RE_KEY_VAL = /^\s*([^\s=]+)\s*=\s*(.*)?\s*$/;
 const RE_LINES = /\n|\r|\r\n/;
@@ -14648,7 +14655,7 @@ function parse(contents, options = {}) {
       continue;
     }
     const value = destr(
-      match[2].trim()
+      (match[2] || "").trim()
       /* val */
     );
     if (key.endsWith("[]")) {
@@ -14658,7 +14665,7 @@ function parse(contents, options = {}) {
     }
     config[key] = value;
   }
-  return options.flat ? config : flat$1.unflatten(config, { overwrite: true });
+  return options.flat ? config : unflatten(config, { overwrite: true });
 }
 function parseFile(path, options) {
   if (!existsSync(path)) {
@@ -15626,11 +15633,11 @@ const r=Object.create(null),E=e=>globalThis.process?.env||import.meta.env||globa
 const _messages = {"appName":"Nuxt","version":"","loading":"Loading"};
 const _render = function({ messages }) {
 var __t, __p = '';
-__p += '<!DOCTYPE html><html><head><title>' +
+__p += '<!DOCTYPE html><html data-critters-container><head><title>' +
 ((__t = ( messages.loading )) == null ? '' : __t) +
 ' | ' +
 ((__t = ( messages.appName )) == null ? '' : __t) +
-'</title><meta charset="utf-8"><meta content="width=device-width,initial-scale=1,minimum-scale=1" name="viewport"><style>.nuxt-loader-bar{background:repeating-linear-gradient(to right, #36E4DA 0%, #1DE0B1 25%, #00DC82 50%, #1DE0B1 75%, #36E4DA 100%);height:100px;background-size:200% auto;background-position:0 0;animation:gradient 2s infinite;animation-fill-mode:forwards;animation-timing-function:linear;position:fixed;bottom:0;left:0;right:0;height:5px}.visual-effects .nuxt-loader-bar{height:100px;bottom:-50px;left:-50px;right:-50px;filter:blur(100px)}.visual-effects .mouse-gradient{background:repeating-linear-gradient(to right, #00DC82 0%, #1DE0B1 50%, #36E4DA 100%);filter:blur(100px);opacity:0.5}#animation-toggle{position:fixed;padding:10px;top:0;right:0;transition:opacity 0.4s ease-in;opacity:0}#animation-toggle:hover{opacity:0.8}@keyframes gradient{0%{background-position:0 0}100%{background-position:-200% 0}}@media (prefers-color-scheme: dark){html,body{color:white;color-scheme:dark}.nuxt-loader-bar{opacity:0.5}}*,:before,:after{-webkit-box-sizing:border-box;box-sizing:border-box;border-width:0;border-style:solid;border-color:#e0e0e0}*{--tw-ring-inset:var(--tw-empty, );--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(14, 165, 233, .5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000}:root{-moz-tab-size:4;-o-tab-size:4;tab-size:4}a{color:inherit;text-decoration:inherit}body{margin:0;font-family:inherit;line-height:inherit}button{font-family:inherit;font-size:100%;line-height:1.15;margin:0;text-transform:none;background-color:transparent;background-image:none;padding:0;line-height:inherit;color:inherit}button{-webkit-appearance:button}button{cursor:pointer}html{-webkit-text-size-adjust:100%;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";line-height:1.5}svg{display:block;vertical-align:middle}.bg-white{--tw-bg-opacity:1;background-color:rgba(255,255,255,var(--tw-bg-opacity))}.rounded-full{border-radius:9999px}.flex{display:-webkit-box;display:-ms-flexbox;display:-webkit-flex;display:flex}.flex-col{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;-webkit-flex-direction:column;flex-direction:column}.items-center{-webkit-box-align:center;-ms-flex-align:center;-webkit-align-items:center;align-items:center}.justify-center{-webkit-box-pack:center;-ms-flex-pack:center;-webkit-justify-content:center;justify-content:center}.h-\\[200px\\]{height:200px}.min-h-screen{min-height:100vh}.overflow-hidden{overflow:hidden}.absolute{position:absolute}.relative{position:relative}.top-0{top:0}.text-center{text-align:center}.w-\\[200px\\]{width:200px}.z-20{z-index:20}.transition-opacity{-webkit-transition-property:opacity;-o-transition-property:opacity;transition-property:opacity;-webkit-transition-timing-function:cubic-bezier(.4,0,.2,1);-o-transition-timing-function:cubic-bezier(.4,0,.2,1);transition-timing-function:cubic-bezier(.4,0,.2,1);-webkit-transition-duration:.15s;-o-transition-duration:.15s;transition-duration:.15s}@media (prefers-color-scheme: dark){.dark\\:bg-black{--tw-bg-opacity:1;background-color:rgba(0,0,0,var(--tw-bg-opacity))}}</style><script>(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const e of document.querySelectorAll(\'link[rel="modulepreload"]\'))i(e);new MutationObserver(e=>{for(const r of e)if(r.type==="childList")for(const o of r.addedNodes)o.tagName==="LINK"&&o.rel==="modulepreload"&&i(o)}).observe(document,{childList:!0,subtree:!0});function s(e){const r={};return e.integrity&&(r.integrity=e.integrity),e.referrerPolicy&&(r.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?r.credentials="include":e.crossOrigin==="anonymous"?r.credentials="omit":r.credentials="same-origin",r}function i(e){if(e.ep)return;e.ep=!0;const r=s(e);fetch(e.href,r)}})();</script></head><body class="visual-effects relative overflow-hidden min-h-screen bg-white dark:bg-black flex flex-col justify-center items-center text-center"><div id="mouseLight" class="absolute top-0 rounded-full mouse-gradient transition-opacity h-[200px] w-[200px]"></div><a href="https://nuxt.com" target="_blank" rel="noopener" class="nuxt-logo z-20"><svg id="nuxtImg" xmlns="http://www.w3.org/2000/svg" width="214" height="53" fill="none" viewBox="0 0 800 200"><path fill="#00DC82" d="M168.303 200h111.522c3.543 0 7.022-.924 10.09-2.679A20.086 20.086 0 0 0 297.3 190a19.855 19.855 0 0 0 2.7-10.001 19.858 19.858 0 0 0-2.709-9.998L222.396 41.429a20.09 20.09 0 0 0-7.384-7.32 20.313 20.313 0 0 0-10.088-2.679c-3.541 0-7.02.925-10.087 2.68a20.082 20.082 0 0 0-7.384 7.32l-19.15 32.896L130.86 9.998a20.086 20.086 0 0 0-7.387-7.32A20.322 20.322 0 0 0 113.384 0c-3.542 0-7.022.924-10.09 2.679a20.091 20.091 0 0 0-7.387 7.319L2.709 170A19.853 19.853 0 0 0 0 179.999c-.002 3.511.93 6.96 2.7 10.001a20.091 20.091 0 0 0 7.385 7.321A20.322 20.322 0 0 0 20.175 200h70.004c27.737 0 48.192-12.075 62.266-35.633l34.171-58.652 18.303-31.389 54.93 94.285h-73.233L168.303 200Zm-79.265-31.421-48.854-.011 73.232-125.706 36.541 62.853-24.466 42.01c-9.347 15.285-19.965 20.854-36.453 20.854Z"></path><path fill="currentColor" d="M377 200a4 4 0 0 0 4-4v-93s5.244 8.286 15 25l38.707 66.961c1.789 3.119 5.084 5.039 8.649 5.039H470V50h-27a4 4 0 0 0-4 4v94l-17-30-36.588-62.98c-1.792-3.108-5.081-5.02-8.639-5.02H350v150h27ZM676.203 143.857 710.551 92h-25.73a9.972 9.972 0 0 0-8.333 4.522L660.757 120.5l-15.731-23.978A9.972 9.972 0 0 0 636.693 92h-25.527l34.348 51.643L608.524 200h24.966a9.969 9.969 0 0 0 8.29-4.458l19.18-28.756 18.981 28.72a9.968 9.968 0 0 0 8.313 4.494h24.736l-36.787-56.143ZM724.598 92h19.714V60.071h28.251V92H800v24.857h-27.437V159.5c0 10.5 5.284 15.429 14.43 15.429H800V200h-16.869c-23.576 0-38.819-14.143-38.819-39.214v-43.929h-19.714V92ZM590 92h-15c-3.489 0-6.218.145-8.5 2.523-2.282 2.246-2.5 3.63-2.5 7.066v52.486c0 8.058-.376 12.962-4 16.925-3.624 3.831-8.619 5-16 5-7.247 0-12.376-1.169-16-5-3.624-3.963-4-8.867-4-16.925v-52.486c0-3.435-.218-4.82-2.5-7.066C519.218 92.145 516.489 92 513 92h-15v62.422c0 14.004 3.892 25.101 11.676 33.292C517.594 195.905 529.103 200 544 200c14.897 0 26.204-4.095 34.123-12.286 7.918-8.191 11.877-19.288 11.877-33.292V92Z"></path></svg> </a><button id="animation-toggle">Animation Enabled</button><div class="nuxt-loader-bar"></div><script>const ANIMATION_KEY = \'nuxt-loading-enable-animation\'\n      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)\n\n      let isLowPerformance = checkIsLowPerformance()\n      let enableAnimation = localStorage.getItem(ANIMATION_KEY) === \'false\'\n         ? false\n         : localStorage.getItem(ANIMATION_KEY) === \'true\'\n          ? true\n          : !isLowPerformance\n\n      const mouseLight = window.document.getElementById(\'mouseLight\')\n      const nuxtImg = window.document.getElementById(\'nuxtImg\')\n      const animationToggle = window.document.getElementById(\'animation-toggle\')\n      const body = window.document.body\n      let bodyRect\n\n      function checkIsLowPerformance() {\n        return window.matchMedia(\'(prefers-reduced-motion: reduce)\').matches\n         || navigator.hardwareConcurrency < 2\n         || navigator.deviceMemory < 1\n         // Safari has some performance issue on the blur filter. Remove this when it\'s fixed.\n         || isSafari\n      }\n      function calculateDistance(elem, mouseX, mouseY) {\n        return Math.floor(Math.sqrt(Math.pow(mouseX - (elem.x + (elem.width / 2)), 2) + Math.pow(mouseY - (elem.top + (elem.height / 2)), 2)));\n      }\n      function onFocusOut() {\n        if (!enableAnimation) {\n          return\n        }\n        mouseLight.style.opacity = 0\n        nuxtImg.style.opacity = 0.7\n      }\n      function onMouseMove(e) {\n        if (!enableAnimation) {\n          return\n        }\n        const pointerRect = nuxtImg.getBoundingClientRect()\n        if (!bodyRect) {\n          bodyRect = body.getBoundingClientRect()\n        }\n        const distance = calculateDistance(pointerRect, e.pageX, e.pageY)\n        const size = Math.max((1000 - distance) / 2 / 100, 1)\n\n        mouseLight.style.top = `${e.clientY - bodyRect.y - mouseLight.clientHeight / 2}px`\n        mouseLight.style.left = `${e.clientX - mouseLight.clientWidth / 2}px`\n        mouseLight.style.width = mouseLight.style.height = `${Math.max(Math.round(size * 100), 300)}px`\n        mouseLight.style.filter = `blur(${Math.min(Math.max(size * 50, 100), 160)}px)`\n        mouseLight.style.opacity = Math.min(Math.max(size / 4, 0.6), 1)\n\n        const dx = e.pageX - pointerRect.left\n        const dy = e.pageY - pointerRect.top\n        const logoGradient = `radial-gradient(circle at ${dx}px ${dy}px, black 75%, transparent 100%)`\n        nuxtImg.style[\'-webkit-mask-image\'] = logoGradient\n        nuxtImg.style[\'mask-image\'] = logoGradient\n        nuxtImg.style.opacity = Math.min(Math.max(size / 4, 0.7), 1)\n      }\n\n      function toggleAnimation(value = !enableAnimation) {\n        enableAnimation = value\n        document.body.classList.toggle(\'visual-effects\', enableAnimation)\n        if (value) {\n          onFocusOut()\n          animationToggle.innerText = \'Animation Enabled\'\n        }\n        else {\n          mouseLight.style.opacity = 0\n          nuxtImg.style.opacity = 1\n          nuxtImg.style[\'mask-image\'] = \'\'\n          nuxtImg.style[\'-webkit-mask-image\'] = \'\'\n          animationToggle.innerText = \'Animation Disabled\'\n        }\n        localStorage.setItem(ANIMATION_KEY, enableAnimation ? \'true\' : \'false\')\n      }\n\n      animationToggle.addEventListener(\'click\', () => toggleAnimation(), { passive: true})\n      body.addEventListener(\'mousemove\', onMouseMove, { passive: true })\n      body.addEventListener(\'mouseleave\', onFocusOut, { passive: true })\n\n      toggleAnimation(enableAnimation)\n\n      if (typeof window.fetch === \'undefined\') {\n        setTimeout(() => window.location.reload(), 1000)\n      } else {\n        const check = async () => {\n          try {\n            const body = await window\n              .fetch(window.location.href)\n              .then(r => r.text())\n            if (!body.includes(\'__NUXT_LOADING__\')) {\n              return window\n                .location\n                .reload()\n            }\n          } catch  {}\n          setTimeout(check, 1000)\n        }\n        check()\n      }</script></body></html>';
+'</title><meta charset="utf-8"><meta content="width=device-width,initial-scale=1,minimum-scale=1" name="viewport"><style>.nuxt-loader-bar{background:repeating-linear-gradient(to right, #36E4DA 0%, #1DE0B1 25%, #00DC82 50%, #1DE0B1 75%, #36E4DA 100%);height:100px;background-size:200% auto;background-position:0 0;animation:gradient 2s infinite;animation-fill-mode:forwards;animation-timing-function:linear;position:fixed;bottom:0;left:0;right:0;height:5px}.visual-effects .nuxt-loader-bar{height:100px;bottom:-50px;left:-50px;right:-50px;filter:blur(100px)}.visual-effects .mouse-gradient{background:repeating-linear-gradient(to right, #00DC82 0%, #1DE0B1 50%, #36E4DA 100%);filter:blur(100px);opacity:0.5}#animation-toggle{position:fixed;padding:10px;top:0;right:0;transition:opacity 0.4s ease-in;opacity:0}#animation-toggle:hover{opacity:0.8}@keyframes gradient{0%{background-position:0 0}100%{background-position:-200% 0}}@media (prefers-color-scheme: dark){html,body{color:white;color-scheme:dark}.nuxt-loader-bar{opacity:0.5}}*,:before,:after{box-sizing:border-box;border-width:0;border-style:solid;border-color:var(--un-default-border-color, #e5e7eb)}:before,:after{--un-content:""}html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}a{color:inherit;text-decoration:inherit}button{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}button{text-transform:none}button{-webkit-appearance:button;background-color:transparent;background-image:none}button{cursor:pointer}svg{display:block;vertical-align:middle}*,:before,:after{--un-rotate:0;--un-rotate-x:0;--un-rotate-y:0;--un-rotate-z:0;--un-scale-x:1;--un-scale-y:1;--un-scale-z:1;--un-skew-x:0;--un-skew-y:0;--un-translate-x:0;--un-translate-y:0;--un-translate-z:0;--un-pan-x: ;--un-pan-y: ;--un-pinch-zoom: ;--un-scroll-snap-strictness:proximity;--un-ordinal: ;--un-slashed-zero: ;--un-numeric-figure: ;--un-numeric-spacing: ;--un-numeric-fraction: ;--un-border-spacing-x:0;--un-border-spacing-y:0;--un-ring-offset-shadow:0 0 rgb(0 0 0 / 0);--un-ring-shadow:0 0 rgb(0 0 0 / 0);--un-shadow-inset: ;--un-shadow:0 0 rgb(0 0 0 / 0);--un-ring-inset: ;--un-ring-offset-width:0px;--un-ring-offset-color:#fff;--un-ring-width:0px;--un-ring-color:rgb(147 197 253 / .5);--un-blur: ;--un-brightness: ;--un-contrast: ;--un-drop-shadow: ;--un-grayscale: ;--un-hue-rotate: ;--un-invert: ;--un-saturate: ;--un-sepia: ;--un-backdrop-blur: ;--un-backdrop-brightness: ;--un-backdrop-contrast: ;--un-backdrop-grayscale: ;--un-backdrop-hue-rotate: ;--un-backdrop-invert: ;--un-backdrop-opacity: ;--un-backdrop-saturate: ;--un-backdrop-sepia: }.absolute{position:absolute}.relative{position:relative}.top-0{top:0}.z-20{z-index:20}.h-\\[200px\\]{height:200px}.min-h-screen{min-height:100vh}.w-\\[200px\\]{width:200px}.flex{display:flex}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.overflow-hidden{overflow:hidden}.rounded-full{border-radius:9999px}.bg-white{--un-bg-opacity:1;background-color:rgb(255 255 255 / var(--un-bg-opacity))}.text-center{text-align:center}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}@media (prefers-color-scheme: dark){.dark\\:bg-black{--un-bg-opacity:1;background-color:rgb(0 0 0 / var(--un-bg-opacity))}}</style><script>(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const e of document.querySelectorAll(\'link[rel="modulepreload"]\'))i(e);new MutationObserver(e=>{for(const r of e)if(r.type==="childList")for(const o of r.addedNodes)o.tagName==="LINK"&&o.rel==="modulepreload"&&i(o)}).observe(document,{childList:!0,subtree:!0});function s(e){const r={};return e.integrity&&(r.integrity=e.integrity),e.referrerPolicy&&(r.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?r.credentials="include":e.crossOrigin==="anonymous"?r.credentials="omit":r.credentials="same-origin",r}function i(e){if(e.ep)return;e.ep=!0;const r=s(e);fetch(e.href,r)}})();</script></head><body class="visual-effects relative overflow-hidden min-h-screen bg-white dark:bg-black flex flex-col justify-center items-center text-center"><div id="mouseLight" class="absolute top-0 rounded-full mouse-gradient transition-opacity h-[200px] w-[200px]"></div><a href="https://nuxt.com" target="_blank" rel="noopener" class="nuxt-logo z-20"><svg id="nuxtImg" xmlns="http://www.w3.org/2000/svg" width="214" height="53" fill="none" viewBox="0 0 800 200"><path fill="#00DC82" d="M168.303 200h111.522c3.543 0 7.022-.924 10.09-2.679A20.086 20.086 0 0 0 297.3 190a19.855 19.855 0 0 0 2.7-10.001 19.858 19.858 0 0 0-2.709-9.998L222.396 41.429a20.09 20.09 0 0 0-7.384-7.32 20.313 20.313 0 0 0-10.088-2.679c-3.541 0-7.02.925-10.087 2.68a20.082 20.082 0 0 0-7.384 7.32l-19.15 32.896L130.86 9.998a20.086 20.086 0 0 0-7.387-7.32A20.322 20.322 0 0 0 113.384 0c-3.542 0-7.022.924-10.09 2.679a20.091 20.091 0 0 0-7.387 7.319L2.709 170A19.853 19.853 0 0 0 0 179.999c-.002 3.511.93 6.96 2.7 10.001a20.091 20.091 0 0 0 7.385 7.321A20.322 20.322 0 0 0 20.175 200h70.004c27.737 0 48.192-12.075 62.266-35.633l34.171-58.652 18.303-31.389 54.93 94.285h-73.233L168.303 200Zm-79.265-31.421-48.854-.011 73.232-125.706 36.541 62.853-24.466 42.01c-9.347 15.285-19.965 20.854-36.453 20.854Z"/><path fill="currentColor" d="M377 200a4 4 0 0 0 4-4v-93s5.244 8.286 15 25l38.707 66.961c1.789 3.119 5.084 5.039 8.649 5.039H470V50h-27a4 4 0 0 0-4 4v94l-17-30-36.588-62.98c-1.792-3.108-5.081-5.02-8.639-5.02H350v150h27ZM676.203 143.857 710.551 92h-25.73a9.972 9.972 0 0 0-8.333 4.522L660.757 120.5l-15.731-23.978A9.972 9.972 0 0 0 636.693 92h-25.527l34.348 51.643L608.524 200h24.966a9.969 9.969 0 0 0 8.29-4.458l19.18-28.756 18.981 28.72a9.968 9.968 0 0 0 8.313 4.494h24.736l-36.787-56.143ZM724.598 92h19.714V60.071h28.251V92H800v24.857h-27.437V159.5c0 10.5 5.284 15.429 14.43 15.429H800V200h-16.869c-23.576 0-38.819-14.143-38.819-39.214v-43.929h-19.714V92ZM590 92h-15c-3.489 0-6.218.145-8.5 2.523-2.282 2.246-2.5 3.63-2.5 7.066v52.486c0 8.058-.376 12.962-4 16.925-3.624 3.831-8.619 5-16 5-7.247 0-12.376-1.169-16-5-3.624-3.963-4-8.867-4-16.925v-52.486c0-3.435-.218-4.82-2.5-7.066C519.218 92.145 516.489 92 513 92h-15v62.422c0 14.004 3.892 25.101 11.676 33.292C517.594 195.905 529.103 200 544 200c14.897 0 26.204-4.095 34.123-12.286 7.918-8.191 11.877-19.288 11.877-33.292V92Z"/></svg> </a><button id="animation-toggle">Animation Enabled</button><div class="nuxt-loader-bar"></div><script>const ANIMATION_KEY = \'nuxt-loading-enable-animation\'\n      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)\n\n      let isLowPerformance = checkIsLowPerformance()\n      let enableAnimation = localStorage.getItem(ANIMATION_KEY) === \'false\'\n         ? false\n         : localStorage.getItem(ANIMATION_KEY) === \'true\'\n          ? true\n          : !isLowPerformance\n\n      const mouseLight = window.document.getElementById(\'mouseLight\')\n      const nuxtImg = window.document.getElementById(\'nuxtImg\')\n      const animationToggle = window.document.getElementById(\'animation-toggle\')\n      const body = window.document.body\n      let bodyRect\n\n      function checkIsLowPerformance() {\n        return window.matchMedia(\'(prefers-reduced-motion: reduce)\').matches\n         || navigator.hardwareConcurrency < 2\n         || navigator.deviceMemory < 1\n         // Safari has some performance issue on the blur filter. Remove this when it\'s fixed.\n         || isSafari\n      }\n      function calculateDistance(elem, mouseX, mouseY) {\n        return Math.floor(Math.sqrt(Math.pow(mouseX - (elem.x + (elem.width / 2)), 2) + Math.pow(mouseY - (elem.top + (elem.height / 2)), 2)));\n      }\n      function onFocusOut() {\n        if (!enableAnimation) {\n          return\n        }\n        mouseLight.style.opacity = 0\n        nuxtImg.style.opacity = 0.7\n      }\n      function onMouseMove(e) {\n        if (!enableAnimation) {\n          return\n        }\n        const pointerRect = nuxtImg.getBoundingClientRect()\n        if (!bodyRect) {\n          bodyRect = body.getBoundingClientRect()\n        }\n        const distance = calculateDistance(pointerRect, e.pageX, e.pageY)\n        const size = Math.max((1000 - distance) / 2 / 100, 1)\n\n        mouseLight.style.top = `${e.clientY - bodyRect.y - mouseLight.clientHeight / 2}px`\n        mouseLight.style.left = `${e.clientX - mouseLight.clientWidth / 2}px`\n        mouseLight.style.width = mouseLight.style.height = `${Math.max(Math.round(size * 100), 300)}px`\n        mouseLight.style.filter = `blur(${Math.min(Math.max(size * 50, 100), 160)}px)`\n        mouseLight.style.opacity = Math.min(Math.max(size / 4, 0.6), 1)\n\n        const dx = e.pageX - pointerRect.left\n        const dy = e.pageY - pointerRect.top\n        const logoGradient = `radial-gradient(circle at ${dx}px ${dy}px, black 75%, transparent 100%)`\n        nuxtImg.style[\'-webkit-mask-image\'] = logoGradient\n        nuxtImg.style[\'mask-image\'] = logoGradient\n        nuxtImg.style.opacity = Math.min(Math.max(size / 4, 0.7), 1)\n      }\n\n      function toggleAnimation(value = !enableAnimation) {\n        enableAnimation = value\n        document.body.classList.toggle(\'visual-effects\', enableAnimation)\n        if (value) {\n          onFocusOut()\n          animationToggle.innerText = \'Animation Enabled\'\n        }\n        else {\n          mouseLight.style.opacity = 0\n          nuxtImg.style.opacity = 1\n          nuxtImg.style[\'mask-image\'] = \'\'\n          nuxtImg.style[\'-webkit-mask-image\'] = \'\'\n          animationToggle.innerText = \'Animation Disabled\'\n        }\n        localStorage.setItem(ANIMATION_KEY, enableAnimation ? \'true\' : \'false\')\n      }\n\n      animationToggle.addEventListener(\'click\', () => toggleAnimation(), { passive: true})\n      body.addEventListener(\'mousemove\', onMouseMove, { passive: true })\n      body.addEventListener(\'mouseleave\', onFocusOut, { passive: true })\n\n      toggleAnimation(enableAnimation)\n\n      if (typeof window.fetch === \'undefined\') {\n        setTimeout(() => window.location.reload(), 1000)\n      } else {\n        const check = async () => {\n          try {\n            const body = await window\n              .fetch(window.location.href)\n              .then(r => r.text())\n            if (!body.includes(\'__NUXT_LOADING__\')) {\n              return window\n                .location\n                .reload()\n            }\n          } catch  {}\n          setTimeout(check, 1000)\n        }\n        check()\n      }</script></body></html>';
 return __p
 };
 const _template = (messages) => _render({ messages: { ..._messages, ...messages } });
@@ -15703,6 +15710,14 @@ const app = defineUntypedSchema({
    * Vue.js config
    */
   vue: {
+    /** @type {typeof import('@vue/compiler-sfc').AssetURLTagConfig} */
+    transformAssetUrls: {
+      video: ["src", "poster"],
+      source: ["src"],
+      img: ["src"],
+      image: ["xlink:href", "href"],
+      use: ["xlink:href", "href"]
+    },
     /**
      * Options for the Vue compiler that will be passed at build time.
      * @see [documentation](https://vuejs.org/api/application.html#app-config-compileroptions)
@@ -17181,7 +17196,23 @@ const typescript = defineUntypedSchema({
      */
     hoist: {
       $resolve: (val) => {
-        const defaults = ["nitropack", "defu", "h3", "@unhead/vue", "vue", "vue-router", "@nuxt/schema", "nuxt", "consola", "ofetch"];
+        const defaults = [
+          // Nitro auto-imported/augmented dependencies
+          "nitropack",
+          "defu",
+          "h3",
+          "consola",
+          "ofetch",
+          // Key nuxt dependencies
+          "@unhead/vue",
+          "vue",
+          "@vue/runtime-core",
+          "@vue/compiler-sfc",
+          "@vue/runtime-dom",
+          "vue-router",
+          "@nuxt/schema",
+          "nuxt"
+        ];
         return val === false ? [] : Array.isArray(val) ? val.concat(defaults) : defaults;
       }
     },
@@ -17208,6 +17239,9 @@ const typescript = defineUntypedSchema({
      *
      * We recommend instead letting the [official Vue extension](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
      * generate accurate types for your components.
+     *
+     * Note that you may wish to set this to `true` if you are using other libraries, such as ESLint,
+     * that are unable to understand the type of `.vue` files.
      */
     shim: false
   }
@@ -17259,11 +17293,17 @@ const vite = defineUntypedSchema({
       template: {
         compilerOptions: {
           $resolve: async (val, get) => val ?? (await get("vue")).compilerOptions
+        },
+        transformAssetUrls: {
+          $resolve: async (val, get) => val ?? (await get("vue")).transformAssetUrls
         }
       },
       script: {
         propsDestructure: {
           $resolve: async (val, get) => val ?? Boolean((await get("vue")).propsDestructure)
+        },
+        hoistStatic: {
+          $resolve: async (val, get) => val ?? (await get("vue")).compilerOptions?.hoistStatic
         }
       }
     },
@@ -17508,13 +17548,14 @@ const webpack = defineUntypedSchema({
        */
       vue: {
         transformAssetUrls: {
-          video: "src",
-          source: "src",
-          object: "src",
-          embed: "src"
+          $resolve: async (val, get) => val ?? await get("vue.transformAssetUrls")
         },
-        compilerOptions: { $resolve: async (val, get) => val ?? await get("vue.compilerOptions") },
-        propsDestructure: { $resolve: async (val, get) => val ?? Boolean(await get("vue.propsDestructure")) }
+        compilerOptions: {
+          $resolve: async (val, get) => val ?? await get("vue.compilerOptions")
+        },
+        propsDestructure: {
+          $resolve: async (val, get) => Boolean(val ?? await get("vue.propsDestructure"))
+        }
       },
       css: {
         importLoaders: 0,
@@ -19125,4 +19166,4 @@ const add$1 = {
   default: add
 };
 
-export { dirname as a, basename as b, add$1 as c, defu as d, join as j, normalize as n, resolve as r, yallist as y };
+export { C$1 as C, K$1 as K, N$2 as N, dirname as a, basename as b, add$1 as c, defu as d, join as j, normalize as n, resolve as r, x, yallist as y };

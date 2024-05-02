@@ -71,81 +71,81 @@ var highLevelOpt = opt => opt ? Object.keys(opt).map(k => [
   argmap.has(k) ? argmap.get(k) : k, opt[k],
 ]).reduce((set, kv) => (set[kv[0]] = kv[1], set), Object.create(null)) : {};
 
-var minipass$2 = {};
+var minipass$1 = {};
 
-const proc$2 =
+const proc$1 =
   typeof process === 'object' && process
     ? process
     : {
         stdout: null,
         stderr: null,
       };
-const EE$5 = require$$0$9;
-const Stream$4 = require$$0$a;
+const EE$4 = require$$0$9;
+const Stream$3 = require$$0$a;
 const stringdecoder = require$$2$2;
-const SD$2 = stringdecoder.StringDecoder;
+const SD$1 = stringdecoder.StringDecoder;
 
-const EOF$3 = Symbol('EOF');
-const MAYBE_EMIT_END$2 = Symbol('maybeEmitEnd');
-const EMITTED_END$2 = Symbol('emittedEnd');
-const EMITTING_END$2 = Symbol('emittingEnd');
-const EMITTED_ERROR$2 = Symbol('emittedError');
-const CLOSED$2 = Symbol('closed');
-const READ$3 = Symbol('read');
-const FLUSH$2 = Symbol('flush');
-const FLUSHCHUNK$2 = Symbol('flushChunk');
-const ENCODING$2 = Symbol('encoding');
-const DECODER$2 = Symbol('decoder');
-const FLOWING$2 = Symbol('flowing');
-const PAUSED$2 = Symbol('paused');
-const RESUME$2 = Symbol('resume');
+const EOF$2 = Symbol('EOF');
+const MAYBE_EMIT_END$1 = Symbol('maybeEmitEnd');
+const EMITTED_END$1 = Symbol('emittedEnd');
+const EMITTING_END$1 = Symbol('emittingEnd');
+const EMITTED_ERROR$1 = Symbol('emittedError');
+const CLOSED$1 = Symbol('closed');
+const READ$2 = Symbol('read');
+const FLUSH$1 = Symbol('flush');
+const FLUSHCHUNK$1 = Symbol('flushChunk');
+const ENCODING$1 = Symbol('encoding');
+const DECODER$1 = Symbol('decoder');
+const FLOWING$1 = Symbol('flowing');
+const PAUSED$1 = Symbol('paused');
+const RESUME$1 = Symbol('resume');
 const BUFFER$1 = Symbol('buffer');
 const PIPES = Symbol('pipes');
-const BUFFERLENGTH$2 = Symbol('bufferLength');
-const BUFFERPUSH$2 = Symbol('bufferPush');
-const BUFFERSHIFT$2 = Symbol('bufferShift');
-const OBJECTMODE$2 = Symbol('objectMode');
+const BUFFERLENGTH$1 = Symbol('bufferLength');
+const BUFFERPUSH$1 = Symbol('bufferPush');
+const BUFFERSHIFT$1 = Symbol('bufferShift');
+const OBJECTMODE$1 = Symbol('objectMode');
 // internal event when stream is destroyed
-const DESTROYED$2 = Symbol('destroyed');
+const DESTROYED$1 = Symbol('destroyed');
 // internal event when stream has an error
 const ERROR = Symbol('error');
-const EMITDATA$2 = Symbol('emitData');
-const EMITEND$2 = Symbol('emitEnd');
-const EMITEND2$2 = Symbol('emitEnd2');
-const ASYNC$2 = Symbol('async');
+const EMITDATA$1 = Symbol('emitData');
+const EMITEND$1 = Symbol('emitEnd');
+const EMITEND2$1 = Symbol('emitEnd2');
+const ASYNC$1 = Symbol('async');
 const ABORT = Symbol('abort');
 const ABORTED$1 = Symbol('aborted');
 const SIGNAL = Symbol('signal');
 
-const defer$2 = fn => Promise.resolve().then(fn);
+const defer$1 = fn => Promise.resolve().then(fn);
 
 // TODO remove when Node v8 support drops
-const doIter$2 = commonjsGlobal$1._MP_NO_ITERATOR_SYMBOLS_ !== '1';
-const ASYNCITERATOR$2 =
-  (doIter$2 && Symbol.asyncIterator) || Symbol('asyncIterator not implemented');
-const ITERATOR$2 =
-  (doIter$2 && Symbol.iterator) || Symbol('iterator not implemented');
+const doIter$1 = commonjsGlobal$1._MP_NO_ITERATOR_SYMBOLS_ !== '1';
+const ASYNCITERATOR$1 =
+  (doIter$1 && Symbol.asyncIterator) || Symbol('asyncIterator not implemented');
+const ITERATOR$1 =
+  (doIter$1 && Symbol.iterator) || Symbol('iterator not implemented');
 
 // events that mean 'the stream is over'
 // these are treated specially, and re-emitted
 // if they are listened for after emitting.
-const isEndish$2 = ev => ev === 'end' || ev === 'finish' || ev === 'prefinish';
+const isEndish$1 = ev => ev === 'end' || ev === 'finish' || ev === 'prefinish';
 
-const isArrayBuffer$2 = b =>
+const isArrayBuffer$1 = b =>
   b instanceof ArrayBuffer ||
   (typeof b === 'object' &&
     b.constructor &&
     b.constructor.name === 'ArrayBuffer' &&
     b.byteLength >= 0);
 
-const isArrayBufferView$2 = b => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
+const isArrayBufferView$1 = b => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
 
-let Pipe$2 = class Pipe {
+let Pipe$1 = class Pipe {
   constructor(src, dest, opts) {
     this.src = src;
     this.dest = dest;
     this.opts = opts;
-    this.ondrain = () => src[RESUME$2]();
+    this.ondrain = () => src[RESUME$1]();
     dest.on('drain', this.ondrain);
   }
   unpipe() {
@@ -159,7 +159,7 @@ let Pipe$2 = class Pipe {
   }
 };
 
-let PipeProxyErrors$2 = class PipeProxyErrors extends Pipe$2 {
+let PipeProxyErrors$1 = class PipeProxyErrors extends Pipe$1 {
   unpipe() {
     this.src.removeListener('error', this.proxyErrors);
     super.unpipe();
@@ -171,29 +171,29 @@ let PipeProxyErrors$2 = class PipeProxyErrors extends Pipe$2 {
   }
 };
 
-let Minipass$4 = class Minipass extends Stream$4 {
+let Minipass$4 = class Minipass extends Stream$3 {
   constructor(options) {
     super();
-    this[FLOWING$2] = false;
+    this[FLOWING$1] = false;
     // whether we're explicitly paused
-    this[PAUSED$2] = false;
+    this[PAUSED$1] = false;
     this[PIPES] = [];
     this[BUFFER$1] = [];
-    this[OBJECTMODE$2] = (options && options.objectMode) || false;
-    if (this[OBJECTMODE$2]) this[ENCODING$2] = null;
-    else this[ENCODING$2] = (options && options.encoding) || null;
-    if (this[ENCODING$2] === 'buffer') this[ENCODING$2] = null;
-    this[ASYNC$2] = (options && !!options.async) || false;
-    this[DECODER$2] = this[ENCODING$2] ? new SD$2(this[ENCODING$2]) : null;
-    this[EOF$3] = false;
-    this[EMITTED_END$2] = false;
-    this[EMITTING_END$2] = false;
-    this[CLOSED$2] = false;
-    this[EMITTED_ERROR$2] = null;
+    this[OBJECTMODE$1] = (options && options.objectMode) || false;
+    if (this[OBJECTMODE$1]) this[ENCODING$1] = null;
+    else this[ENCODING$1] = (options && options.encoding) || null;
+    if (this[ENCODING$1] === 'buffer') this[ENCODING$1] = null;
+    this[ASYNC$1] = (options && !!options.async) || false;
+    this[DECODER$1] = this[ENCODING$1] ? new SD$1(this[ENCODING$1]) : null;
+    this[EOF$2] = false;
+    this[EMITTED_END$1] = false;
+    this[EMITTING_END$1] = false;
+    this[CLOSED$1] = false;
+    this[EMITTED_ERROR$1] = null;
     this.writable = true;
     this.readable = true;
-    this[BUFFERLENGTH$2] = 0;
-    this[DESTROYED$2] = false;
+    this[BUFFERLENGTH$1] = 0;
+    this[DESTROYED$1] = false;
     if (options && options.debugExposeBuffer === true) {
       Object.defineProperty(this, 'buffer', { get: () => this[BUFFER$1] });
     }
@@ -211,29 +211,29 @@ let Minipass$4 = class Minipass extends Stream$4 {
   }
 
   get bufferLength() {
-    return this[BUFFERLENGTH$2]
+    return this[BUFFERLENGTH$1]
   }
 
   get encoding() {
-    return this[ENCODING$2]
+    return this[ENCODING$1]
   }
   set encoding(enc) {
-    if (this[OBJECTMODE$2]) throw new Error('cannot set encoding in objectMode')
+    if (this[OBJECTMODE$1]) throw new Error('cannot set encoding in objectMode')
 
     if (
-      this[ENCODING$2] &&
-      enc !== this[ENCODING$2] &&
-      ((this[DECODER$2] && this[DECODER$2].lastNeed) || this[BUFFERLENGTH$2])
+      this[ENCODING$1] &&
+      enc !== this[ENCODING$1] &&
+      ((this[DECODER$1] && this[DECODER$1].lastNeed) || this[BUFFERLENGTH$1])
     )
       throw new Error('cannot change encoding')
 
-    if (this[ENCODING$2] !== enc) {
-      this[DECODER$2] = enc ? new SD$2(enc) : null;
+    if (this[ENCODING$1] !== enc) {
+      this[DECODER$1] = enc ? new SD$1(enc) : null;
       if (this[BUFFER$1].length)
-        this[BUFFER$1] = this[BUFFER$1].map(chunk => this[DECODER$2].write(chunk));
+        this[BUFFER$1] = this[BUFFER$1].map(chunk => this[DECODER$1].write(chunk));
     }
 
-    this[ENCODING$2] = enc;
+    this[ENCODING$1] = enc;
   }
 
   setEncoding(enc) {
@@ -241,17 +241,17 @@ let Minipass$4 = class Minipass extends Stream$4 {
   }
 
   get objectMode() {
-    return this[OBJECTMODE$2]
+    return this[OBJECTMODE$1]
   }
   set objectMode(om) {
-    this[OBJECTMODE$2] = this[OBJECTMODE$2] || !!om;
+    this[OBJECTMODE$1] = this[OBJECTMODE$1] || !!om;
   }
 
   get ['async']() {
-    return this[ASYNC$2]
+    return this[ASYNC$1]
   }
   set ['async'](a) {
-    this[ASYNC$2] = this[ASYNC$2] || !!a;
+    this[ASYNC$1] = this[ASYNC$1] || !!a;
   }
 
   // drop everything and get out of the flow completely
@@ -268,9 +268,9 @@ let Minipass$4 = class Minipass extends Stream$4 {
 
   write(chunk, encoding, cb) {
     if (this[ABORTED$1]) return false
-    if (this[EOF$3]) throw new Error('write after end')
+    if (this[EOF$2]) throw new Error('write after end')
 
-    if (this[DESTROYED$2]) {
+    if (this[DESTROYED$1]) {
       this.emit(
         'error',
         Object.assign(
@@ -285,16 +285,16 @@ let Minipass$4 = class Minipass extends Stream$4 {
 
     if (!encoding) encoding = 'utf8';
 
-    const fn = this[ASYNC$2] ? defer$2 : f => f();
+    const fn = this[ASYNC$1] ? defer$1 : f => f();
 
     // convert array buffers and typed array views into buffers
     // at some point in the future, we may want to do the opposite!
     // leave strings and buffers as-is
     // anything else switches us into object mode
-    if (!this[OBJECTMODE$2] && !Buffer.isBuffer(chunk)) {
-      if (isArrayBufferView$2(chunk))
+    if (!this[OBJECTMODE$1] && !Buffer.isBuffer(chunk)) {
+      if (isArrayBufferView$1(chunk))
         chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
-      else if (isArrayBuffer$2(chunk)) chunk = Buffer.from(chunk);
+      else if (isArrayBuffer$1(chunk)) chunk = Buffer.from(chunk);
       else if (typeof chunk !== 'string')
         // use the setter so we throw if we have encoding set
         this.objectMode = true;
@@ -302,14 +302,14 @@ let Minipass$4 = class Minipass extends Stream$4 {
 
     // handle object mode up front, since it's simpler
     // this yields better performance, fewer checks later.
-    if (this[OBJECTMODE$2]) {
+    if (this[OBJECTMODE$1]) {
       /* istanbul ignore if - maybe impossible? */
-      if (this.flowing && this[BUFFERLENGTH$2] !== 0) this[FLUSH$2](true);
+      if (this.flowing && this[BUFFERLENGTH$1] !== 0) this[FLUSH$1](true);
 
       if (this.flowing) this.emit('data', chunk);
-      else this[BUFFERPUSH$2](chunk);
+      else this[BUFFERPUSH$1](chunk);
 
-      if (this[BUFFERLENGTH$2] !== 0) this.emit('readable');
+      if (this[BUFFERLENGTH$1] !== 0) this.emit('readable');
 
       if (cb) fn(cb);
 
@@ -319,7 +319,7 @@ let Minipass$4 = class Minipass extends Stream$4 {
     // at this point the chunk is a buffer or string
     // don't buffer it up or send it to the decoder
     if (!chunk.length) {
-      if (this[BUFFERLENGTH$2] !== 0) this.emit('readable');
+      if (this[BUFFERLENGTH$1] !== 0) this.emit('readable');
       if (cb) fn(cb);
       return this.flowing
     }
@@ -329,21 +329,21 @@ let Minipass$4 = class Minipass extends Stream$4 {
     if (
       typeof chunk === 'string' &&
       // unless it is a string already ready for us to use
-      !(encoding === this[ENCODING$2] && !this[DECODER$2].lastNeed)
+      !(encoding === this[ENCODING$1] && !this[DECODER$1].lastNeed)
     ) {
       chunk = Buffer.from(chunk, encoding);
     }
 
-    if (Buffer.isBuffer(chunk) && this[ENCODING$2])
-      chunk = this[DECODER$2].write(chunk);
+    if (Buffer.isBuffer(chunk) && this[ENCODING$1])
+      chunk = this[DECODER$1].write(chunk);
 
     // Note: flushing CAN potentially switch us into not-flowing mode
-    if (this.flowing && this[BUFFERLENGTH$2] !== 0) this[FLUSH$2](true);
+    if (this.flowing && this[BUFFERLENGTH$1] !== 0) this[FLUSH$1](true);
 
     if (this.flowing) this.emit('data', chunk);
-    else this[BUFFERPUSH$2](chunk);
+    else this[BUFFERPUSH$1](chunk);
 
-    if (this[BUFFERLENGTH$2] !== 0) this.emit('readable');
+    if (this[BUFFERLENGTH$1] !== 0) this.emit('readable');
 
     if (cb) fn(cb);
 
@@ -351,36 +351,36 @@ let Minipass$4 = class Minipass extends Stream$4 {
   }
 
   read(n) {
-    if (this[DESTROYED$2]) return null
+    if (this[DESTROYED$1]) return null
 
-    if (this[BUFFERLENGTH$2] === 0 || n === 0 || n > this[BUFFERLENGTH$2]) {
-      this[MAYBE_EMIT_END$2]();
+    if (this[BUFFERLENGTH$1] === 0 || n === 0 || n > this[BUFFERLENGTH$1]) {
+      this[MAYBE_EMIT_END$1]();
       return null
     }
 
-    if (this[OBJECTMODE$2]) n = null;
+    if (this[OBJECTMODE$1]) n = null;
 
-    if (this[BUFFER$1].length > 1 && !this[OBJECTMODE$2]) {
+    if (this[BUFFER$1].length > 1 && !this[OBJECTMODE$1]) {
       if (this.encoding) this[BUFFER$1] = [this[BUFFER$1].join('')];
-      else this[BUFFER$1] = [Buffer.concat(this[BUFFER$1], this[BUFFERLENGTH$2])];
+      else this[BUFFER$1] = [Buffer.concat(this[BUFFER$1], this[BUFFERLENGTH$1])];
     }
 
-    const ret = this[READ$3](n || null, this[BUFFER$1][0]);
-    this[MAYBE_EMIT_END$2]();
+    const ret = this[READ$2](n || null, this[BUFFER$1][0]);
+    this[MAYBE_EMIT_END$1]();
     return ret
   }
 
-  [READ$3](n, chunk) {
-    if (n === chunk.length || n === null) this[BUFFERSHIFT$2]();
+  [READ$2](n, chunk) {
+    if (n === chunk.length || n === null) this[BUFFERSHIFT$1]();
     else {
       this[BUFFER$1][0] = chunk.slice(n);
       chunk = chunk.slice(0, n);
-      this[BUFFERLENGTH$2] -= n;
+      this[BUFFERLENGTH$1] -= n;
     }
 
     this.emit('data', chunk);
 
-    if (!this[BUFFER$1].length && !this[EOF$3]) this.emit('drain');
+    if (!this[BUFFER$1].length && !this[EOF$2]) this.emit('drain');
 
     return chunk
   }
@@ -390,79 +390,79 @@ let Minipass$4 = class Minipass extends Stream$4 {
     if (typeof encoding === 'function') (cb = encoding), (encoding = 'utf8');
     if (chunk) this.write(chunk, encoding);
     if (cb) this.once('end', cb);
-    this[EOF$3] = true;
+    this[EOF$2] = true;
     this.writable = false;
 
     // if we haven't written anything, then go ahead and emit,
     // even if we're not reading.
     // we'll re-emit if a new 'end' listener is added anyway.
     // This makes MP more suitable to write-only use cases.
-    if (this.flowing || !this[PAUSED$2]) this[MAYBE_EMIT_END$2]();
+    if (this.flowing || !this[PAUSED$1]) this[MAYBE_EMIT_END$1]();
     return this
   }
 
   // don't let the internal resume be overwritten
-  [RESUME$2]() {
-    if (this[DESTROYED$2]) return
+  [RESUME$1]() {
+    if (this[DESTROYED$1]) return
 
-    this[PAUSED$2] = false;
-    this[FLOWING$2] = true;
+    this[PAUSED$1] = false;
+    this[FLOWING$1] = true;
     this.emit('resume');
-    if (this[BUFFER$1].length) this[FLUSH$2]();
-    else if (this[EOF$3]) this[MAYBE_EMIT_END$2]();
+    if (this[BUFFER$1].length) this[FLUSH$1]();
+    else if (this[EOF$2]) this[MAYBE_EMIT_END$1]();
     else this.emit('drain');
   }
 
   resume() {
-    return this[RESUME$2]()
+    return this[RESUME$1]()
   }
 
   pause() {
-    this[FLOWING$2] = false;
-    this[PAUSED$2] = true;
+    this[FLOWING$1] = false;
+    this[PAUSED$1] = true;
   }
 
   get destroyed() {
-    return this[DESTROYED$2]
+    return this[DESTROYED$1]
   }
 
   get flowing() {
-    return this[FLOWING$2]
+    return this[FLOWING$1]
   }
 
   get paused() {
-    return this[PAUSED$2]
+    return this[PAUSED$1]
   }
 
-  [BUFFERPUSH$2](chunk) {
-    if (this[OBJECTMODE$2]) this[BUFFERLENGTH$2] += 1;
-    else this[BUFFERLENGTH$2] += chunk.length;
+  [BUFFERPUSH$1](chunk) {
+    if (this[OBJECTMODE$1]) this[BUFFERLENGTH$1] += 1;
+    else this[BUFFERLENGTH$1] += chunk.length;
     this[BUFFER$1].push(chunk);
   }
 
-  [BUFFERSHIFT$2]() {
-    if (this[OBJECTMODE$2]) this[BUFFERLENGTH$2] -= 1;
-    else this[BUFFERLENGTH$2] -= this[BUFFER$1][0].length;
+  [BUFFERSHIFT$1]() {
+    if (this[OBJECTMODE$1]) this[BUFFERLENGTH$1] -= 1;
+    else this[BUFFERLENGTH$1] -= this[BUFFER$1][0].length;
     return this[BUFFER$1].shift()
   }
 
-  [FLUSH$2](noDrain) {
-    do {} while (this[FLUSHCHUNK$2](this[BUFFERSHIFT$2]()) && this[BUFFER$1].length)
+  [FLUSH$1](noDrain) {
+    do {} while (this[FLUSHCHUNK$1](this[BUFFERSHIFT$1]()) && this[BUFFER$1].length)
 
-    if (!noDrain && !this[BUFFER$1].length && !this[EOF$3]) this.emit('drain');
+    if (!noDrain && !this[BUFFER$1].length && !this[EOF$2]) this.emit('drain');
   }
 
-  [FLUSHCHUNK$2](chunk) {
+  [FLUSHCHUNK$1](chunk) {
     this.emit('data', chunk);
     return this.flowing
   }
 
   pipe(dest, opts) {
-    if (this[DESTROYED$2]) return
+    if (this[DESTROYED$1]) return
 
-    const ended = this[EMITTED_END$2];
+    const ended = this[EMITTED_END$1];
     opts = opts || {};
-    if (dest === proc$2.stdout || dest === proc$2.stderr) opts.end = false;
+    if (dest === proc$1.stdout || dest === proc$1.stderr) opts.end = false;
     else opts.end = opts.end !== false;
     opts.proxyErrors = !!opts.proxyErrors;
 
@@ -472,11 +472,11 @@ let Minipass$4 = class Minipass extends Stream$4 {
     } else {
       this[PIPES].push(
         !opts.proxyErrors
-          ? new Pipe$2(this, dest, opts)
-          : new PipeProxyErrors$2(this, dest, opts)
+          ? new Pipe$1(this, dest, opts)
+          : new PipeProxyErrors$1(this, dest, opts)
       );
-      if (this[ASYNC$2]) defer$2(() => this[RESUME$2]());
-      else this[RESUME$2]();
+      if (this[ASYNC$1]) defer$1(() => this[RESUME$1]());
+      else this[RESUME$1]();
     }
 
     return dest
@@ -496,71 +496,71 @@ let Minipass$4 = class Minipass extends Stream$4 {
 
   on(ev, fn) {
     const ret = super.on(ev, fn);
-    if (ev === 'data' && !this[PIPES].length && !this.flowing) this[RESUME$2]();
-    else if (ev === 'readable' && this[BUFFERLENGTH$2] !== 0)
+    if (ev === 'data' && !this[PIPES].length && !this.flowing) this[RESUME$1]();
+    else if (ev === 'readable' && this[BUFFERLENGTH$1] !== 0)
       super.emit('readable');
-    else if (isEndish$2(ev) && this[EMITTED_END$2]) {
+    else if (isEndish$1(ev) && this[EMITTED_END$1]) {
       super.emit(ev);
       this.removeAllListeners(ev);
-    } else if (ev === 'error' && this[EMITTED_ERROR$2]) {
-      if (this[ASYNC$2]) defer$2(() => fn.call(this, this[EMITTED_ERROR$2]));
-      else fn.call(this, this[EMITTED_ERROR$2]);
+    } else if (ev === 'error' && this[EMITTED_ERROR$1]) {
+      if (this[ASYNC$1]) defer$1(() => fn.call(this, this[EMITTED_ERROR$1]));
+      else fn.call(this, this[EMITTED_ERROR$1]);
     }
     return ret
   }
 
   get emittedEnd() {
-    return this[EMITTED_END$2]
+    return this[EMITTED_END$1]
   }
 
-  [MAYBE_EMIT_END$2]() {
+  [MAYBE_EMIT_END$1]() {
     if (
-      !this[EMITTING_END$2] &&
-      !this[EMITTED_END$2] &&
-      !this[DESTROYED$2] &&
+      !this[EMITTING_END$1] &&
+      !this[EMITTED_END$1] &&
+      !this[DESTROYED$1] &&
       this[BUFFER$1].length === 0 &&
-      this[EOF$3]
+      this[EOF$2]
     ) {
-      this[EMITTING_END$2] = true;
+      this[EMITTING_END$1] = true;
       this.emit('end');
       this.emit('prefinish');
       this.emit('finish');
-      if (this[CLOSED$2]) this.emit('close');
-      this[EMITTING_END$2] = false;
+      if (this[CLOSED$1]) this.emit('close');
+      this[EMITTING_END$1] = false;
     }
   }
 
   emit(ev, data, ...extra) {
     // error and close are only events allowed after calling destroy()
-    if (ev !== 'error' && ev !== 'close' && ev !== DESTROYED$2 && this[DESTROYED$2])
+    if (ev !== 'error' && ev !== 'close' && ev !== DESTROYED$1 && this[DESTROYED$1])
       return
     else if (ev === 'data') {
-      return !this[OBJECTMODE$2] && !data
+      return !this[OBJECTMODE$1] && !data
         ? false
-        : this[ASYNC$2]
-        ? defer$2(() => this[EMITDATA$2](data))
-        : this[EMITDATA$2](data)
+        : this[ASYNC$1]
+        ? defer$1(() => this[EMITDATA$1](data))
+        : this[EMITDATA$1](data)
     } else if (ev === 'end') {
-      return this[EMITEND$2]()
+      return this[EMITEND$1]()
     } else if (ev === 'close') {
-      this[CLOSED$2] = true;
+      this[CLOSED$1] = true;
       // don't emit close before 'end' and 'finish'
-      if (!this[EMITTED_END$2] && !this[DESTROYED$2]) return
+      if (!this[EMITTED_END$1] && !this[DESTROYED$1]) return
       const ret = super.emit('close');
       this.removeAllListeners('close');
       return ret
     } else if (ev === 'error') {
-      this[EMITTED_ERROR$2] = data;
+      this[EMITTED_ERROR$1] = data;
       super.emit(ERROR, data);
       const ret =
         !this[SIGNAL] || this.listeners('error').length
           ? super.emit('error', data)
           : false;
-      this[MAYBE_EMIT_END$2]();
+      this[MAYBE_EMIT_END$1]();
       return ret
     } else if (ev === 'resume') {
       const ret = super.emit('resume');
-      this[MAYBE_EMIT_END$2]();
+      this[MAYBE_EMIT_END$1]();
       return ret
     } else if (ev === 'finish' || ev === 'prefinish') {
       const ret = super.emit(ev);
@@ -570,31 +570,31 @@ let Minipass$4 = class Minipass extends Stream$4 {
 
     // Some other unknown event
     const ret = super.emit(ev, data, ...extra);
-    this[MAYBE_EMIT_END$2]();
+    this[MAYBE_EMIT_END$1]();
     return ret
   }
 
-  [EMITDATA$2](data) {
+  [EMITDATA$1](data) {
     for (const p of this[PIPES]) {
       if (p.dest.write(data) === false) this.pause();
     }
     const ret = super.emit('data', data);
-    this[MAYBE_EMIT_END$2]();
+    this[MAYBE_EMIT_END$1]();
     return ret
   }
 
-  [EMITEND$2]() {
-    if (this[EMITTED_END$2]) return
+  [EMITEND$1]() {
+    if (this[EMITTED_END$1]) return
 
-    this[EMITTED_END$2] = true;
+    this[EMITTED_END$1] = true;
     this.readable = false;
-    if (this[ASYNC$2]) defer$2(() => this[EMITEND2$2]());
-    else this[EMITEND2$2]();
+    if (this[ASYNC$1]) defer$1(() => this[EMITEND2$1]());
+    else this[EMITEND2$1]();
   }
 
-  [EMITEND2$2]() {
-    if (this[DECODER$2]) {
-      const data = this[DECODER$2].end();
+  [EMITEND2$1]() {
+    if (this[DECODER$1]) {
+      const data = this[DECODER$1].end();
       if (data) {
         for (const p of this[PIPES]) {
           p.dest.write(data);
@@ -614,25 +614,25 @@ let Minipass$4 = class Minipass extends Stream$4 {
   // const all = await stream.collect()
   collect() {
     const buf = [];
-    if (!this[OBJECTMODE$2]) buf.dataLength = 0;
+    if (!this[OBJECTMODE$1]) buf.dataLength = 0;
     // set the promise first, in case an error is raised
     // by triggering the flow here.
     const p = this.promise();
     this.on('data', c => {
       buf.push(c);
-      if (!this[OBJECTMODE$2]) buf.dataLength += c.length;
+      if (!this[OBJECTMODE$1]) buf.dataLength += c.length;
     });
     return p.then(() => buf)
   }
 
   // const data = await stream.concat()
   concat() {
-    return this[OBJECTMODE$2]
+    return this[OBJECTMODE$1]
       ? Promise.reject(new Error('cannot concat in objectMode'))
       : this.collect().then(buf =>
-          this[OBJECTMODE$2]
+          this[OBJECTMODE$1]
             ? Promise.reject(new Error('cannot concat in objectMode'))
-            : this[ENCODING$2]
+            : this[ENCODING$1]
             ? buf.join('')
             : Buffer.concat(buf, buf.dataLength)
         )
@@ -641,14 +641,14 @@ let Minipass$4 = class Minipass extends Stream$4 {
   // stream.promise().then(() => done, er => emitted error)
   promise() {
     return new Promise((resolve, reject) => {
-      this.on(DESTROYED$2, () => reject(new Error('stream destroyed')));
+      this.on(DESTROYED$1, () => reject(new Error('stream destroyed')));
       this.on('error', er => reject(er));
       this.on('end', () => resolve());
     })
   }
 
   // for await (let chunk of stream)
-  [ASYNCITERATOR$2]() {
+  [ASYNCITERATOR$1]() {
     let stopped = false;
     const stop = () => {
       this.pause();
@@ -660,28 +660,28 @@ let Minipass$4 = class Minipass extends Stream$4 {
       const res = this.read();
       if (res !== null) return Promise.resolve({ done: false, value: res })
 
-      if (this[EOF$3]) return stop()
+      if (this[EOF$2]) return stop()
 
       let resolve = null;
       let reject = null;
       const onerr = er => {
         this.removeListener('data', ondata);
         this.removeListener('end', onend);
-        this.removeListener(DESTROYED$2, ondestroy);
+        this.removeListener(DESTROYED$1, ondestroy);
         stop();
         reject(er);
       };
       const ondata = value => {
         this.removeListener('error', onerr);
         this.removeListener('end', onend);
-        this.removeListener(DESTROYED$2, ondestroy);
+        this.removeListener(DESTROYED$1, ondestroy);
         this.pause();
-        resolve({ value: value, done: !!this[EOF$3] });
+        resolve({ value: value, done: !!this[EOF$2] });
       };
       const onend = () => {
         this.removeListener('error', onerr);
         this.removeListener('data', ondata);
-        this.removeListener(DESTROYED$2, ondestroy);
+        this.removeListener(DESTROYED$1, ondestroy);
         stop();
         resolve({ done: true });
       };
@@ -689,7 +689,7 @@ let Minipass$4 = class Minipass extends Stream$4 {
       return new Promise((res, rej) => {
         reject = rej;
         resolve = res;
-        this.once(DESTROYED$2, ondestroy);
+        this.once(DESTROYED$1, ondestroy);
         this.once('error', onerr);
         this.once('end', onend);
         this.once('data', ondata);
@@ -700,19 +700,19 @@ let Minipass$4 = class Minipass extends Stream$4 {
       next,
       throw: stop,
       return: stop,
-      [ASYNCITERATOR$2]() {
+      [ASYNCITERATOR$1]() {
         return this
       },
     }
   }
 
   // for (let chunk of stream)
-  [ITERATOR$2]() {
+  [ITERATOR$1]() {
     let stopped = false;
     const stop = () => {
       this.pause();
       this.removeListener(ERROR, stop);
-      this.removeListener(DESTROYED$2, stop);
+      this.removeListener(DESTROYED$1, stop);
       this.removeListener('end', stop);
       stopped = true;
       return { done: true }
@@ -725,36 +725,36 @@ let Minipass$4 = class Minipass extends Stream$4 {
     };
     this.once('end', stop);
     this.once(ERROR, stop);
-    this.once(DESTROYED$2, stop);
+    this.once(DESTROYED$1, stop);
 
     return {
       next,
       throw: stop,
       return: stop,
-      [ITERATOR$2]() {
+      [ITERATOR$1]() {
         return this
       },
     }
   }
 
   destroy(er) {
-    if (this[DESTROYED$2]) {
+    if (this[DESTROYED$1]) {
       if (er) this.emit('error', er);
-      else this.emit(DESTROYED$2);
+      else this.emit(DESTROYED$1);
       return this
     }
 
-    this[DESTROYED$2] = true;
+    this[DESTROYED$1] = true;
 
     // throw away all buffered data, it's never coming out
     this[BUFFER$1].length = 0;
-    this[BUFFERLENGTH$2] = 0;
+    this[BUFFERLENGTH$1] = 0;
 
-    if (typeof this.close === 'function' && !this[CLOSED$2]) this.close();
+    if (typeof this.close === 'function' && !this[CLOSED$1]) this.close();
 
     if (er) this.emit('error', er);
     // if no error to emit, still reject pending promises
-    else this.emit(DESTROYED$2);
+    else this.emit(DESTROYED$1);
 
     return this
   }
@@ -763,8 +763,8 @@ let Minipass$4 = class Minipass extends Stream$4 {
     return (
       !!s &&
       (s instanceof Minipass ||
-        s instanceof Stream$4 ||
-        (s instanceof EE$5 &&
+        s instanceof Stream$3 ||
+        (s instanceof EE$4 &&
           // readable
           (typeof s.pipe === 'function' ||
             // writable
@@ -773,7 +773,7 @@ let Minipass$4 = class Minipass extends Stream$4 {
   }
 };
 
-minipass$2.Minipass = Minipass$4;
+minipass$1.Minipass = Minipass$4;
 
 var minizlib = {};
 
@@ -893,69 +893,69 @@ var constants$7 = Object.freeze(Object.assign(Object.create(null), {
   BROTLI_DECODER_ERROR_UNREACHABLE: -31,
 }, realZlibConstants));
 
-const proc$1 = typeof process === 'object' && process ? process : {
+const proc = typeof process === 'object' && process ? process : {
   stdout: null,
   stderr: null,
 };
-const EE$4 = require$$0$9;
-const Stream$3 = require$$0$a;
-const SD$1 = require$$2$2.StringDecoder;
+const EE$3 = require$$0$9;
+const Stream$2 = require$$0$a;
+const SD = require$$2$2.StringDecoder;
 
-const EOF$2 = Symbol('EOF');
-const MAYBE_EMIT_END$1 = Symbol('maybeEmitEnd');
-const EMITTED_END$1 = Symbol('emittedEnd');
-const EMITTING_END$1 = Symbol('emittingEnd');
-const EMITTED_ERROR$1 = Symbol('emittedError');
-const CLOSED$1 = Symbol('closed');
-const READ$2 = Symbol('read');
-const FLUSH$1 = Symbol('flush');
-const FLUSHCHUNK$1 = Symbol('flushChunk');
-const ENCODING$1 = Symbol('encoding');
-const DECODER$1 = Symbol('decoder');
-const FLOWING$1 = Symbol('flowing');
-const PAUSED$1 = Symbol('paused');
-const RESUME$1 = Symbol('resume');
-const BUFFERLENGTH$1 = Symbol('bufferLength');
-const BUFFERPUSH$1 = Symbol('bufferPush');
-const BUFFERSHIFT$1 = Symbol('bufferShift');
-const OBJECTMODE$1 = Symbol('objectMode');
-const DESTROYED$1 = Symbol('destroyed');
-const EMITDATA$1 = Symbol('emitData');
-const EMITEND$1 = Symbol('emitEnd');
-const EMITEND2$1 = Symbol('emitEnd2');
-const ASYNC$1 = Symbol('async');
+const EOF$1 = Symbol('EOF');
+const MAYBE_EMIT_END = Symbol('maybeEmitEnd');
+const EMITTED_END = Symbol('emittedEnd');
+const EMITTING_END = Symbol('emittingEnd');
+const EMITTED_ERROR = Symbol('emittedError');
+const CLOSED = Symbol('closed');
+const READ$1 = Symbol('read');
+const FLUSH = Symbol('flush');
+const FLUSHCHUNK = Symbol('flushChunk');
+const ENCODING = Symbol('encoding');
+const DECODER = Symbol('decoder');
+const FLOWING = Symbol('flowing');
+const PAUSED = Symbol('paused');
+const RESUME = Symbol('resume');
+const BUFFERLENGTH = Symbol('bufferLength');
+const BUFFERPUSH = Symbol('bufferPush');
+const BUFFERSHIFT = Symbol('bufferShift');
+const OBJECTMODE = Symbol('objectMode');
+const DESTROYED = Symbol('destroyed');
+const EMITDATA = Symbol('emitData');
+const EMITEND = Symbol('emitEnd');
+const EMITEND2 = Symbol('emitEnd2');
+const ASYNC = Symbol('async');
 
-const defer$1 = fn => Promise.resolve().then(fn);
+const defer = fn => Promise.resolve().then(fn);
 
 // TODO remove when Node v8 support drops
-const doIter$1 = commonjsGlobal$1._MP_NO_ITERATOR_SYMBOLS_  !== '1';
-const ASYNCITERATOR$1 = doIter$1 && Symbol.asyncIterator
+const doIter = commonjsGlobal$1._MP_NO_ITERATOR_SYMBOLS_  !== '1';
+const ASYNCITERATOR = doIter && Symbol.asyncIterator
   || Symbol('asyncIterator not implemented');
-const ITERATOR$1 = doIter$1 && Symbol.iterator
+const ITERATOR = doIter && Symbol.iterator
   || Symbol('iterator not implemented');
 
 // events that mean 'the stream is over'
 // these are treated specially, and re-emitted
 // if they are listened for after emitting.
-const isEndish$1 = ev =>
+const isEndish = ev =>
   ev === 'end' ||
   ev === 'finish' ||
   ev === 'prefinish';
 
-const isArrayBuffer$1 = b => b instanceof ArrayBuffer ||
+const isArrayBuffer = b => b instanceof ArrayBuffer ||
   typeof b === 'object' &&
   b.constructor &&
   b.constructor.name === 'ArrayBuffer' &&
   b.byteLength >= 0;
 
-const isArrayBufferView$1 = b => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
+const isArrayBufferView = b => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
 
-let Pipe$1 = class Pipe {
+class Pipe {
   constructor (src, dest, opts) {
     this.src = src;
     this.dest = dest;
     this.opts = opts;
-    this.ondrain = () => src[RESUME$1]();
+    this.ondrain = () => src[RESUME]();
     dest.on('drain', this.ondrain);
   }
   unpipe () {
@@ -968,9 +968,9 @@ let Pipe$1 = class Pipe {
     if (this.opts.end)
       this.dest.end();
   }
-};
+}
 
-let PipeProxyErrors$1 = class PipeProxyErrors extends Pipe$1 {
+class PipeProxyErrors extends Pipe {
   unpipe () {
     this.src.removeListener('error', this.proxyErrors);
     super.unpipe();
@@ -980,71 +980,71 @@ let PipeProxyErrors$1 = class PipeProxyErrors extends Pipe$1 {
     this.proxyErrors = er => dest.emit('error', er);
     src.on('error', this.proxyErrors);
   }
-};
+}
 
-var minipass$1 = class Minipass extends Stream$3 {
+var minipass = class Minipass extends Stream$2 {
   constructor (options) {
     super();
-    this[FLOWING$1] = false;
+    this[FLOWING] = false;
     // whether we're explicitly paused
-    this[PAUSED$1] = false;
+    this[PAUSED] = false;
     this.pipes = [];
     this.buffer = [];
-    this[OBJECTMODE$1] = options && options.objectMode || false;
-    if (this[OBJECTMODE$1])
-      this[ENCODING$1] = null;
+    this[OBJECTMODE] = options && options.objectMode || false;
+    if (this[OBJECTMODE])
+      this[ENCODING] = null;
     else
-      this[ENCODING$1] = options && options.encoding || null;
-    if (this[ENCODING$1] === 'buffer')
-      this[ENCODING$1] = null;
-    this[ASYNC$1] = options && !!options.async || false;
-    this[DECODER$1] = this[ENCODING$1] ? new SD$1(this[ENCODING$1]) : null;
-    this[EOF$2] = false;
-    this[EMITTED_END$1] = false;
-    this[EMITTING_END$1] = false;
-    this[CLOSED$1] = false;
-    this[EMITTED_ERROR$1] = null;
+      this[ENCODING] = options && options.encoding || null;
+    if (this[ENCODING] === 'buffer')
+      this[ENCODING] = null;
+    this[ASYNC] = options && !!options.async || false;
+    this[DECODER] = this[ENCODING] ? new SD(this[ENCODING]) : null;
+    this[EOF$1] = false;
+    this[EMITTED_END] = false;
+    this[EMITTING_END] = false;
+    this[CLOSED] = false;
+    this[EMITTED_ERROR] = null;
     this.writable = true;
     this.readable = true;
-    this[BUFFERLENGTH$1] = 0;
-    this[DESTROYED$1] = false;
+    this[BUFFERLENGTH] = 0;
+    this[DESTROYED] = false;
   }
 
-  get bufferLength () { return this[BUFFERLENGTH$1] }
+  get bufferLength () { return this[BUFFERLENGTH] }
 
-  get encoding () { return this[ENCODING$1] }
+  get encoding () { return this[ENCODING] }
   set encoding (enc) {
-    if (this[OBJECTMODE$1])
+    if (this[OBJECTMODE])
       throw new Error('cannot set encoding in objectMode')
 
-    if (this[ENCODING$1] && enc !== this[ENCODING$1] &&
-        (this[DECODER$1] && this[DECODER$1].lastNeed || this[BUFFERLENGTH$1]))
+    if (this[ENCODING] && enc !== this[ENCODING] &&
+        (this[DECODER] && this[DECODER].lastNeed || this[BUFFERLENGTH]))
       throw new Error('cannot change encoding')
 
-    if (this[ENCODING$1] !== enc) {
-      this[DECODER$1] = enc ? new SD$1(enc) : null;
+    if (this[ENCODING] !== enc) {
+      this[DECODER] = enc ? new SD(enc) : null;
       if (this.buffer.length)
-        this.buffer = this.buffer.map(chunk => this[DECODER$1].write(chunk));
+        this.buffer = this.buffer.map(chunk => this[DECODER].write(chunk));
     }
 
-    this[ENCODING$1] = enc;
+    this[ENCODING] = enc;
   }
 
   setEncoding (enc) {
     this.encoding = enc;
   }
 
-  get objectMode () { return this[OBJECTMODE$1] }
-  set objectMode (om) { this[OBJECTMODE$1] = this[OBJECTMODE$1] || !!om; }
+  get objectMode () { return this[OBJECTMODE] }
+  set objectMode (om) { this[OBJECTMODE] = this[OBJECTMODE] || !!om; }
 
-  get ['async'] () { return this[ASYNC$1] }
-  set ['async'] (a) { this[ASYNC$1] = this[ASYNC$1] || !!a; }
+  get ['async'] () { return this[ASYNC] }
+  set ['async'] (a) { this[ASYNC] = this[ASYNC] || !!a; }
 
   write (chunk, encoding, cb) {
-    if (this[EOF$2])
+    if (this[EOF$1])
       throw new Error('write after end')
 
-    if (this[DESTROYED$1]) {
+    if (this[DESTROYED]) {
       this.emit('error', Object.assign(
         new Error('Cannot call write after a stream was destroyed'),
         { code: 'ERR_STREAM_DESTROYED' }
@@ -1058,16 +1058,16 @@ var minipass$1 = class Minipass extends Stream$3 {
     if (!encoding)
       encoding = 'utf8';
 
-    const fn = this[ASYNC$1] ? defer$1 : f => f();
+    const fn = this[ASYNC] ? defer : f => f();
 
     // convert array buffers and typed array views into buffers
     // at some point in the future, we may want to do the opposite!
     // leave strings and buffers as-is
     // anything else switches us into object mode
-    if (!this[OBJECTMODE$1] && !Buffer.isBuffer(chunk)) {
-      if (isArrayBufferView$1(chunk))
+    if (!this[OBJECTMODE] && !Buffer.isBuffer(chunk)) {
+      if (isArrayBufferView(chunk))
         chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
-      else if (isArrayBuffer$1(chunk))
+      else if (isArrayBuffer(chunk))
         chunk = Buffer.from(chunk);
       else if (typeof chunk !== 'string')
         // use the setter so we throw if we have encoding set
@@ -1076,17 +1076,17 @@ var minipass$1 = class Minipass extends Stream$3 {
 
     // handle object mode up front, since it's simpler
     // this yields better performance, fewer checks later.
-    if (this[OBJECTMODE$1]) {
+    if (this[OBJECTMODE]) {
       /* istanbul ignore if - maybe impossible? */
-      if (this.flowing && this[BUFFERLENGTH$1] !== 0)
-        this[FLUSH$1](true);
+      if (this.flowing && this[BUFFERLENGTH] !== 0)
+        this[FLUSH](true);
 
       if (this.flowing)
         this.emit('data', chunk);
       else
-        this[BUFFERPUSH$1](chunk);
+        this[BUFFERPUSH](chunk);
 
-      if (this[BUFFERLENGTH$1] !== 0)
+      if (this[BUFFERLENGTH] !== 0)
         this.emit('readable');
 
       if (cb)
@@ -1098,7 +1098,7 @@ var minipass$1 = class Minipass extends Stream$3 {
     // at this point the chunk is a buffer or string
     // don't buffer it up or send it to the decoder
     if (!chunk.length) {
-      if (this[BUFFERLENGTH$1] !== 0)
+      if (this[BUFFERLENGTH] !== 0)
         this.emit('readable');
       if (cb)
         fn(cb);
@@ -1109,23 +1109,23 @@ var minipass$1 = class Minipass extends Stream$3 {
     // an empty buffer, skipping the buffer/decoder dance
     if (typeof chunk === 'string' &&
         // unless it is a string already ready for us to use
-        !(encoding === this[ENCODING$1] && !this[DECODER$1].lastNeed)) {
+        !(encoding === this[ENCODING] && !this[DECODER].lastNeed)) {
       chunk = Buffer.from(chunk, encoding);
     }
 
-    if (Buffer.isBuffer(chunk) && this[ENCODING$1])
-      chunk = this[DECODER$1].write(chunk);
+    if (Buffer.isBuffer(chunk) && this[ENCODING])
+      chunk = this[DECODER].write(chunk);
 
     // Note: flushing CAN potentially switch us into not-flowing mode
-    if (this.flowing && this[BUFFERLENGTH$1] !== 0)
-      this[FLUSH$1](true);
+    if (this.flowing && this[BUFFERLENGTH] !== 0)
+      this[FLUSH](true);
 
     if (this.flowing)
       this.emit('data', chunk);
     else
-      this[BUFFERPUSH$1](chunk);
+      this[BUFFERPUSH](chunk);
 
-    if (this[BUFFERLENGTH$1] !== 0)
+    if (this[BUFFERLENGTH] !== 0)
       this.emit('readable');
 
     if (cb)
@@ -1135,41 +1135,41 @@ var minipass$1 = class Minipass extends Stream$3 {
   }
 
   read (n) {
-    if (this[DESTROYED$1])
+    if (this[DESTROYED])
       return null
 
-    if (this[BUFFERLENGTH$1] === 0 || n === 0 || n > this[BUFFERLENGTH$1]) {
-      this[MAYBE_EMIT_END$1]();
+    if (this[BUFFERLENGTH] === 0 || n === 0 || n > this[BUFFERLENGTH]) {
+      this[MAYBE_EMIT_END]();
       return null
     }
 
-    if (this[OBJECTMODE$1])
+    if (this[OBJECTMODE])
       n = null;
 
-    if (this.buffer.length > 1 && !this[OBJECTMODE$1]) {
+    if (this.buffer.length > 1 && !this[OBJECTMODE]) {
       if (this.encoding)
         this.buffer = [this.buffer.join('')];
       else
-        this.buffer = [Buffer.concat(this.buffer, this[BUFFERLENGTH$1])];
+        this.buffer = [Buffer.concat(this.buffer, this[BUFFERLENGTH])];
     }
 
-    const ret = this[READ$2](n || null, this.buffer[0]);
-    this[MAYBE_EMIT_END$1]();
+    const ret = this[READ$1](n || null, this.buffer[0]);
+    this[MAYBE_EMIT_END]();
     return ret
   }
 
-  [READ$2] (n, chunk) {
+  [READ$1] (n, chunk) {
     if (n === chunk.length || n === null)
-      this[BUFFERSHIFT$1]();
+      this[BUFFERSHIFT]();
     else {
       this.buffer[0] = chunk.slice(n);
       chunk = chunk.slice(0, n);
-      this[BUFFERLENGTH$1] -= n;
+      this[BUFFERLENGTH] -= n;
     }
 
     this.emit('data', chunk);
 
-    if (!this.buffer.length && !this[EOF$2])
+    if (!this.buffer.length && !this[EOF$1])
       this.emit('drain');
 
     return chunk
@@ -1184,91 +1184,91 @@ var minipass$1 = class Minipass extends Stream$3 {
       this.write(chunk, encoding);
     if (cb)
       this.once('end', cb);
-    this[EOF$2] = true;
+    this[EOF$1] = true;
     this.writable = false;
 
     // if we haven't written anything, then go ahead and emit,
     // even if we're not reading.
     // we'll re-emit if a new 'end' listener is added anyway.
     // This makes MP more suitable to write-only use cases.
-    if (this.flowing || !this[PAUSED$1])
-      this[MAYBE_EMIT_END$1]();
+    if (this.flowing || !this[PAUSED])
+      this[MAYBE_EMIT_END]();
     return this
   }
 
   // don't let the internal resume be overwritten
-  [RESUME$1] () {
-    if (this[DESTROYED$1])
+  [RESUME] () {
+    if (this[DESTROYED])
       return
 
-    this[PAUSED$1] = false;
-    this[FLOWING$1] = true;
+    this[PAUSED] = false;
+    this[FLOWING] = true;
     this.emit('resume');
     if (this.buffer.length)
-      this[FLUSH$1]();
-    else if (this[EOF$2])
-      this[MAYBE_EMIT_END$1]();
+      this[FLUSH]();
+    else if (this[EOF$1])
+      this[MAYBE_EMIT_END]();
     else
       this.emit('drain');
   }
 
   resume () {
-    return this[RESUME$1]()
+    return this[RESUME]()
   }
 
   pause () {
-    this[FLOWING$1] = false;
-    this[PAUSED$1] = true;
+    this[FLOWING] = false;
+    this[PAUSED] = true;
   }
 
   get destroyed () {
-    return this[DESTROYED$1]
+    return this[DESTROYED]
   }
 
   get flowing () {
-    return this[FLOWING$1]
+    return this[FLOWING]
   }
 
   get paused () {
-    return this[PAUSED$1]
+    return this[PAUSED]
   }
 
-  [BUFFERPUSH$1] (chunk) {
-    if (this[OBJECTMODE$1])
-      this[BUFFERLENGTH$1] += 1;
+  [BUFFERPUSH] (chunk) {
+    if (this[OBJECTMODE])
+      this[BUFFERLENGTH] += 1;
     else
-      this[BUFFERLENGTH$1] += chunk.length;
+      this[BUFFERLENGTH] += chunk.length;
     this.buffer.push(chunk);
   }
 
-  [BUFFERSHIFT$1] () {
+  [BUFFERSHIFT] () {
     if (this.buffer.length) {
-      if (this[OBJECTMODE$1])
-        this[BUFFERLENGTH$1] -= 1;
+      if (this[OBJECTMODE])
+        this[BUFFERLENGTH] -= 1;
       else
-        this[BUFFERLENGTH$1] -= this.buffer[0].length;
+        this[BUFFERLENGTH] -= this.buffer[0].length;
     }
     return this.buffer.shift()
   }
 
-  [FLUSH$1] (noDrain) {
-    do {} while (this[FLUSHCHUNK$1](this[BUFFERSHIFT$1]()))
+  [FLUSH] (noDrain) {
+    do {} while (this[FLUSHCHUNK](this[BUFFERSHIFT]()))
 
-    if (!noDrain && !this.buffer.length && !this[EOF$2])
+    if (!noDrain && !this.buffer.length && !this[EOF$1])
       this.emit('drain');
   }
 
-  [FLUSHCHUNK$1] (chunk) {
+  [FLUSHCHUNK] (chunk) {
     return chunk ? (this.emit('data', chunk), this.flowing) : false
   }
 
   pipe (dest, opts) {
-    if (this[DESTROYED$1])
+    if (this[DESTROYED])
       return
 
-    const ended = this[EMITTED_END$1];
+    const ended = this[EMITTED_END];
     opts = opts || {};
-    if (dest === proc$1.stdout || dest === proc$1.stderr)
+    if (dest === proc.stdout || dest === proc.stderr)
       opts.end = false;
     else
       opts.end = opts.end !== false;
@@ -1279,12 +1279,12 @@ var minipass$1 = class Minipass extends Stream$3 {
       if (opts.end)
         dest.end();
     } else {
-      this.pipes.push(!opts.proxyErrors ? new Pipe$1(this, dest, opts)
-        : new PipeProxyErrors$1(this, dest, opts));
-      if (this[ASYNC$1])
-        defer$1(() => this[RESUME$1]());
+      this.pipes.push(!opts.proxyErrors ? new Pipe(this, dest, opts)
+        : new PipeProxyErrors(this, dest, opts));
+      if (this[ASYNC])
+        defer(() => this[RESUME]());
       else
-        this[RESUME$1]();
+        this[RESUME]();
     }
 
     return dest
@@ -1305,67 +1305,67 @@ var minipass$1 = class Minipass extends Stream$3 {
   on (ev, fn) {
     const ret = super.on(ev, fn);
     if (ev === 'data' && !this.pipes.length && !this.flowing)
-      this[RESUME$1]();
-    else if (ev === 'readable' && this[BUFFERLENGTH$1] !== 0)
+      this[RESUME]();
+    else if (ev === 'readable' && this[BUFFERLENGTH] !== 0)
       super.emit('readable');
-    else if (isEndish$1(ev) && this[EMITTED_END$1]) {
+    else if (isEndish(ev) && this[EMITTED_END]) {
       super.emit(ev);
       this.removeAllListeners(ev);
-    } else if (ev === 'error' && this[EMITTED_ERROR$1]) {
-      if (this[ASYNC$1])
-        defer$1(() => fn.call(this, this[EMITTED_ERROR$1]));
+    } else if (ev === 'error' && this[EMITTED_ERROR]) {
+      if (this[ASYNC])
+        defer(() => fn.call(this, this[EMITTED_ERROR]));
       else
-        fn.call(this, this[EMITTED_ERROR$1]);
+        fn.call(this, this[EMITTED_ERROR]);
     }
     return ret
   }
 
   get emittedEnd () {
-    return this[EMITTED_END$1]
+    return this[EMITTED_END]
   }
 
-  [MAYBE_EMIT_END$1] () {
-    if (!this[EMITTING_END$1] &&
-        !this[EMITTED_END$1] &&
-        !this[DESTROYED$1] &&
+  [MAYBE_EMIT_END] () {
+    if (!this[EMITTING_END] &&
+        !this[EMITTED_END] &&
+        !this[DESTROYED] &&
         this.buffer.length === 0 &&
-        this[EOF$2]) {
-      this[EMITTING_END$1] = true;
+        this[EOF$1]) {
+      this[EMITTING_END] = true;
       this.emit('end');
       this.emit('prefinish');
       this.emit('finish');
-      if (this[CLOSED$1])
+      if (this[CLOSED])
         this.emit('close');
-      this[EMITTING_END$1] = false;
+      this[EMITTING_END] = false;
     }
   }
 
   emit (ev, data, ...extra) {
     // error and close are only events allowed after calling destroy()
-    if (ev !== 'error' && ev !== 'close' && ev !== DESTROYED$1 && this[DESTROYED$1])
+    if (ev !== 'error' && ev !== 'close' && ev !== DESTROYED && this[DESTROYED])
       return
     else if (ev === 'data') {
       return !data ? false
-        : this[ASYNC$1] ? defer$1(() => this[EMITDATA$1](data))
-        : this[EMITDATA$1](data)
+        : this[ASYNC] ? defer(() => this[EMITDATA](data))
+        : this[EMITDATA](data)
     } else if (ev === 'end') {
-      return this[EMITEND$1]()
+      return this[EMITEND]()
     } else if (ev === 'close') {
-      this[CLOSED$1] = true;
+      this[CLOSED] = true;
       // don't emit close before 'end' and 'finish'
-      if (!this[EMITTED_END$1] && !this[DESTROYED$1])
+      if (!this[EMITTED_END] && !this[DESTROYED])
         return
       const ret = super.emit('close');
       this.removeAllListeners('close');
       return ret
     } else if (ev === 'error') {
-      this[EMITTED_ERROR$1] = data;
+      this[EMITTED_ERROR] = data;
       const ret = super.emit('error', data);
-      this[MAYBE_EMIT_END$1]();
+      this[MAYBE_EMIT_END]();
       return ret
     } else if (ev === 'resume') {
       const ret = super.emit('resume');
-      this[MAYBE_EMIT_END$1]();
+      this[MAYBE_EMIT_END]();
       return ret
     } else if (ev === 'finish' || ev === 'prefinish') {
       const ret = super.emit(ev);
@@ -1375,35 +1375,35 @@ var minipass$1 = class Minipass extends Stream$3 {
 
     // Some other unknown event
     const ret = super.emit(ev, data, ...extra);
-    this[MAYBE_EMIT_END$1]();
+    this[MAYBE_EMIT_END]();
     return ret
   }
 
-  [EMITDATA$1] (data) {
+  [EMITDATA] (data) {
     for (const p of this.pipes) {
       if (p.dest.write(data) === false)
         this.pause();
     }
     const ret = super.emit('data', data);
-    this[MAYBE_EMIT_END$1]();
+    this[MAYBE_EMIT_END]();
     return ret
   }
 
-  [EMITEND$1] () {
-    if (this[EMITTED_END$1])
+  [EMITEND] () {
+    if (this[EMITTED_END])
       return
 
-    this[EMITTED_END$1] = true;
+    this[EMITTED_END] = true;
     this.readable = false;
-    if (this[ASYNC$1])
-      defer$1(() => this[EMITEND2$1]());
+    if (this[ASYNC])
+      defer(() => this[EMITEND2]());
     else
-      this[EMITEND2$1]();
+      this[EMITEND2]();
   }
 
-  [EMITEND2$1] () {
-    if (this[DECODER$1]) {
-      const data = this[DECODER$1].end();
+  [EMITEND2] () {
+    if (this[DECODER]) {
+      const data = this[DECODER].end();
       if (data) {
         for (const p of this.pipes) {
           p.dest.write(data);
@@ -1423,14 +1423,14 @@ var minipass$1 = class Minipass extends Stream$3 {
   // const all = await stream.collect()
   collect () {
     const buf = [];
-    if (!this[OBJECTMODE$1])
+    if (!this[OBJECTMODE])
       buf.dataLength = 0;
     // set the promise first, in case an error is raised
     // by triggering the flow here.
     const p = this.promise();
     this.on('data', c => {
       buf.push(c);
-      if (!this[OBJECTMODE$1])
+      if (!this[OBJECTMODE])
         buf.dataLength += c.length;
     });
     return p.then(() => buf)
@@ -1438,31 +1438,31 @@ var minipass$1 = class Minipass extends Stream$3 {
 
   // const data = await stream.concat()
   concat () {
-    return this[OBJECTMODE$1]
+    return this[OBJECTMODE]
       ? Promise.reject(new Error('cannot concat in objectMode'))
       : this.collect().then(buf =>
-          this[OBJECTMODE$1]
+          this[OBJECTMODE]
             ? Promise.reject(new Error('cannot concat in objectMode'))
-            : this[ENCODING$1] ? buf.join('') : Buffer.concat(buf, buf.dataLength))
+            : this[ENCODING] ? buf.join('') : Buffer.concat(buf, buf.dataLength))
   }
 
   // stream.promise().then(() => done, er => emitted error)
   promise () {
     return new Promise((resolve, reject) => {
-      this.on(DESTROYED$1, () => reject(new Error('stream destroyed')));
+      this.on(DESTROYED, () => reject(new Error('stream destroyed')));
       this.on('error', er => reject(er));
       this.on('end', () => resolve());
     })
   }
 
   // for await (let chunk of stream)
-  [ASYNCITERATOR$1] () {
+  [ASYNCITERATOR] () {
     const next = () => {
       const res = this.read();
       if (res !== null)
         return Promise.resolve({ done: false, value: res })
 
-      if (this[EOF$2])
+      if (this[EOF$1])
         return Promise.resolve({ done: true })
 
       let resolve = null;
@@ -1476,7 +1476,7 @@ var minipass$1 = class Minipass extends Stream$3 {
         this.removeListener('error', onerr);
         this.removeListener('end', onend);
         this.pause();
-        resolve({ value: value, done: !!this[EOF$2] });
+        resolve({ value: value, done: !!this[EOF$1] });
       };
       const onend = () => {
         this.removeListener('error', onerr);
@@ -1487,7 +1487,7 @@ var minipass$1 = class Minipass extends Stream$3 {
       return new Promise((res, rej) => {
         reject = rej;
         resolve = res;
-        this.once(DESTROYED$1, ondestroy);
+        this.once(DESTROYED, ondestroy);
         this.once('error', onerr);
         this.once('end', onend);
         this.once('data', ondata);
@@ -1498,7 +1498,7 @@ var minipass$1 = class Minipass extends Stream$3 {
   }
 
   // for (let chunk of stream)
-  [ITERATOR$1] () {
+  [ITERATOR] () {
     const next = () => {
       const value = this.read();
       const done = value === null;
@@ -1508,34 +1508,34 @@ var minipass$1 = class Minipass extends Stream$3 {
   }
 
   destroy (er) {
-    if (this[DESTROYED$1]) {
+    if (this[DESTROYED]) {
       if (er)
         this.emit('error', er);
       else
-        this.emit(DESTROYED$1);
+        this.emit(DESTROYED);
       return this
     }
 
-    this[DESTROYED$1] = true;
+    this[DESTROYED] = true;
 
     // throw away all buffered data, it's never coming out
     this.buffer.length = 0;
-    this[BUFFERLENGTH$1] = 0;
+    this[BUFFERLENGTH] = 0;
 
-    if (typeof this.close === 'function' && !this[CLOSED$1])
+    if (typeof this.close === 'function' && !this[CLOSED])
       this.close();
 
     if (er)
       this.emit('error', er);
     else // if no error to emit, still reject pending promises
-      this.emit(DESTROYED$1);
+      this.emit(DESTROYED);
 
     return this
   }
 
   static isStream (s) {
-    return !!s && (s instanceof Minipass || s instanceof Stream$3 ||
-      s instanceof EE$4 && (
+    return !!s && (s instanceof Minipass || s instanceof Stream$2 ||
+      s instanceof EE$3 && (
         typeof s.pipe === 'function' || // readable
         (typeof s.write === 'function' && typeof s.end === 'function') // writable
       ))
@@ -1547,7 +1547,7 @@ const Buffer$1 = require$$1$5.Buffer;
 const realZlib = require$$0$b;
 
 const constants$6 = minizlib.constants = constants$7;
-const Minipass$3 = minipass$1;
+const Minipass$3 = minipass;
 
 const OriginalBufferConcat = Buffer$1.concat;
 
@@ -1897,7 +1897,7 @@ const platform$4 = process.env.TESTING_TAR_FAKE_PLATFORM || process.platform;
 var normalizeWindowsPath = platform$4 !== 'win32' ? p => p
   : p => p && p.replace(/\\/g, '/');
 
-const { Minipass: Minipass$2 } = minipass$2;
+const { Minipass: Minipass$2 } = minipass$1;
 const normPath$4 = normalizeWindowsPath;
 
 const SLURP$1 = Symbol('slurp');
@@ -2730,7 +2730,7 @@ function requireModeFix () {
 	return modeFix$1;
 }
 
-const { Minipass: Minipass$1 } = minipass$2;
+const { Minipass: Minipass$1 } = minipass$1;
 const Pax$1 = pax;
 const Header$1 = header;
 const fs$9 = fs__default;
@@ -2753,7 +2753,7 @@ const DIRECTORY$1 = Symbol('directory');
 const SYMLINK$1 = Symbol('symlink');
 const HARDLINK$1 = Symbol('hardlink');
 const HEADER = Symbol('header');
-const READ$1 = Symbol('read');
+const READ = Symbol('read');
 const LSTAT = Symbol('lstat');
 const ONLSTAT = Symbol('onlstat');
 const ONREAD = Symbol('onread');
@@ -3010,10 +3010,10 @@ const WriteEntry$1 = warner$2(class WriteEntry extends Minipass$1 {
     this.pos = 0;
     this.remain = this.stat.size;
     this.length = this.buf.length;
-    this[READ$1]();
+    this[READ]();
   }
 
-  [READ$1] () {
+  [READ] () {
     const { fd, buf, offset, length, pos } = this;
     fs$9.read(fd, buf, offset, length, pos, (er, bytesRead) => {
       if (er) {
@@ -3103,7 +3103,7 @@ const WriteEntry$1 = warner$2(class WriteEntry extends Minipass$1 {
       this.offset = 0;
     }
     this.length = this.buf.length - this.offset;
-    this[READ$1]();
+    this[READ]();
   }
 });
 
@@ -3120,7 +3120,7 @@ let WriteEntrySync$1 = class WriteEntrySync extends WriteEntry$1 {
     this[ONOPENFILE](fs$9.openSync(this.absolute, 'r'));
   }
 
-  [READ$1] () {
+  [READ] () {
     let threw = true;
     try {
       const { fd, buf, offset, length, pos } = this;
@@ -3298,14 +3298,14 @@ class PackJob {
   }
 }
 
-const { Minipass } = minipass$2;
+const { Minipass } = minipass$1;
 const zlib$3 = minizlib;
 const ReadEntry = readEntry;
 const WriteEntry = writeEntry;
 const WriteEntrySync = WriteEntry.Sync;
 const WriteEntryTar = WriteEntry.Tar;
 const Yallist$1 = yallist;
-const EOF$1 = Buffer.alloc(1024);
+const EOF = Buffer.alloc(1024);
 const ONSTAT = Symbol('onStat');
 const ENDED$2 = Symbol('ended');
 const QUEUE$1 = Symbol('queue');
@@ -3517,9 +3517,9 @@ const Pack = warner$1(class Pack extends Minipass {
 
     if (this[ENDED$2] && !this[QUEUE$1].length && this[JOBS] === 0) {
       if (this.zip) {
-        this.zip.end(EOF$1);
+        this.zip.end(EOF);
       } else {
-        super.write(EOF$1);
+        super.write(EOF);
         super.end();
       }
     }
@@ -3706,655 +3706,6 @@ class PackSync extends Pack {
 Pack.Sync = PackSync;
 
 var fsMinipass = {};
-
-const proc = typeof process === 'object' && process ? process : {
-  stdout: null,
-  stderr: null,
-};
-const EE$3 = require$$0$9;
-const Stream$2 = require$$0$a;
-const SD = require$$2$2.StringDecoder;
-
-const EOF = Symbol('EOF');
-const MAYBE_EMIT_END = Symbol('maybeEmitEnd');
-const EMITTED_END = Symbol('emittedEnd');
-const EMITTING_END = Symbol('emittingEnd');
-const EMITTED_ERROR = Symbol('emittedError');
-const CLOSED = Symbol('closed');
-const READ = Symbol('read');
-const FLUSH = Symbol('flush');
-const FLUSHCHUNK = Symbol('flushChunk');
-const ENCODING = Symbol('encoding');
-const DECODER = Symbol('decoder');
-const FLOWING = Symbol('flowing');
-const PAUSED = Symbol('paused');
-const RESUME = Symbol('resume');
-const BUFFERLENGTH = Symbol('bufferLength');
-const BUFFERPUSH = Symbol('bufferPush');
-const BUFFERSHIFT = Symbol('bufferShift');
-const OBJECTMODE = Symbol('objectMode');
-const DESTROYED = Symbol('destroyed');
-const EMITDATA = Symbol('emitData');
-const EMITEND = Symbol('emitEnd');
-const EMITEND2 = Symbol('emitEnd2');
-const ASYNC = Symbol('async');
-
-const defer = fn => Promise.resolve().then(fn);
-
-// TODO remove when Node v8 support drops
-const doIter = commonjsGlobal$1._MP_NO_ITERATOR_SYMBOLS_  !== '1';
-const ASYNCITERATOR = doIter && Symbol.asyncIterator
-  || Symbol('asyncIterator not implemented');
-const ITERATOR = doIter && Symbol.iterator
-  || Symbol('iterator not implemented');
-
-// events that mean 'the stream is over'
-// these are treated specially, and re-emitted
-// if they are listened for after emitting.
-const isEndish = ev =>
-  ev === 'end' ||
-  ev === 'finish' ||
-  ev === 'prefinish';
-
-const isArrayBuffer = b => b instanceof ArrayBuffer ||
-  typeof b === 'object' &&
-  b.constructor &&
-  b.constructor.name === 'ArrayBuffer' &&
-  b.byteLength >= 0;
-
-const isArrayBufferView = b => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
-
-class Pipe {
-  constructor (src, dest, opts) {
-    this.src = src;
-    this.dest = dest;
-    this.opts = opts;
-    this.ondrain = () => src[RESUME]();
-    dest.on('drain', this.ondrain);
-  }
-  unpipe () {
-    this.dest.removeListener('drain', this.ondrain);
-  }
-  // istanbul ignore next - only here for the prototype
-  proxyErrors () {}
-  end () {
-    this.unpipe();
-    if (this.opts.end)
-      this.dest.end();
-  }
-}
-
-class PipeProxyErrors extends Pipe {
-  unpipe () {
-    this.src.removeListener('error', this.proxyErrors);
-    super.unpipe();
-  }
-  constructor (src, dest, opts) {
-    super(src, dest, opts);
-    this.proxyErrors = er => dest.emit('error', er);
-    src.on('error', this.proxyErrors);
-  }
-}
-
-var minipass = class Minipass extends Stream$2 {
-  constructor (options) {
-    super();
-    this[FLOWING] = false;
-    // whether we're explicitly paused
-    this[PAUSED] = false;
-    this.pipes = [];
-    this.buffer = [];
-    this[OBJECTMODE] = options && options.objectMode || false;
-    if (this[OBJECTMODE])
-      this[ENCODING] = null;
-    else
-      this[ENCODING] = options && options.encoding || null;
-    if (this[ENCODING] === 'buffer')
-      this[ENCODING] = null;
-    this[ASYNC] = options && !!options.async || false;
-    this[DECODER] = this[ENCODING] ? new SD(this[ENCODING]) : null;
-    this[EOF] = false;
-    this[EMITTED_END] = false;
-    this[EMITTING_END] = false;
-    this[CLOSED] = false;
-    this[EMITTED_ERROR] = null;
-    this.writable = true;
-    this.readable = true;
-    this[BUFFERLENGTH] = 0;
-    this[DESTROYED] = false;
-  }
-
-  get bufferLength () { return this[BUFFERLENGTH] }
-
-  get encoding () { return this[ENCODING] }
-  set encoding (enc) {
-    if (this[OBJECTMODE])
-      throw new Error('cannot set encoding in objectMode')
-
-    if (this[ENCODING] && enc !== this[ENCODING] &&
-        (this[DECODER] && this[DECODER].lastNeed || this[BUFFERLENGTH]))
-      throw new Error('cannot change encoding')
-
-    if (this[ENCODING] !== enc) {
-      this[DECODER] = enc ? new SD(enc) : null;
-      if (this.buffer.length)
-        this.buffer = this.buffer.map(chunk => this[DECODER].write(chunk));
-    }
-
-    this[ENCODING] = enc;
-  }
-
-  setEncoding (enc) {
-    this.encoding = enc;
-  }
-
-  get objectMode () { return this[OBJECTMODE] }
-  set objectMode (om) { this[OBJECTMODE] = this[OBJECTMODE] || !!om; }
-
-  get ['async'] () { return this[ASYNC] }
-  set ['async'] (a) { this[ASYNC] = this[ASYNC] || !!a; }
-
-  write (chunk, encoding, cb) {
-    if (this[EOF])
-      throw new Error('write after end')
-
-    if (this[DESTROYED]) {
-      this.emit('error', Object.assign(
-        new Error('Cannot call write after a stream was destroyed'),
-        { code: 'ERR_STREAM_DESTROYED' }
-      ));
-      return true
-    }
-
-    if (typeof encoding === 'function')
-      cb = encoding, encoding = 'utf8';
-
-    if (!encoding)
-      encoding = 'utf8';
-
-    const fn = this[ASYNC] ? defer : f => f();
-
-    // convert array buffers and typed array views into buffers
-    // at some point in the future, we may want to do the opposite!
-    // leave strings and buffers as-is
-    // anything else switches us into object mode
-    if (!this[OBJECTMODE] && !Buffer.isBuffer(chunk)) {
-      if (isArrayBufferView(chunk))
-        chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
-      else if (isArrayBuffer(chunk))
-        chunk = Buffer.from(chunk);
-      else if (typeof chunk !== 'string')
-        // use the setter so we throw if we have encoding set
-        this.objectMode = true;
-    }
-
-    // handle object mode up front, since it's simpler
-    // this yields better performance, fewer checks later.
-    if (this[OBJECTMODE]) {
-      /* istanbul ignore if - maybe impossible? */
-      if (this.flowing && this[BUFFERLENGTH] !== 0)
-        this[FLUSH](true);
-
-      if (this.flowing)
-        this.emit('data', chunk);
-      else
-        this[BUFFERPUSH](chunk);
-
-      if (this[BUFFERLENGTH] !== 0)
-        this.emit('readable');
-
-      if (cb)
-        fn(cb);
-
-      return this.flowing
-    }
-
-    // at this point the chunk is a buffer or string
-    // don't buffer it up or send it to the decoder
-    if (!chunk.length) {
-      if (this[BUFFERLENGTH] !== 0)
-        this.emit('readable');
-      if (cb)
-        fn(cb);
-      return this.flowing
-    }
-
-    // fast-path writing strings of same encoding to a stream with
-    // an empty buffer, skipping the buffer/decoder dance
-    if (typeof chunk === 'string' &&
-        // unless it is a string already ready for us to use
-        !(encoding === this[ENCODING] && !this[DECODER].lastNeed)) {
-      chunk = Buffer.from(chunk, encoding);
-    }
-
-    if (Buffer.isBuffer(chunk) && this[ENCODING])
-      chunk = this[DECODER].write(chunk);
-
-    // Note: flushing CAN potentially switch us into not-flowing mode
-    if (this.flowing && this[BUFFERLENGTH] !== 0)
-      this[FLUSH](true);
-
-    if (this.flowing)
-      this.emit('data', chunk);
-    else
-      this[BUFFERPUSH](chunk);
-
-    if (this[BUFFERLENGTH] !== 0)
-      this.emit('readable');
-
-    if (cb)
-      fn(cb);
-
-    return this.flowing
-  }
-
-  read (n) {
-    if (this[DESTROYED])
-      return null
-
-    if (this[BUFFERLENGTH] === 0 || n === 0 || n > this[BUFFERLENGTH]) {
-      this[MAYBE_EMIT_END]();
-      return null
-    }
-
-    if (this[OBJECTMODE])
-      n = null;
-
-    if (this.buffer.length > 1 && !this[OBJECTMODE]) {
-      if (this.encoding)
-        this.buffer = [this.buffer.join('')];
-      else
-        this.buffer = [Buffer.concat(this.buffer, this[BUFFERLENGTH])];
-    }
-
-    const ret = this[READ](n || null, this.buffer[0]);
-    this[MAYBE_EMIT_END]();
-    return ret
-  }
-
-  [READ] (n, chunk) {
-    if (n === chunk.length || n === null)
-      this[BUFFERSHIFT]();
-    else {
-      this.buffer[0] = chunk.slice(n);
-      chunk = chunk.slice(0, n);
-      this[BUFFERLENGTH] -= n;
-    }
-
-    this.emit('data', chunk);
-
-    if (!this.buffer.length && !this[EOF])
-      this.emit('drain');
-
-    return chunk
-  }
-
-  end (chunk, encoding, cb) {
-    if (typeof chunk === 'function')
-      cb = chunk, chunk = null;
-    if (typeof encoding === 'function')
-      cb = encoding, encoding = 'utf8';
-    if (chunk)
-      this.write(chunk, encoding);
-    if (cb)
-      this.once('end', cb);
-    this[EOF] = true;
-    this.writable = false;
-
-    // if we haven't written anything, then go ahead and emit,
-    // even if we're not reading.
-    // we'll re-emit if a new 'end' listener is added anyway.
-    // This makes MP more suitable to write-only use cases.
-    if (this.flowing || !this[PAUSED])
-      this[MAYBE_EMIT_END]();
-    return this
-  }
-
-  // don't let the internal resume be overwritten
-  [RESUME] () {
-    if (this[DESTROYED])
-      return
-
-    this[PAUSED] = false;
-    this[FLOWING] = true;
-    this.emit('resume');
-    if (this.buffer.length)
-      this[FLUSH]();
-    else if (this[EOF])
-      this[MAYBE_EMIT_END]();
-    else
-      this.emit('drain');
-  }
-
-  resume () {
-    return this[RESUME]()
-  }
-
-  pause () {
-    this[FLOWING] = false;
-    this[PAUSED] = true;
-  }
-
-  get destroyed () {
-    return this[DESTROYED]
-  }
-
-  get flowing () {
-    return this[FLOWING]
-  }
-
-  get paused () {
-    return this[PAUSED]
-  }
-
-  [BUFFERPUSH] (chunk) {
-    if (this[OBJECTMODE])
-      this[BUFFERLENGTH] += 1;
-    else
-      this[BUFFERLENGTH] += chunk.length;
-    this.buffer.push(chunk);
-  }
-
-  [BUFFERSHIFT] () {
-    if (this.buffer.length) {
-      if (this[OBJECTMODE])
-        this[BUFFERLENGTH] -= 1;
-      else
-        this[BUFFERLENGTH] -= this.buffer[0].length;
-    }
-    return this.buffer.shift()
-  }
-
-  [FLUSH] (noDrain) {
-    do {} while (this[FLUSHCHUNK](this[BUFFERSHIFT]()))
-
-    if (!noDrain && !this.buffer.length && !this[EOF])
-      this.emit('drain');
-  }
-
-  [FLUSHCHUNK] (chunk) {
-    return chunk ? (this.emit('data', chunk), this.flowing) : false
-  }
-
-  pipe (dest, opts) {
-    if (this[DESTROYED])
-      return
-
-    const ended = this[EMITTED_END];
-    opts = opts || {};
-    if (dest === proc.stdout || dest === proc.stderr)
-      opts.end = false;
-    else
-      opts.end = opts.end !== false;
-    opts.proxyErrors = !!opts.proxyErrors;
-
-    // piping an ended stream ends immediately
-    if (ended) {
-      if (opts.end)
-        dest.end();
-    } else {
-      this.pipes.push(!opts.proxyErrors ? new Pipe(this, dest, opts)
-        : new PipeProxyErrors(this, dest, opts));
-      if (this[ASYNC])
-        defer(() => this[RESUME]());
-      else
-        this[RESUME]();
-    }
-
-    return dest
-  }
-
-  unpipe (dest) {
-    const p = this.pipes.find(p => p.dest === dest);
-    if (p) {
-      this.pipes.splice(this.pipes.indexOf(p), 1);
-      p.unpipe();
-    }
-  }
-
-  addListener (ev, fn) {
-    return this.on(ev, fn)
-  }
-
-  on (ev, fn) {
-    const ret = super.on(ev, fn);
-    if (ev === 'data' && !this.pipes.length && !this.flowing)
-      this[RESUME]();
-    else if (ev === 'readable' && this[BUFFERLENGTH] !== 0)
-      super.emit('readable');
-    else if (isEndish(ev) && this[EMITTED_END]) {
-      super.emit(ev);
-      this.removeAllListeners(ev);
-    } else if (ev === 'error' && this[EMITTED_ERROR]) {
-      if (this[ASYNC])
-        defer(() => fn.call(this, this[EMITTED_ERROR]));
-      else
-        fn.call(this, this[EMITTED_ERROR]);
-    }
-    return ret
-  }
-
-  get emittedEnd () {
-    return this[EMITTED_END]
-  }
-
-  [MAYBE_EMIT_END] () {
-    if (!this[EMITTING_END] &&
-        !this[EMITTED_END] &&
-        !this[DESTROYED] &&
-        this.buffer.length === 0 &&
-        this[EOF]) {
-      this[EMITTING_END] = true;
-      this.emit('end');
-      this.emit('prefinish');
-      this.emit('finish');
-      if (this[CLOSED])
-        this.emit('close');
-      this[EMITTING_END] = false;
-    }
-  }
-
-  emit (ev, data, ...extra) {
-    // error and close are only events allowed after calling destroy()
-    if (ev !== 'error' && ev !== 'close' && ev !== DESTROYED && this[DESTROYED])
-      return
-    else if (ev === 'data') {
-      return !data ? false
-        : this[ASYNC] ? defer(() => this[EMITDATA](data))
-        : this[EMITDATA](data)
-    } else if (ev === 'end') {
-      return this[EMITEND]()
-    } else if (ev === 'close') {
-      this[CLOSED] = true;
-      // don't emit close before 'end' and 'finish'
-      if (!this[EMITTED_END] && !this[DESTROYED])
-        return
-      const ret = super.emit('close');
-      this.removeAllListeners('close');
-      return ret
-    } else if (ev === 'error') {
-      this[EMITTED_ERROR] = data;
-      const ret = super.emit('error', data);
-      this[MAYBE_EMIT_END]();
-      return ret
-    } else if (ev === 'resume') {
-      const ret = super.emit('resume');
-      this[MAYBE_EMIT_END]();
-      return ret
-    } else if (ev === 'finish' || ev === 'prefinish') {
-      const ret = super.emit(ev);
-      this.removeAllListeners(ev);
-      return ret
-    }
-
-    // Some other unknown event
-    const ret = super.emit(ev, data, ...extra);
-    this[MAYBE_EMIT_END]();
-    return ret
-  }
-
-  [EMITDATA] (data) {
-    for (const p of this.pipes) {
-      if (p.dest.write(data) === false)
-        this.pause();
-    }
-    const ret = super.emit('data', data);
-    this[MAYBE_EMIT_END]();
-    return ret
-  }
-
-  [EMITEND] () {
-    if (this[EMITTED_END])
-      return
-
-    this[EMITTED_END] = true;
-    this.readable = false;
-    if (this[ASYNC])
-      defer(() => this[EMITEND2]());
-    else
-      this[EMITEND2]();
-  }
-
-  [EMITEND2] () {
-    if (this[DECODER]) {
-      const data = this[DECODER].end();
-      if (data) {
-        for (const p of this.pipes) {
-          p.dest.write(data);
-        }
-        super.emit('data', data);
-      }
-    }
-
-    for (const p of this.pipes) {
-      p.end();
-    }
-    const ret = super.emit('end');
-    this.removeAllListeners('end');
-    return ret
-  }
-
-  // const all = await stream.collect()
-  collect () {
-    const buf = [];
-    if (!this[OBJECTMODE])
-      buf.dataLength = 0;
-    // set the promise first, in case an error is raised
-    // by triggering the flow here.
-    const p = this.promise();
-    this.on('data', c => {
-      buf.push(c);
-      if (!this[OBJECTMODE])
-        buf.dataLength += c.length;
-    });
-    return p.then(() => buf)
-  }
-
-  // const data = await stream.concat()
-  concat () {
-    return this[OBJECTMODE]
-      ? Promise.reject(new Error('cannot concat in objectMode'))
-      : this.collect().then(buf =>
-          this[OBJECTMODE]
-            ? Promise.reject(new Error('cannot concat in objectMode'))
-            : this[ENCODING] ? buf.join('') : Buffer.concat(buf, buf.dataLength))
-  }
-
-  // stream.promise().then(() => done, er => emitted error)
-  promise () {
-    return new Promise((resolve, reject) => {
-      this.on(DESTROYED, () => reject(new Error('stream destroyed')));
-      this.on('error', er => reject(er));
-      this.on('end', () => resolve());
-    })
-  }
-
-  // for await (let chunk of stream)
-  [ASYNCITERATOR] () {
-    const next = () => {
-      const res = this.read();
-      if (res !== null)
-        return Promise.resolve({ done: false, value: res })
-
-      if (this[EOF])
-        return Promise.resolve({ done: true })
-
-      let resolve = null;
-      let reject = null;
-      const onerr = er => {
-        this.removeListener('data', ondata);
-        this.removeListener('end', onend);
-        reject(er);
-      };
-      const ondata = value => {
-        this.removeListener('error', onerr);
-        this.removeListener('end', onend);
-        this.pause();
-        resolve({ value: value, done: !!this[EOF] });
-      };
-      const onend = () => {
-        this.removeListener('error', onerr);
-        this.removeListener('data', ondata);
-        resolve({ done: true });
-      };
-      const ondestroy = () => onerr(new Error('stream destroyed'));
-      return new Promise((res, rej) => {
-        reject = rej;
-        resolve = res;
-        this.once(DESTROYED, ondestroy);
-        this.once('error', onerr);
-        this.once('end', onend);
-        this.once('data', ondata);
-      })
-    };
-
-    return { next }
-  }
-
-  // for (let chunk of stream)
-  [ITERATOR] () {
-    const next = () => {
-      const value = this.read();
-      const done = value === null;
-      return { value, done }
-    };
-    return { next }
-  }
-
-  destroy (er) {
-    if (this[DESTROYED]) {
-      if (er)
-        this.emit('error', er);
-      else
-        this.emit(DESTROYED);
-      return this
-    }
-
-    this[DESTROYED] = true;
-
-    // throw away all buffered data, it's never coming out
-    this.buffer.length = 0;
-    this[BUFFERLENGTH] = 0;
-
-    if (typeof this.close === 'function' && !this[CLOSED])
-      this.close();
-
-    if (er)
-      this.emit('error', er);
-    else // if no error to emit, still reject pending promises
-      this.emit(DESTROYED);
-
-    return this
-  }
-
-  static isStream (s) {
-    return !!s && (s instanceof Minipass || s instanceof Stream$2 ||
-      s instanceof EE$3 && (
-        typeof s.pipe === 'function' || // readable
-        (typeof s.write === 'function' && typeof s.end === 'function') // writable
-      ))
-  }
-};
 
 const MiniPass = minipass;
 const EE$2 = require$$0$9.EventEmitter;

@@ -1,7 +1,7 @@
-import { b as defineCommand, a as prompt } from '../shared/scaffold.66bd7c69.mjs';
-import { resolve as resolve$1, join } from 'node:path';
+import { d as defineCommand, p as prompt } from '../shared/scaffold.c6b71549.mjs';
+import { join, resolve as resolve$1 } from 'node:path';
 import { spawn } from 'cross-spawn';
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
 import { g as getDefaultExportFromCjs } from '../shared/scaffold.2155838d.mjs';
 import { win32, posix as posix$1, resolve, parse, basename } from 'path';
 import { fileURLToPath } from 'url';
@@ -8771,6 +8771,11 @@ async function main(args) {
   });
   if (framework.value === "nest") {
     await asyncSpawn(shell, ["-c", "nest", "new", name.value, "--skip-install"]);
+    console.log("\nSetting up domains...");
+    mkdirSync(join(name.value, "src", "domains"), { recursive: true });
+    mkdirSync(join(name.value, "src", "app"), { recursive: true });
+    mkdirSync(join(name.value, "src", "domains", "auth"), { recursive: true });
+    await asyncSpawn(shell, ["-c", "nest", "g", "resource", "auth"]);
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -8811,6 +8816,7 @@ async function main(args) {
     writeJson(resolve$1(name.value, "package.json"), packageJson);
     const nestConfig = readJson(resolve$1(name.value, "nest-cli.json"));
     nestConfig.generateOptions = {
+      sourceRoot: "src/app",
       spec: false
     };
     console.log("nest-cli.json created.\n");
@@ -8858,14 +8864,15 @@ async function main(args) {
       message: "Type?",
       choices: [
         {
+          name: "SPA",
+          value: "spa",
+          key: "spa",
+          checked: true
+        },
+        {
           name: "SSR",
           value: "ssr",
           key: "ssr"
-        },
-        {
-          name: "SPA",
-          value: "spa",
-          key: "spa"
         }
       ]
     });
@@ -8874,15 +8881,10 @@ async function main(args) {
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
     packageJson.scripts = {
-      ...packageJson.scripts,
-      clean: "rimraf node_modules .nuxt"
+      ...packageJson.scripts
     };
-    const dependencies = [
-      "pinia"
-    ];
-    const devDependencies = [
-      "rimraf"
-    ];
+    const dependencies = [];
+    const devDependencies = [];
     console.log("\nAdding development and production dependencies...");
     for (const value of dependencies) {
       packageJson.dependencies[value] = "*";
@@ -8900,22 +8902,11 @@ async function main(args) {
       resolve$1(name.value, "nuxt.config.ts"),
       `export default defineNuxtConfig({
   ssr: ${type.value === "ssr" ? "true" : "false"},
-  devtools: {enabled: true},
+  devtools: { enabled: false },
 
-  components: [
-    {
-      path: '~/',
-      extensions: ['.vue']
-    }
+  modules: [
+
   ],
-
-  modules: [],
-
-  imports: {
-    dirs: ['stores/**']
-  },
-
-  pinia: {},
 
   i18n: {
     langDir: 'lang',
@@ -8957,7 +8948,6 @@ async function main(args) {
 `
     );
     const _modules = [
-      "@pinia/nuxt",
       "nuxt-quasar-ui",
       "@nuxtjs/i18n",
       "@vueuse/nuxt"
@@ -8984,7 +8974,7 @@ async function main(args) {
       message: "Hola Localizaci\xF3n"
     });
     console.log("\nUpdating Nuxt...\n");
-    await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade --force`], {
+    await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade -f`], {
       cwd: name.value
     });
     console.log("Updating dependencies...\n");

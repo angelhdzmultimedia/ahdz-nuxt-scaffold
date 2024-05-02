@@ -1,7 +1,7 @@
 import { stdin, stdout } from 'node:process';
 import f from 'node:readline';
 import { WriteStream } from 'node:tty';
-import { i as isUnicodeSupported, e as colors, g as getDefaultExportFromCjs } from '../shared/scaffold.66bd7c69.mjs';
+import { i as isUnicodeSupported, c as colors, g as getDefaultExportFromCjs } from '../shared/scaffold.c6b71549.mjs';
 import require$$0 from 'tty';
 import 'node:util';
 import 'node:path';
