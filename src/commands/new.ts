@@ -434,8 +434,7 @@ function readJson(file: string) {
 
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
-  packageJson.dependencies ??= {}
-  packageJson.devDependencies ??= {}
+ 
   packageJson.scripts = {
     ...packageJson.scripts
   }
@@ -452,12 +451,18 @@ function readJson(file: string) {
   console.log('\nAdding development and production dependencies...')
 
   for (const value of dependencies) {
-    packageJson.dependencies[value] = 'latest'
+    await asyncSpawn(shell, ['-c', `${npm.add} ${value}`], {
+      cwd: name.value
+    })
+   // packageJson.dependencies[value] = 'latest'
     console.log(`${value} production dependency added.`)
   }
 
   for (const value of devDependencies) {
-    packageJson.devDependencies[value] = 'latest'
+    await asyncSpawn(shell, ['-c', `${npm.add} -D ${value}`], {
+      cwd: name.value
+    })
+   // packageJson.devDependencies[value] = 'latest'
     console.log(`${value} development dependency added.`)
   }
 
@@ -469,14 +474,15 @@ function readJson(file: string) {
   console.log('\nCreating files...\n')
   
 
-  console.log('package.json created.\n')
 
   writeJson(resolve(name.value, 'package.json'), packageJson)
+  console.log('package.json created.\n')
 
-  console.log('nuxt.config.ts created.\n')
+
  
  
   write(resolve(name.value, 'nuxt.config.ts'), 
+  
 `export default defineNuxtConfig({
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
   devtools: { enabled: false },
@@ -523,6 +529,7 @@ function readJson(file: string) {
 })
   
 `)
+console.log('nuxt.config.ts created.\n')
 
   // Modules
   const _modules = [

@@ -8879,8 +8879,6 @@ async function main(args) {
       cwd: name.value
     });
     const packageJson = readJson(resolve$1(name.value, "package.json"));
-    packageJson.dependencies ?? (packageJson.dependencies = {});
-    packageJson.devDependencies ?? (packageJson.devDependencies = {});
     packageJson.scripts = {
       ...packageJson.scripts
     };
@@ -8891,17 +8889,20 @@ async function main(args) {
     const devDependencies = [];
     console.log("\nAdding development and production dependencies...");
     for (const value of dependencies) {
-      packageJson.dependencies[value] = "latest";
+      await asyncSpawn(shell, ["-c", `${npm.add} ${value}`], {
+        cwd: name.value
+      });
       console.log(`${value} production dependency added.`);
     }
     for (const value of devDependencies) {
-      packageJson.devDependencies[value] = "latest";
+      await asyncSpawn(shell, ["-c", `${npm.add} -D ${value}`], {
+        cwd: name.value
+      });
       console.log(`${value} development dependency added.`);
     }
     console.log("\nCreating files...\n");
-    console.log("package.json created.\n");
     writeJson(resolve$1(name.value, "package.json"), packageJson);
-    console.log("nuxt.config.ts created.\n");
+    console.log("package.json created.\n");
     write(
       resolve$1(name.value, "nuxt.config.ts"),
       `export default defineNuxtConfig({
@@ -8951,6 +8952,7 @@ async function main(args) {
   
 `
     );
+    console.log("nuxt.config.ts created.\n");
     const _modules = [
       "nuxt-quasar-ui",
       "@nuxtjs/i18n",
