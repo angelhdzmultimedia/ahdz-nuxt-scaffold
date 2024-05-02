@@ -425,7 +425,7 @@ function readJson(file: string) {
       ]
     })
 
-  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest init ${name.value}`])
+  await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest init ${name.value} --no-install --packageManager=${npm.name}`])
   console.log('\nUpdating Nuxt...\n')
 
   await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade -f`], {
