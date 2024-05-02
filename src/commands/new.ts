@@ -426,6 +426,12 @@ function readJson(file: string) {
     })
 
   await asyncSpawn(shell, ['-c', `${npm.execute} nuxi@latest init ${name.value}`])
+  console.log('\nUpdating Nuxt...\n')
+
+  await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade -f`], {
+    cwd: name.value
+  })
+
   const packageJson = readJson(resolve(name.value, 'package.json'))
   
   packageJson.dependencies ??= {}
@@ -581,12 +587,7 @@ for (const _module of _modules) {
     message: 'Hola Localización'
   })
 
-  console.log('\nUpdating Nuxt...\n')
-
-  await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade -f`], {
-    cwd: name.value
-  })
-
+ 
   console.log('Updating dependencies...\n')
 
   //await asyncSpawn('cmd', ['/c', npm.name, npm.update])
