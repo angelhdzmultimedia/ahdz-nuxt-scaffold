@@ -257,8 +257,7 @@ function readJson(file: string) {
     packageJson.scripts = {
       ...packageJson.scripts,
       format: 'prettier --write \"src/**/*.ts\"',
-      ['start:dev']: 'pnpm format && nest start --watch',
-      clean: 'rimraf node_modules dist pnpm-lock.yaml'
+      ['start:dev']: 'pnpm format && nest start --watch'
     }
 
     const dependencies: any[] = [
@@ -268,7 +267,7 @@ function readJson(file: string) {
     ]
   
     const devDependencies: any[] = [
-      'rimraf'
+      
     ]
     
     console.log('\nAdding development and production dependencies...')
