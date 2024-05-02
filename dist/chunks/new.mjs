@@ -8884,7 +8884,10 @@ async function main(args) {
     packageJson.scripts = {
       ...packageJson.scripts
     };
-    const dependencies = [];
+    const dependencies = [
+      "quasar",
+      "@quasar/extras"
+    ];
     const devDependencies = [];
     console.log("\nAdding development and production dependencies...");
     for (const value of dependencies) {

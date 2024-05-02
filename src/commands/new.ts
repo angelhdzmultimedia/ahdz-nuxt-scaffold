@@ -441,7 +441,8 @@ function readJson(file: string) {
   }
 
   const dependencies: any[] = [
-   
+    "quasar",
+    "@quasar/extras"
   ]
 
   const devDependencies: any[] = [
