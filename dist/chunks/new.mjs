@@ -8891,11 +8891,11 @@ async function main(args) {
     const devDependencies = [];
     console.log("\nAdding development and production dependencies...");
     for (const value of dependencies) {
-      packageJson.dependencies[value] = "*";
+      packageJson.dependencies[value] = "latest";
       console.log(`${value} production dependency added.`);
     }
     for (const value of devDependencies) {
-      packageJson.devDependencies[value] = "*";
+      packageJson.devDependencies[value] = "latest";
       console.log(`${value} development dependency added.`);
     }
     console.log("\nCreating files...\n");
@@ -8978,6 +8978,9 @@ async function main(args) {
       message: "Hola Localizaci\xF3n"
     });
     console.log("Updating dependencies...\n");
+    await asyncSpawn("cmd", ["/c", npm.name, npm.update], {
+      cwd: name.value
+    });
   }
   console.log("\nEnjoy your new application! \u{1F525}");
 }
