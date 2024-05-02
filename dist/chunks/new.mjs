@@ -8782,17 +8782,14 @@ async function main(args) {
     packageJson.scripts = {
       ...packageJson.scripts,
       format: 'prettier --write "src/**/*.ts"',
-      ["start:dev"]: "pnpm format && nest start --watch",
-      clean: "rimraf node_modules dist pnpm-lock.yaml"
+      ["start:dev"]: "pnpm format && nest start --watch"
     };
     const dependencies = [
       "@nestjs/config",
       "@nestjs/websockets",
       "@nestjs/swagger"
     ];
-    const devDependencies = [
-      "rimraf"
-    ];
+    const devDependencies = [];
     console.log("\nAdding development and production dependencies...");
     for (const value of dependencies) {
       packageJson.dependencies[value] = "*";
@@ -8876,7 +8873,11 @@ async function main(args) {
         }
       ]
     });
-    await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest init ${name.value}`]);
+    await asyncSpawn(shell, ["-c", `${npm.execute} nuxi@latest init ${name.value} --packageManager=${npm.name}`]);
+    console.log("\nUpdating Nuxt...\n");
+    await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade -f`], {
+      cwd: name.value
+    });
     const packageJson = readJson(resolve$1(name.value, "package.json"));
     packageJson.dependencies ?? (packageJson.dependencies = {});
     packageJson.devDependencies ?? (packageJson.devDependencies = {});
@@ -8972,10 +8973,6 @@ async function main(args) {
     console.log("lang/es-ES.json created.\n");
     writeJson(join(name.value, "lang", "es-ES.json"), {
       message: "Hola Localizaci\xF3n"
-    });
-    console.log("\nUpdating Nuxt...\n");
-    await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade -f`], {
-      cwd: name.value
     });
     console.log("Updating dependencies...\n");
   }
