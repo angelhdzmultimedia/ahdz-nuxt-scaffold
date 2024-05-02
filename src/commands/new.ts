@@ -432,8 +432,7 @@ function readJson(file: string) {
   packageJson.dependencies ??= {}
   packageJson.devDependencies ??= {}
   packageJson.scripts = {
-    ...packageJson.scripts,
-    clean: 'rimraf node_modules .nuxt'
+    ...packageJson.scripts
   }
 
   const dependencies: any[] = [
@@ -441,7 +440,7 @@ function readJson(file: string) {
   ]
 
   const devDependencies: any[] = [
-    'rimraf'
+    
   ]
 
   console.log('\nAdding development and production dependencies...')
@@ -585,7 +584,7 @@ for (const _module of _modules) {
 
   console.log('\nUpdating Nuxt...\n')
 
-  await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade --force`], {
+  await asyncSpawn(shell, [`${npm.execute} nuxi@latest upgrade -f`], {
     cwd: name.value
   })
 
