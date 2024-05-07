@@ -8889,13 +8889,13 @@ async function main(args) {
     const devDependencies = [];
     console.log("\nAdding development and production dependencies...");
     for (const value of dependencies) {
-      await asyncSpawn(shell, ["-c", `${npm.add} ${value}`], {
+      await asyncSpawn(shell, ["-c", npm.add, value], {
         cwd: name.value
       });
       console.log(`${value} production dependency added.`);
     }
     for (const value of devDependencies) {
-      await asyncSpawn(shell, ["-c", `${npm.add} -D ${value}`], {
+      await asyncSpawn(shell, ["-c", npm.add, "-D", value], {
         cwd: name.value
       });
       console.log(`${value} development dependency added.`);
@@ -8908,6 +8908,10 @@ async function main(args) {
       `export default defineNuxtConfig({
   ssr: ${type.value === "ssr" ? "true" : "false"},
   devtools: { enabled: false },
+
+  experimental: {
+    typedPages: true
+  },
 
   modules: [
 
