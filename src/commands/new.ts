@@ -451,7 +451,7 @@ function readJson(file: string) {
   console.log('\nAdding development and production dependencies...')
 
   for (const value of dependencies) {
-    await asyncSpawn(shell, ['-c', `${npm.add} ${value}`], {
+    await asyncSpawn(shell, ['-c', npm.add, value], {
       cwd: name.value
     })
    // packageJson.dependencies[value] = 'latest'
@@ -459,7 +459,7 @@ function readJson(file: string) {
   }
 
   for (const value of devDependencies) {
-    await asyncSpawn(shell, ['-c', `${npm.add} -D ${value}`], {
+    await asyncSpawn(shell, ['-c', npm.add, '-D', value], {
       cwd: name.value
     })
    // packageJson.devDependencies[value] = 'latest'
@@ -468,25 +468,17 @@ function readJson(file: string) {
 
   // Hardcoded versions
 
-
-
-
   console.log('\nCreating files...\n')
-  
-
 
   writeJson(resolve(name.value, 'package.json'), packageJson)
   console.log('package.json created.\n')
-
-
- 
  
   write(resolve(name.value, 'nuxt.config.ts'), 
   
 `export default defineNuxtConfig({
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
   devtools: { enabled: false },
-  
+
   experimental: {
     typedPages: true
   },
