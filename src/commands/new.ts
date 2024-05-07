@@ -486,6 +486,10 @@ function readJson(file: string) {
 `export default defineNuxtConfig({
   ssr: ${type.value === 'ssr' ? 'true' : 'false'},
   devtools: { enabled: false },
+  
+  experimental: {
+    typedPages: true
+  },
 
   modules: [
 
